@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "d3d11-config.h"
+
 #include <util/AlignedNew.hpp>
 #include <util/windows/win-version.h>
 
@@ -27,6 +29,9 @@
 #include <windows.h>
 #include <dxgi.h>
 #include <dxgi1_2.h>
+#if WIN_10_0_14393_0_SDK
+#include <dxgi1_5.h>
+#endif
 #include <d3d11.h>
 #include <d3dcompiler.h>
 

@@ -43,6 +43,29 @@ void gs_duplicator::Start()
 	if (!get_monitor(device, idx, output.Assign()))
 		throw "Invalid monitor index";
 
+#if WIN_10_0_14393_0_SDK
+	static bool DXGI1_5Support = false;
+	ComPtr<IDXGIOutput5> output5;
+	hr = output->QueryInterface(__uuidof(IDXGIOutput5),
+			(void**)output5.Assign());
+	if (!FAILED(hr))
+		DXGI1_5Support = true;
+
+	if (DXGI1_5Support) {
+		const DXGI_FORMAT pSupportedFormats[] = { DXGI_FORMAT_B8G8R8A8_UNORM };
+		int SupportedFormatsCount = 1;
+
+		hr = output5->DuplicateOutput1(device->device, 0,
+				SupportedFormatsCount,
+				pSupportedFormats,
+				duplicator.Assign());
+
+		if (FAILED(hr))
+			throw HRError("Failed to duplicate output (IDXGIOutput5)", hr);
+		return;
+	}
+#endif
+
 	hr = output->QueryInterface(__uuidof(IDXGIOutput1),
 			(void**)output1.Assign());
 	if (FAILED(hr))
@@ -50,7 +73,7 @@ void gs_duplicator::Start()
 
 	hr = output1->DuplicateOutput(device->device, duplicator.Assign());
 	if (FAILED(hr))
-		throw HRError("Failed to duplicate output", hr);
+		throw HRError("Failed to duplicate output (IDXGIOutput1)", hr);
 }
 
 gs_duplicator::gs_duplicator(gs_device_t *device_, int monitor_idx)

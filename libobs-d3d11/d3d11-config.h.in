@@ -1,0 +1,15 @@
+#pragma once
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef ON
+#define ON 1
+#endif
+
+#ifndef FALSE
+#define FALSE 0
+#endif
+
+#define WIN_10_0_14393_0_SDK @WIN_10_0_14393_0_SDK@
