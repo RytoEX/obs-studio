@@ -222,6 +222,18 @@ void OBSBasicTransform::RefreshControls()
 	ui->cropRight->setValue(int(crop.right));
 	ui->cropTop->setValue(int(crop.top));
 	ui->cropBottom->setValue(int(crop.bottom));
+	//*
+	int sizeX = int(ui->sizeX->value());
+	int cropX = int(crop.left) + int(crop.right);
+	//int cropSizeX = sizeX - cropX;
+	static int cropSizeX = 0;
+	cropSizeX += 1;
+	QString s = QString::number(cropSizeX);
+	//QString s = QString::number(sizeX) + " " + QString::number(crop.left) + " " + QString::number(crop.right) + " " + QString::number(cropX);
+	ui->cropSizeX->setText(s);
+	ui->cropSizeY->setText(QString::number(ui->sizeY->value() -
+		(crop.top + crop.bottom)));
+	//*/
 	ignoreItemChange = false;
 }
 
