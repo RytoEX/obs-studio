@@ -225,12 +225,19 @@ void OBSBasicTransform::RefreshControls()
 	//*
 	int sizeX = int(ui->sizeX->value());
 	int cropX = int(crop.left) + int(crop.right);
-	//int cropSizeX = sizeX - cropX;
-	static int cropSizeX = 0;
-	cropSizeX += 1;
-	QString s = QString::number(cropSizeX);
+	int cropSizeX = sizeX - cropX;
+	//static int cropSizeX = 0;
+	//cropSizeX += 1;
+	//QString s = QString::number(cropSizeX);
+	blog(LOG_INFO, "Transform Control Refresh:  %d, %d, %d, %d, %d, %d, %d",
+			int(crop.left), int(crop.right),
+			int(crop.top), int(crop.bottom),
+			sizeX, cropX, cropSizeX);
 	//QString s = QString::number(sizeX) + " " + QString::number(crop.left) + " " + QString::number(crop.right) + " " + QString::number(cropX);
-	ui->cropSizeX->setText(s);
+	//ui->cropSizeX->setText(s);
+	/*
+	ui->cropSizeX->setText(QString::number(ui->sizeX->value() -
+		(crop.left + crop.right)));
 	ui->cropSizeY->setText(QString::number(ui->sizeY->value() -
 		(crop.top + crop.bottom)));
 	//*/
