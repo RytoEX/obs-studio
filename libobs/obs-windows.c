@@ -125,12 +125,306 @@ static void log_available_memory(void)
 	     (DWORD)(ms.ullAvailPhys / 1048576), note);
 }
 
+
+char *get_windows_edition_name(DWORD prod_type)
+{
+	char *edition;
+
+	switch (prod_type) {
+	case PRODUCT_BUSINESS:
+		edition = "Business";
+		break;
+	case PRODUCT_BUSINESS_N:
+		edition = "Business N";
+		break;
+	case PRODUCT_CLUSTER_SERVER:
+		edition = "HPC Edition";
+		break;
+	case PRODUCT_CLUSTER_SERVER_V:
+		edition = "Server Hyper Core V";
+		break;
+	case PRODUCT_CORE:
+		edition = "Windows 10 Home";
+		break;
+	case PRODUCT_CORE_COUNTRYSPECIFIC:
+		edition = "Windows 10 Home China";
+		break;
+	case PRODUCT_CORE_N:
+		edition = "Windows 10 Home N";
+		break;
+	case PRODUCT_CORE_SINGLELANGUAGE:
+		edition = "Windows 10 Home Single Language";
+		break;
+	case PRODUCT_DATACENTER_EVALUATION_SERVER:
+		edition = "Server Datacenter (evaluation installation)";
+		break;
+	case PRODUCT_DATACENTER_SERVER:
+		edition = "Server Datacenter (full installation)";
+		break;
+	case PRODUCT_DATACENTER_SERVER_CORE:
+		edition = "Server Datacenter (core installation)";
+		break;
+	case PRODUCT_DATACENTER_SERVER_CORE_V:
+		edition = "Server Datacenter without Hyper-V (core installation)";
+		break;
+	case PRODUCT_DATACENTER_SERVER_V:
+		edition = "Server Datacenter without Hyper-V (full installation)";
+		break;
+	case PRODUCT_EDUCATION:
+		edition = "Windows 10 Education";
+		break;
+	case PRODUCT_EDUCATION_N:
+		edition = "Windows 10 Education N";
+		break;
+	case PRODUCT_ENTERPRISE:
+		edition = "Windows 10 Enterprise";
+		break;
+	case PRODUCT_ENTERPRISE_E:
+		edition = "Windows 10 Enterprise E";
+		break;
+	case PRODUCT_ENTERPRISE_EVALUATION:
+		edition = "Windows 10 Enterprise Evaluation";
+		break;
+	case PRODUCT_ENTERPRISE_N:
+		edition = "Windows 10 Enterprise N";
+		break;
+	case PRODUCT_ENTERPRISE_N_EVALUATION:
+		edition = "Windows 10 Enterprise N Evaluation";
+		break;
+	case PRODUCT_ENTERPRISE_S:
+		edition = "Windows 10 Enterprise 2015 LTSB";
+		break;
+	case PRODUCT_ENTERPRISE_S_EVALUATION:
+		edition = "Windows 10 Enterprise 2015 LTSB Evaluation";
+		break;
+	case PRODUCT_ENTERPRISE_S_N:
+		edition = "Windows 10 Enterprise 2015 LTSB N";
+		break;
+	case PRODUCT_ENTERPRISE_S_N_EVALUATION:
+		edition = "Windows 10 Enterprise 2015 LTSB N Evaluation";
+		break;
+	case PRODUCT_ENTERPRISE_SERVER:
+		edition = "Server Enterprise (full installation)";
+		break;
+	case PRODUCT_ENTERPRISE_SERVER_CORE:
+		edition = "Server Enterprise (core installation)";
+		break;
+	case PRODUCT_ENTERPRISE_SERVER_CORE_V:
+		edition = "Server Enterprise without Hyper-V (core installation)";
+		break;
+	case PRODUCT_ENTERPRISE_SERVER_IA64:
+		edition = "Server Enterprise for Itanium-based Systems";
+		break;
+	case PRODUCT_ENTERPRISE_SERVER_V:
+		edition = "Server Enterprise without Hyper-V (full installation)";
+		break;
+	case PRODUCT_ESSENTIALBUSINESS_SERVER_ADDL:
+		edition = "Windows Essential Server Solution Additional";
+		break;
+	case PRODUCT_ESSENTIALBUSINESS_SERVER_ADDLSVC:
+		edition = "Windows Essential Server Solution Additional SVC";
+		break;
+	case PRODUCT_ESSENTIALBUSINESS_SERVER_MGMT:
+		edition = "Windows Essential Server Solution Management";
+		break;
+	case PRODUCT_ESSENTIALBUSINESS_SERVER_MGMTSVC:
+		edition = "Windows Essential Server Solution Management SVC";
+		break;
+	case PRODUCT_HOME_BASIC:
+		edition = "Home Basic";
+		break;
+	case PRODUCT_HOME_BASIC_E:
+		edition = "Not supported";
+		break;
+	case PRODUCT_HOME_BASIC_N:
+		edition = "Home Basic N";
+		break;
+	case PRODUCT_HOME_PREMIUM:
+		edition = "Home Premium";
+		break;
+	case PRODUCT_HOME_PREMIUM_E:
+		edition = "Not supported";
+		break;
+	case PRODUCT_HOME_PREMIUM_N:
+		edition = "Home Premium N";
+		break;
+	case PRODUCT_HOME_PREMIUM_SERVER:
+		edition = "Windows Home Server 2011";
+		break;
+	case PRODUCT_HOME_SERVER:
+		edition = "Windows Storage Server 2008 R2 Essentials";
+		break;
+	case PRODUCT_HYPERV:
+		edition = "Microsoft Hyper-V Server";
+		break;
+	case PRODUCT_IOTUAP:
+		edition = "Windows 10 IoT Core";
+		break;
+	/*case PRODUCT_IOTUAPCOMMERCIAL:
+		edition = "Windows 10 IoT Core Commercial";
+		break;*/
+	case PRODUCT_MEDIUMBUSINESS_SERVER_MANAGEMENT:
+		edition = "Windows Essential Business Server Management Server";
+		break;
+	case PRODUCT_MEDIUMBUSINESS_SERVER_MESSAGING:
+		edition = "Windows Essential Business Server Messaging Server";
+		break;
+	case PRODUCT_MEDIUMBUSINESS_SERVER_SECURITY:
+		edition = "Windows Essential Business Server Security Server";
+		break;
+	case PRODUCT_MOBILE_CORE:
+		edition = "Windows 10 Mobile";
+		break;
+	/*case PRODUCT_MOBILE_ENTERPRISE:
+		edition = "Windows 10 Mobile Enterprise";
+		break;*/
+	case PRODUCT_MULTIPOINT_PREMIUM_SERVER:
+		edition = "Windows MultiPoint Server Premium (full installation)";
+		break;
+	case PRODUCT_MULTIPOINT_STANDARD_SERVER:
+		edition = "Windows MultiPoint Server Standard (full installation)";
+		break;
+	case PRODUCT_PROFESSIONAL:
+		edition = "Windows 10 Pro";
+		break;
+	case PRODUCT_PROFESSIONAL_E:
+		edition = "Not supported";
+		break;
+	case PRODUCT_PROFESSIONAL_N:
+		edition = "Windows 10 Pro N";
+		break;
+	case PRODUCT_PROFESSIONAL_WMC:
+		edition = "Professional with Media Center";
+		break;
+	case PRODUCT_SB_SOLUTION_SERVER:
+		edition = "Windows Small Business Server 2011 Essentials";
+		break;
+	case PRODUCT_SB_SOLUTION_SERVER_EM:
+		edition = "Server For SB Solutions EM";
+		break;
+	case PRODUCT_SERVER_FOR_SB_SOLUTIONS:
+		edition = "Server For SB Solutions";
+		break;
+	case PRODUCT_SERVER_FOR_SB_SOLUTIONS_EM:
+		edition = "Server For SB Solutions EM";
+		break;
+	case PRODUCT_SERVER_FOR_SMALLBUSINESS:
+		edition = "Windows Server 2008 for Windows Essential Server Solutions";
+		break;
+	case PRODUCT_SERVER_FOR_SMALLBUSINESS_V:
+		edition = "Windows Server 2008 without Hyper-V for Windows Essential Server Solutions";
+		break;
+	case PRODUCT_SERVER_FOUNDATION:
+		edition = "Server Foundation";
+		break;
+	case PRODUCT_SMALLBUSINESS_SERVER:
+		edition = "Windows Small Business Server";
+		break;
+	case PRODUCT_SMALLBUSINESS_SERVER_PREMIUM:
+		edition = "Small Business Server Premium";
+		break;
+	case PRODUCT_SMALLBUSINESS_SERVER_PREMIUM_CORE:
+		edition = "Small Business Server Premium (core installation)";
+		break;
+	case PRODUCT_SOLUTION_EMBEDDEDSERVER:
+		edition = "Windows MultiPoint Server";
+		break;
+	case PRODUCT_STANDARD_EVALUATION_SERVER:
+		edition = "Server Standard (evaluation installation)";
+		break;
+	case PRODUCT_STANDARD_SERVER:
+		edition = "Server Standard";
+		break;
+	case PRODUCT_STANDARD_SERVER_CORE:
+		edition = "Server Standard (core installation)";
+		break;
+	case PRODUCT_STANDARD_SERVER_CORE_V:
+		edition = "Server Standard without Hyper-V (core installation)";
+		break;
+	case PRODUCT_STANDARD_SERVER_V:
+		edition = "Server Standard without Hyper-V";
+		break;
+	case PRODUCT_STANDARD_SERVER_SOLUTIONS:
+		edition = "Server Solutions Premium";
+		break;
+	case PRODUCT_STANDARD_SERVER_SOLUTIONS_CORE:
+		edition = "Server Solutions Premium (core installation)";
+		break;
+	case PRODUCT_STARTER:
+		edition = "Starter";
+		break;
+	case PRODUCT_STARTER_E:
+		edition = "Not supported";
+		break;
+	case PRODUCT_STARTER_N:
+		edition = "Starter N";
+		break;
+	case PRODUCT_STORAGE_ENTERPRISE_SERVER:
+		edition = "Storage Server Enterprise";
+		break;
+	case PRODUCT_STORAGE_ENTERPRISE_SERVER_CORE:
+		edition = "Storage Server Enterprise (core installation)";
+		break;
+	case PRODUCT_STORAGE_EXPRESS_SERVER:
+		edition = "Storage Server Express";
+		break;
+	case PRODUCT_STORAGE_EXPRESS_SERVER_CORE:
+		edition = "Storage Server Express (core installation)";
+		break;
+	case PRODUCT_STORAGE_STANDARD_EVALUATION_SERVER:
+		edition = "Storage Server Standard (evaluation installation)";
+		break;
+	case PRODUCT_STORAGE_STANDARD_SERVER:
+		edition = "Storage Server Standard";
+		break;
+	case PRODUCT_STORAGE_STANDARD_SERVER_CORE:
+		edition = "Storage Server Standard (core installation)";
+		break;
+	case PRODUCT_STORAGE_WORKGROUP_EVALUATION_SERVER:
+		edition = "Storage Server Workgroup (evaluation installation)";
+		break;
+	case PRODUCT_STORAGE_WORKGROUP_SERVER:
+		edition = "Storage Server Workgroup";
+		break;
+	case PRODUCT_STORAGE_WORKGROUP_SERVER_CORE:
+		edition = "Storage Server Workgroup (core installation)";
+		break;
+	case PRODUCT_ULTIMATE:
+		edition = "Ultimate";
+		break;
+	case PRODUCT_ULTIMATE_E:
+		edition = "Not supported";
+		break;
+	case PRODUCT_ULTIMATE_N:
+		edition = "Ultimate N";
+		break;
+	case PRODUCT_UNDEFINED:
+		edition = "An unknown PRODUCT";
+		break;
+	case PRODUCT_WEB_SERVER:
+		edition = "Web Server (full installation)";
+		break;
+	case PRODUCT_WEB_SERVER_CORE:
+		edition = "Web Server (core installation)";
+		break;
+	default:
+		edition = "Unknown";
+	}
+
+	return edition;
+}
+
+
 extern const char *get_win_release_id();
 
 static void log_windows_version(void)
 {
 	struct win_version_info ver;
 	get_win_ver(&ver);
+	DWORD prod_type;
+	BOOL win_info = GetProductInfo((DWORD) 6, (DWORD) 1, (DWORD) 0,
+			(DWORD) 0, &prod_type);
+	char *prod_type_str = get_windows_edition_name(prod_type);
 
 	const char *release_id = get_win_release_id();
 
@@ -141,6 +435,7 @@ static void log_windows_version(void)
 	     "Windows Version: %d.%d Build %d (release: %s; revision: %d; %s-bit)",
 	     ver.major, ver.minor, ver.build, release_id, ver.revis,
 	     windows_bitness);
+	blog(LOG_INFO, "Windows Edition: %s", prod_type_str);
 }
 
 static void log_admin_status(void)
