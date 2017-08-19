@@ -12,6 +12,12 @@ struct rtmp_common {
 	char *key;
 
 	char *output;
+
+	bool can_use_auth;
+	bool require_auth;
+	bool use_auth;
+	char *username;
+	char *password;
 };
 
 static const char *rtmp_common_getname(void *unused)
@@ -23,6 +29,7 @@ static const char *rtmp_common_getname(void *unused)
 static json_t *open_services_file(void);
 static inline json_t *find_service(json_t *root, const char *name);
 static inline const char *get_string_val(json_t *service, const char *key);
+static inline bool get_bool_val(json_t *service, const char *key);
 
 extern void twitch_ingests_refresh(int seconds);
 
@@ -34,11 +41,16 @@ static void rtmp_common_update(void *data, obs_data_t *settings)
 	bfree(service->server);
 	bfree(service->output);
 	bfree(service->key);
+	bfree(service->username);
+	bfree(service->password);
 
 	service->service = bstrdup(obs_data_get_string(settings, "service"));
 	service->server  = bstrdup(obs_data_get_string(settings, "server"));
 	service->key     = bstrdup(obs_data_get_string(settings, "key"));
 	service->output  = NULL;
+	service->can_use_auth = false;
+	service->require_auth = false;
+	service->use_auth     = false;
 
 	json_t *root = open_services_file();
 	if (root) {
@@ -49,6 +61,13 @@ static void rtmp_common_update(void *data, obs_data_t *settings)
 				const char *out = get_string_val(rec, "output");
 				if (out)
 					service->output = bstrdup(out);
+			}
+			json_t *auth = json_object_get(serv, "authentication");
+			if (auth && json_is_object(auth)) {
+				service->can_use_auth = get_bool_val(auth, "can_use_auth");
+				service->require_auth = get_bool_val(auth, "require_auth");
+				service->username = bstrdup(obs_data_get_string(settings, "username"));
+				service->password = bstrdup(obs_data_get_string(settings, "password"));
 			}
 		}
 	}
@@ -66,6 +85,8 @@ static void rtmp_common_destroy(void *data)
 	bfree(service->server);
 	bfree(service->output);
 	bfree(service->key);
+	bfree(service->username);
+	bfree(service->password);
 	bfree(service);
 }
 
@@ -326,6 +347,41 @@ static inline json_t *find_service(json_t *root, const char *name)
 	return NULL;
 }
 
+static void show_hide_auth_props(obs_properties_t *props, json_t *service,
+		obs_data_t *settings)
+{
+	obs_property_t *p_use_auth = obs_properties_get(props, "use_auth");
+	obs_property_t *p_username = obs_properties_get(props, "username");
+	obs_property_t *p_password = obs_properties_get(props, "password");
+	bool can_use_auth = obs_data_get_bool(settings, "can_use_auth");
+	bool require_auth = obs_data_get_bool(settings, "require_auth");
+	bool use_auth = obs_data_get_bool(settings, "use_auth");
+	json_t *auth = json_object_get(service, "authentication");
+	if (auth && json_is_object(auth)) {
+		can_use_auth = get_bool_val(auth, "can_use_auth");
+		require_auth = get_bool_val(auth, "require_auth");
+	}
+
+	if (can_use_auth) {
+		obs_property_set_enabled(p_use_auth, true);
+		obs_property_set_visible(p_use_auth, true);
+		obs_property_set_visible(p_username, true);
+		obs_property_set_visible(p_password, true);
+		if (require_auth) {
+			obs_data_set_bool(settings, "use_auth", true);
+			obs_property_set_enabled(p_use_auth, false);
+		} else if (!require_auth) {
+			obs_data_set_bool(settings, "use_auth", false);
+		}
+	} else if (!can_use_auth) {
+		obs_data_set_bool(settings, "use_auth", false);
+		obs_property_set_enabled(p_use_auth, false);
+		obs_property_set_visible(p_use_auth, false);
+		obs_property_set_visible(p_username, false);
+		obs_property_set_visible(p_password, false);
+	}
+}
+
 static bool service_selected(obs_properties_t *props, obs_property_t *p,
 		obs_data_t *settings)
 {
@@ -350,6 +406,7 @@ static bool service_selected(obs_properties_t *props, obs_property_t *p,
 	}
 
 	fill_servers(obs_properties_get(props, "server"), service, name);
+	show_hide_auth_props(props, service, settings);
 
 	return true;
 }
@@ -368,6 +425,17 @@ static bool show_all_services_toggled(obs_properties_t *ppts,
 			cur_service);
 
 	UNUSED_PARAMETER(p);
+	return true;
+}
+
+static bool use_auth_modified(obs_properties_t *ppts, obs_property_t *p,
+		obs_data_t *settings)
+{
+	bool use_auth = obs_data_get_bool(settings, "use_auth");
+	p = obs_properties_get(ppts, "username");
+	obs_property_set_visible(p, use_auth);
+	p = obs_properties_get(ppts, "password");
+	obs_property_set_visible(p, use_auth);
 	return true;
 }
 
@@ -399,6 +467,14 @@ static obs_properties_t *rtmp_common_properties(void *unused)
 
 	obs_properties_add_text(ppts, "key", obs_module_text("StreamKey"),
 			OBS_TEXT_PASSWORD);
+
+	p = obs_properties_add_bool(ppts, "use_auth", obs_module_text("UseAuth"));
+	obs_properties_add_text(ppts, "username", obs_module_text("Username"),
+			OBS_TEXT_DEFAULT);
+	obs_properties_add_text(ppts, "password", obs_module_text("Password"),
+			OBS_TEXT_PASSWORD);
+	obs_property_set_modified_callback(p, use_auth_modified);
+
 	return ppts;
 }
 
@@ -530,6 +606,22 @@ static const char *rtmp_common_key(void *data)
 	return service->key;
 }
 
+static const char *rtmp_common_username(void *data)
+{
+	struct rtmp_common *service = data;
+	if (!service->use_auth)
+		return NULL;
+	return service->username;
+}
+
+static const char *rtmp_common_password(void *data)
+{
+	struct rtmp_common *service = data;
+	if (!service->use_auth)
+		return NULL;
+	return service->password;
+}
+
 struct obs_service_info rtmp_common_service = {
 	.id             = "rtmp_common",
 	.get_name       = rtmp_common_getname,
@@ -539,6 +631,8 @@ struct obs_service_info rtmp_common_service = {
 	.get_properties = rtmp_common_properties,
 	.get_url        = rtmp_common_url,
 	.get_key        = rtmp_common_key,
+	.get_username = rtmp_common_username,
+	.get_password = rtmp_common_password,
 	.apply_encoder_settings = rtmp_common_apply_settings,
-	.get_output_type = rtmp_common_get_output_type,
+	.get_output_type = rtmp_common_get_output_type
 };
