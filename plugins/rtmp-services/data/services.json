@@ -1237,6 +1237,24 @@
                     "url": "rtmp://rtmp.cdn.asset.aparat.com:443/event"
                 }
             ]
+        },
+        {
+            "name": "G9MD.tv",
+            "servers": [
+                {
+                    "name": "Default",
+                    "url": "rtmp://g9md.tv:1935/g9md"
+                }
+            ],
+            "recommended": {
+                "keyint": 2,
+                "max video bitrate": 3200,
+                "max audio bitrate": 160
+            },
+            "authentication": {
+                "can_use_auth": true,
+                "require_auth": true
+            }
         }
     ]
 }
