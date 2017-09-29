@@ -40,6 +40,13 @@ using namespace Gdiplus;
 #define S_FONT                          "font"
 #define S_USE_FILE                      "read_from_file"
 #define S_FILE                          "file"
+#define S_OUTPUT_TIMER                  "output_timer"
+#define S_OUTPUT_TIMER_TYPE             "output_timer_type"
+#define S_OUTPUT_TIMER_SYSCLOCK         "output_timer_sysclock"
+#define S_OUTPUT_TIMER_SYSUPTIME        "output_timer_sysuptime"
+#define S_OUTPUT_TIMER_STOPWATCH        "output_timer_stopwatch"
+#define S_OUTPUT_TIMER_TIMER            "output_timer_timer"
+#define S_OUTPUT_TIMER_START_TIME       "output_timer_start_time"
 #define S_TEXT                          "text"
 #define S_COLOR                         "color"
 #define S_GRADIENT                      "gradient"
@@ -75,6 +82,13 @@ using namespace Gdiplus;
 #define T_FONT                          T_("Font")
 #define T_USE_FILE                      T_("ReadFromFile")
 #define T_FILE                          T_("TextFile")
+#define T_OUTPUT_TIMER                  T_("OutputTimer")
+#define T_OUTPUT_TIMER_TYPE             T_("OutputTimer.Type")
+#define T_OUTPUT_TIMER_SYSCLOCK         T_("OutputTimer.SystemClock")
+#define T_OUTPUT_TIMER_SYSUPTIME        T_("OutputTimer.SystemUptime")
+#define T_OUTPUT_TIMER_STOPWATCH        T_("OutputTimer.Stopwatch")
+#define T_OUTPUT_TIMER_TIMER            T_("OutputTimer.Timer")
+#define T_OUTPUT_TIMER_START_TIME       T_("OutputTimer.Timer.StartTime")
 #define T_TEXT                          T_("Text")
 #define T_COLOR                         T_("Color")
 #define T_GRADIENT                      T_("Gradient")
@@ -181,6 +195,13 @@ enum class VAlign {
 	Bottom
 };
 
+enum class TimerType {
+	SystemClock,
+	SystemUptime,
+	Stopwatch,
+	Countdown
+};
+
 struct TextSource {
 	obs_source_t *source = nullptr;
 
@@ -199,6 +220,12 @@ struct TextSource {
 	time_t file_timestamp = 0;
 	bool update_file = false;
 	float update_time_elapsed = 0.0f;
+
+	bool output_timer = false;
+	TimerType timer_type = TimerType::SystemClock;
+	float total_elapsed_time = 0.0f;
+	float timer_time = 0.0f;
+
 
 	wstring text;
 	wstring face;
@@ -261,6 +288,7 @@ struct TextSource {
 			const Brush &brush);
 	void RenderText();
 	void LoadFileText();
+	void LoadTimerText();
 
 	const char *GetMainString(const char *str);
 
@@ -632,6 +660,57 @@ void TextSource::LoadFileText()
 		text.push_back('\n');
 }
 
+void TextSource::LoadTimerText()
+{
+	if (timer_type == TimerType::SystemClock) {
+		SYSTEMTIME time_info;
+		GetLocalTime(&time_info);
+		wchar_t buffer[100];
+		int res;
+		res = swprintf(buffer, 100,
+			L"%02u:%02u:%02u.%03u",
+			time_info.wHour,
+			time_info.wMinute,
+			time_info.wSecond,
+			time_info.wMilliseconds);
+		text = std::wstring(buffer);
+	} else if (timer_type == TimerType::SystemUptime) {
+		uint64_t os_time_ns = os_gettime_ns();
+		uint64_t os_time_ms = os_time_ns / 1000000;
+		uint64_t os_time_seconds = os_time_ns / 1000000000;
+		uint64_t os_time_minutes = os_time_seconds / 60;
+		uint64_t os_time_hours = os_time_minutes / 60;
+		uint64_t os_time_days = os_time_hours / 24;
+		uint8_t os_time_display_hour = os_time_hours % 24;
+		uint8_t os_time_display_minutes = os_time_minutes % 60;
+		uint8_t os_time_display_seconds = os_time_seconds % 60;
+		uint16_t os_time_display_ms = os_time_ms % 1000;
+		wchar_t buffer[100];
+		int res;
+		res = swprintf(buffer, 100,
+				L"%u:%02u:%02u:%02u.%03u",
+				os_time_days,
+				os_time_display_hour,
+				os_time_display_minutes,
+				os_time_display_seconds,
+				os_time_display_ms);
+		text = std::wstring(buffer);
+		//text = std::to_wstring(os_time_ns); // Use this line to see just nanoseconds!
+		//text = os_gettime_ns(); // Uncomment for fun and unexpected behavior!
+	} else if (timer_type == TimerType::Stopwatch) {
+		//text = std::to_wstring(update_time_elapsed); // time elapsed
+		text = std::to_wstring(timer_time + total_elapsed_time); // active time
+		//text = std::to_wstring(frame_time); // frame count
+		//text = std::to_wstring(active_fps); // active fps
+	} else if (timer_type == TimerType::Countdown) {
+		// get starting value, count down
+		text = std::to_wstring(timer_time - total_elapsed_time);
+	}
+
+	if (!text.empty() && text.back() != '\n')
+		text.push_back('\n');
+}
+
 #define obs_data_get_uint32 (uint32_t)obs_data_get_int
 
 inline void TextSource::Update(obs_data_t *s)
@@ -659,6 +738,10 @@ inline void TextSource::Update(obs_data_t *s)
 	bool new_extents_wrap  = obs_data_get_bool(s, S_EXTENTS_WRAP);
 	uint32_t n_extents_cx  = obs_data_get_uint32(s, S_EXTENTS_CX);
 	uint32_t n_extents_cy  = obs_data_get_uint32(s, S_EXTENTS_CY);
+
+	bool new_output_timer       = obs_data_get_bool(s, S_OUTPUT_TIMER);
+	const char *timer_type_str  = obs_data_get_string(s, S_OUTPUT_TIMER_TYPE);
+	const char *timer_start_str = obs_data_get_string(s, S_OUTPUT_TIMER_START_TIME);
 
 	const char *font_face  = obs_data_get_string(font_obj, "face");
 	int font_size          = (int)obs_data_get_int(font_obj, "size");
@@ -720,6 +803,8 @@ inline void TextSource::Update(obs_data_t *s)
 
 	read_from_file = new_use_file;
 
+	output_timer = new_output_timer;
+
 	chatlog_mode = new_chat_mode;
 	chatlog_lines = new_chat_lines;
 
@@ -727,7 +812,18 @@ inline void TextSource::Update(obs_data_t *s)
 		file = new_file;
 		file_timestamp = get_modified_timestamp(new_file);
 		LoadFileText();
-
+	} else if (output_timer) {
+		if (strcmp(timer_type_str, S_OUTPUT_TIMER_SYSCLOCK) == 0) {
+			timer_type = TimerType::SystemClock;
+		} else if (strcmp(timer_type_str, S_OUTPUT_TIMER_SYSUPTIME) == 0) {
+			timer_type = TimerType::SystemUptime;
+		} else if (strcmp(timer_type_str, S_OUTPUT_TIMER_STOPWATCH) == 0) {
+			timer_type = TimerType::Stopwatch;
+		} else if (strcmp(timer_type_str, S_OUTPUT_TIMER_TIMER) == 0) {
+			timer_type = TimerType::Countdown;
+			timer_time = atof(timer_start_str);
+		}
+		LoadTimerText();
 	} else {
 		text = to_wide(GetMainString(new_text));
 
@@ -767,12 +863,21 @@ inline void TextSource::Update(obs_data_t *s)
 
 inline void TextSource::Tick(float seconds)
 {
-	if (!read_from_file)
+	if (!read_from_file && !output_timer)
 		return;
 
 	update_time_elapsed += seconds;
 
-	if (update_time_elapsed >= 1.0f) {
+	if (output_timer) {
+		if (obs_source_active(source)) {
+			total_elapsed_time += seconds;
+		} else {
+			// make an option to "preserve/pause timer time when not active"
+			total_elapsed_time = 0.0f;
+		}
+		LoadTimerText();
+		RenderText();
+	} else if (update_time_elapsed >= 1.0f) {
 		time_t t = get_modified_timestamp(file.c_str());
 		update_time_elapsed = 0.0f;
 
@@ -811,13 +916,52 @@ OBS_MODULE_USE_DEFAULT_LOCALE("obs-text", "en-US")
 		obs_property_set_visible(p, var == show); \
 	} while (false)
 
+#define set_enable(var, val, show) \
+	do { \
+		p = obs_properties_get(props, val); \
+		obs_property_set_enabled(p, var == show); \
+	} while (false)
+
 static bool use_file_changed(obs_properties_t *props, obs_property_t *p,
 		obs_data_t *s)
 {
 	bool use_file = obs_data_get_bool(s, S_USE_FILE);
 
+	set_enable(use_file, S_OUTPUT_TIMER, false);
 	set_vis(use_file, S_TEXT, false);
 	set_vis(use_file, S_FILE, true);
+	return true;
+}
+
+static bool use_output_timer_changed(obs_properties_t *props, obs_property_t *p,
+		obs_data_t *s)
+{
+	bool use_output_timer = obs_data_get_bool(s, S_OUTPUT_TIMER);
+	const char *timer_type_str = obs_data_get_string(s, S_OUTPUT_TIMER_TYPE);
+
+	set_enable(use_output_timer, S_USE_FILE, false);
+	set_vis(use_output_timer, S_TEXT, false);
+	set_vis(use_output_timer, S_OUTPUT_TIMER_TYPE, true);
+	if (strcmp(timer_type_str, S_OUTPUT_TIMER_TIMER) == 0)
+		set_vis(use_output_timer, S_OUTPUT_TIMER_START_TIME, true);
+	return true;
+}
+
+static bool timer_type_changed(obs_properties_t *props, obs_property_t *p,
+		obs_data_t *s)
+{
+	bool use_output_timer = obs_data_get_bool(s, S_OUTPUT_TIMER); // might not need?
+	const char *timer_type_str = obs_data_get_string(s, S_OUTPUT_TIMER_TYPE);
+	blog(LOG_DEBUG, "Use Timer: %s", use_output_timer ? "true" : "false");
+	blog(LOG_DEBUG, "Timer Type: %s", timer_type_str);
+
+	if (strcmp(timer_type_str, S_OUTPUT_TIMER_TIMER) == 0) {
+		blog(LOG_DEBUG, "timer (countdown) enabled");
+		set_vis(use_output_timer, S_OUTPUT_TIMER_START_TIME, true);
+	} else {
+		blog(LOG_DEBUG, "timer (countdown) disabled");
+		set_vis(false, S_OUTPUT_TIMER_START_TIME, true);
+	}
 	return true;
 }
 
@@ -864,6 +1008,7 @@ static bool extents_modified(obs_properties_t *props, obs_property_t *p,
 }
 
 #undef set_vis
+#undef set_enable
 
 static obs_properties_t *get_properties(void *data)
 {
@@ -874,6 +1019,25 @@ static obs_properties_t *get_properties(void *data)
 	obs_property_t *p;
 
 	obs_properties_add_font(props, S_FONT, T_FONT);
+
+	p = obs_properties_add_bool(props, S_OUTPUT_TIMER, T_OUTPUT_TIMER);
+	obs_property_set_modified_callback(p, use_output_timer_changed);
+
+	p = obs_properties_add_list(props, S_OUTPUT_TIMER_TYPE,
+			T_OUTPUT_TIMER_TYPE, OBS_COMBO_TYPE_LIST,
+			OBS_COMBO_FORMAT_STRING);
+	obs_property_list_add_string(p, T_OUTPUT_TIMER_SYSCLOCK,
+			S_OUTPUT_TIMER_SYSCLOCK);
+	obs_property_list_add_string(p, T_OUTPUT_TIMER_SYSUPTIME,
+			S_OUTPUT_TIMER_SYSUPTIME);
+	obs_property_list_add_string(p, T_OUTPUT_TIMER_STOPWATCH,
+			S_OUTPUT_TIMER_STOPWATCH);
+	obs_property_list_add_string(p, T_OUTPUT_TIMER_TIMER,
+			S_OUTPUT_TIMER_TIMER);
+	obs_property_set_modified_callback(p, timer_type_changed);
+
+	obs_properties_add_text(props, S_OUTPUT_TIMER_START_TIME,
+			T_OUTPUT_TIMER_START_TIME, OBS_TEXT_DEFAULT);
 
 	p = obs_properties_add_bool(props, S_USE_FILE, T_USE_FILE);
 	obs_property_set_modified_callback(p, use_file_changed);
