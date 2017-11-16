@@ -118,23 +118,30 @@ cleanup:
 
 static bool nvenc_supported(void)
 {
-	AVCodec *nvenc = avcodec_find_encoder_by_name("nvenc_h264");
-	void *lib = NULL;
+	avcodec_register_all();
+	bool supported = false;
 
+	AVCodecContext *nvenc_context = NULL;
+	AVCodec *nvenc = avcodec_find_encoder_by_name("h264_nvenc");
 	if (!nvenc)
-		return false;
+		nvenc = avcodec_find_encoder_by_name("nvenc_h264");
 
-#if defined(_WIN32)
-	if (sizeof(void*) == 8) {
-		lib = os_dlopen("nvEncodeAPI64.dll");
-	} else {
-		lib = os_dlopen("nvEncodeAPI.dll");
+	if (!nvenc) {
+		blog(LOG_WARNING, "Couldn't find encoder");
+		goto cleanup;
 	}
-#else
-	lib = os_dlopen("libnvidia-encode.so.1");
-#endif
-	os_dlclose(lib);
-	return !!lib;
+
+	nvenc_context = avcodec_alloc_context3(nvenc);
+	if (!nvenc_context) {
+		blog(LOG_WARNING, "Failed to create codec context");
+		goto cleanup;
+	}
+
+	supported = true;
+
+cleanup:
+	avcodec_close(nvenc_context);
+	return supported;
 }
 
 bool obs_module_load(void)
