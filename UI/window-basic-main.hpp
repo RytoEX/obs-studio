@@ -216,7 +216,7 @@ private:
 
 	void          InitPrimitives();
 
-	OBSSceneItem  GetSceneItem(QListWidgetItem *item);
+	OBSSceneItem  GetSceneItem(QTreeWidgetItem *item);
 	OBSSceneItem  GetCurrentSceneItem();
 
 	bool          QueryRemoveSource(obs_source_t *source);
@@ -275,7 +275,7 @@ private:
 
 	void SaveProjectNow();
 
-	QListWidgetItem *GetTopSelectedSourceItem();
+	QTreeWidgetItem *GetTopSelectedSourceItem();
 
 	obs_hotkey_pair_id streamingHotkeys, recordingHotkeys,
 	                   replayBufHotkeys;
@@ -554,7 +554,7 @@ public:
 
 	QMenu *AddDeinterlacingMenu(obs_source_t *source);
 	QMenu *AddScaleFilteringMenu(obs_sceneitem_t *item);
-	void CreateSourcePopupMenu(QListWidgetItem *item, bool preview);
+	void CreateSourcePopupMenu(QTreeWidgetItem *item, bool preview);
 
 	void UpdateTitleBar();
 	void UpdateSceneSelection(OBSSource source);
@@ -607,7 +607,7 @@ private slots:
 	void on_actionSceneDown_triggered();
 	void on_sources_itemSelectionChanged();
 	void on_sources_customContextMenuRequested(const QPoint &pos);
-	void on_sources_itemDoubleClicked(QListWidgetItem *item);
+	void on_sources_itemDoubleClicked(QTreeWidgetItem *item);
 	void on_scenes_itemDoubleClicked(QListWidgetItem *item);
 	void on_actionAddSource_triggered();
 	void on_actionRemoveSource_triggered();

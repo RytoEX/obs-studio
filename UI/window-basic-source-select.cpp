@@ -65,6 +65,7 @@ void OBSBasicSourceSelect::SourceAdded(OBSSource source)
 		return;
 
 	ui->sourceList->addItem(name);
+	ui->sourceList->itemCount++;
 }
 
 void OBSBasicSourceSelect::SourceRemoved(OBSSource source)
@@ -75,13 +76,14 @@ void OBSBasicSourceSelect::SourceRemoved(OBSSource source)
 	if (strcmp(sourceId, id) != 0)
 		return;
 
-	QList<QListWidgetItem*> items =
+	QList<QTreeWidgetItem*> items =
 		ui->sourceList->findItems(name, Qt::MatchFixedString);
 
 	if (!items.count())
 		return;
 
 	delete items[0];
+	ui->sourceList->itemCount--;
 }
 
 static void AddSource(void *_data, obs_scene_t *scene)
@@ -189,11 +191,11 @@ void OBSBasicSourceSelect::on_buttonBox_accepted()
 	bool visible = ui->sourceVisible->isChecked();
 
 	if (useExisting) {
-		QListWidgetItem *item = ui->sourceList->currentItem();
+		QTreeWidgetItem *item = ui->sourceList->currentItem();
 		if (!item)
 			return;
 
-		AddExisting(QT_TO_UTF8(item->text()), visible, false);
+		AddExisting(QT_TO_UTF8(item->text(0)), visible, false);
 	} else {
 		if (ui->sourceName->text().isEmpty()) {
 			OBSMessageBox::information(this,

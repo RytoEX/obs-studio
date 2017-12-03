@@ -98,6 +98,19 @@ static void SetOBSRef(QListWidgetItem *item, T &&val)
 			QVariant::fromValue(val));
 }
 
+template <typename T>
+static T GetOBSRef(QTreeWidgetItem *item)
+{
+	return item->data(0, static_cast<int>(QtDataRole::OBSRef)).value<T>();
+}
+
+template <typename T>
+static void SetOBSRef(QTreeWidgetItem *item, T &&val)
+{
+	item->setData(0, static_cast<int>(QtDataRole::OBSRef),
+		QVariant::fromValue(val));
+}
+
 static void AddExtraModulePaths()
 {
 	char base_module_dir[512];
@@ -2017,7 +2030,7 @@ OBSScene OBSBasic::GetCurrentScene()
 	return item ? GetOBSRef<OBSScene>(item) : nullptr;
 }
 
-OBSSceneItem OBSBasic::GetSceneItem(QListWidgetItem *item)
+OBSSceneItem OBSBasic::GetSceneItem(QTreeWidgetItem *item)
 {
 	return item ? GetOBSRef<OBSSceneItem>(item) : nullptr;
 }
@@ -2064,7 +2077,7 @@ void OBSBasic::UpdateSources(OBSScene scene)
 
 void OBSBasic::InsertSceneItem(obs_sceneitem_t *item)
 {
-	QListWidgetItem *listItem = new QListWidgetItem();
+	QTreeWidgetItem *listItem = new QTreeWidgetItem();
 	SetOBSRef(listItem, OBSSceneItem(item));
 
 	ui->sources->insertItem(0, listItem);
@@ -2238,7 +2251,7 @@ void OBSBasic::AddSceneItem(OBSSceneItem item)
 void OBSBasic::RemoveSceneItem(OBSSceneItem item)
 {
 	for (int i = 0; i < ui->sources->count(); i++) {
-		QListWidgetItem *listItem = ui->sources->item(i);
+		QTreeWidgetItem *listItem = ui->sources->item(i);
 
 		if (GetOBSRef<OBSSceneItem>(listItem) == item) {
 			DeleteListItem(ui->sources, listItem);
@@ -2323,9 +2336,9 @@ void OBSBasic::SelectSceneItem(OBSScene scene, OBSSceneItem item, bool select)
 		return;
 
 	for (int i = 0; i < ui->sources->count(); i++) {
-		QListWidgetItem *witem = ui->sources->item(i);
+		QTreeWidgetItem *witem = ui->sources->item(i);
 		QVariant data =
-			witem->data(static_cast<int>(QtDataRole::OBSRef));
+			witem->data(0, static_cast<int>(QtDataRole::OBSRef));
 		if (!data.canConvert<OBSSceneItem>())
 			continue;
 
@@ -2843,7 +2856,7 @@ void OBSBasic::ReorderSceneItem(obs_sceneitem_t *item, size_t idx)
 	int idx_inv = count - (int)idx - 1;
 
 	for (int i = 0; i < count; i++) {
-		QListWidgetItem *listItem = ui->sources->item(i);
+		QTreeWidgetItem *listItem = ui->sources->item(i);
 		OBSSceneItem sceneItem = GetOBSRef<OBSSceneItem>(listItem);
 
 		if (sceneItem == item) {
@@ -3805,7 +3818,7 @@ void OBSBasic::on_sources_itemSelectionChanged()
 		ignoreSelectionUpdate = true;
 		for (int i = 0; i < ui->sources->count(); i++)
 		{
-			QListWidgetItem *wItem = ui->sources->item(i);
+			QTreeWidgetItem *wItem = ui->sources->item(i);
 			OBSSceneItem item = GetOBSRef<OBSSceneItem>(wItem);
 
 			obs_sceneitem_select(item, wItem->isSelected());
@@ -3823,13 +3836,13 @@ void OBSBasic::on_sources_itemSelectionChanged()
 
 void OBSBasic::EditSceneItemName()
 {
-	QListWidgetItem *item = GetTopSelectedSourceItem();
+	QTreeWidgetItem *item = GetTopSelectedSourceItem();
 	Qt::ItemFlags flags   = item->flags();
 	OBSSceneItem sceneItem= GetOBSRef<OBSSceneItem>(item);
 	obs_source_t *source  = obs_sceneitem_get_source(sceneItem);
 	const char *name      = obs_source_get_name(source);
 
-	item->setText(QT_UTF8(name));
+	item->setText(0, QT_UTF8(name));
 	item->setFlags(flags | Qt::ItemIsEditable);
 	ui->sources->removeItemWidget(item);
 	ui->sources->editItem(item);
@@ -3933,7 +3946,7 @@ QMenu *OBSBasic::AddScaleFilteringMenu(obs_sceneitem_t *item)
 	return menu;
 }
 
-void OBSBasic::CreateSourcePopupMenu(QListWidgetItem *item, bool preview)
+void OBSBasic::CreateSourcePopupMenu(QTreeWidgetItem *item, bool preview)
 {
 	QMenu popup(this);
 	QPointer<QMenu> previewProjector;
@@ -4064,7 +4077,7 @@ void OBSBasic::on_sources_customContextMenuRequested(const QPoint &pos)
 		CreateSourcePopupMenu(ui->sources->itemAt(pos), false);
 }
 
-void OBSBasic::on_sources_itemDoubleClicked(QListWidgetItem *witem)
+void OBSBasic::on_sources_itemDoubleClicked(QTreeWidgetItem *witem)
 {
 	if (!witem)
 		return;
@@ -4461,6 +4474,36 @@ static void RenameListItem(OBSBasic *parent, QListWidget *listWidget,
 	}
 }
 
+static void RenameListItem(OBSBasic *parent, SourceTreeWidget *treeWidget,
+		obs_source_t *source, const string &name)
+{
+	const char *prevName = obs_source_get_name(source);
+	if (name == prevName)
+		return;
+
+	obs_source_t    *foundSource = obs_get_source_by_name(name.c_str());
+	QTreeWidgetItem *listItem    = treeWidget->currentItem();
+
+	if (foundSource || name.empty()) {
+		listItem->setText(0, QT_UTF8(prevName));
+
+		if (foundSource) {
+			OBSMessageBox::information(parent,
+				QTStr("NameExists.Title"),
+				QTStr("NameExists.Text"));
+		} else if (name.empty()) {
+			OBSMessageBox::information(parent,
+				QTStr("NoNameEntered.Title"),
+				QTStr("NoNameEntered.Text"));
+		}
+
+		obs_source_release(foundSource);
+	} else {
+		listItem->setText(0, QT_UTF8(name.c_str()));
+		obs_source_set_name(source, name.c_str());
+	}
+}
+
 void OBSBasic::SceneNameEdited(QWidget *editor,
 		QAbstractItemDelegate::EndEditHint endHint)
 {
@@ -4493,8 +4536,8 @@ void OBSBasic::SceneItemNameEdited(QWidget *editor,
 	obs_source_t *source = obs_sceneitem_get_source(item);
 	RenameListItem(this, ui->sources, source, text);
 
-	QListWidgetItem *listItem = ui->sources->currentItem();
-	listItem->setText(QString());
+	QTreeWidgetItem *listItem = ui->sources->currentItem();
+	listItem->setText(0, QString());
 	SetupVisibilityItem(ui->sources, listItem, item);
 
 	UNUSED_PARAMETER(endHint);
@@ -5146,10 +5189,10 @@ void OBSBasic::on_actionShowProfileFolder_triggered()
 	QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
-QListWidgetItem *OBSBasic::GetTopSelectedSourceItem()
+QTreeWidgetItem *OBSBasic::GetTopSelectedSourceItem()
 {
-	QList<QListWidgetItem*> selectedItems = ui->sources->selectedItems();
-	QListWidgetItem *topItem = nullptr;
+	QList<QTreeWidgetItem*> selectedItems = ui->sources->selectedItems();
+	QTreeWidgetItem *topItem = nullptr;
 	if (selectedItems.size() != 0)
 		topItem = selectedItems[0];
 	return topItem;

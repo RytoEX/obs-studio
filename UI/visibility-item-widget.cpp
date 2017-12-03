@@ -4,6 +4,7 @@
 #include "qt-wrappers.hpp"
 #include "obs-app.hpp"
 #include <QListWidget>
+#include <QTreeWidget>
 #include <QLineEdit>
 #include <QHBoxLayout>
 #include <QMessageBox>
@@ -303,4 +304,22 @@ void SetupVisibilityItem(QListWidget *list, QListWidgetItem *item,
 
 	item->setSizeHint(baseWidget->sizeHint());
 	list->setItemWidget(item, baseWidget);
+}
+
+void SetupVisibilityItem(QTreeWidget *list, QTreeWidgetItem *item,
+		obs_source_t *source)
+{
+	VisibilityItemWidget *baseWidget = new VisibilityItemWidget(source);
+
+	item->setSizeHint(0, baseWidget->sizeHint());
+	list->setItemWidget(item, 0, baseWidget);
+}
+
+void SetupVisibilityItem(QTreeWidget *list, QTreeWidgetItem *item,
+		obs_sceneitem_t *sceneItem)
+{
+	VisibilityItemWidget *baseWidget = new VisibilityItemWidget(sceneItem);
+
+	item->setSizeHint(0, baseWidget->sizeHint());
+	list->setItemWidget(item, 0, baseWidget);
 }

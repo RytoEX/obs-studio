@@ -518,12 +518,18 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="SourceListWidget" name="sources">
+         <widget class="SourceTreeWidget" name="sources">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="columnCount">
+           <number>1</number>
+          </property>
+          <property name="headerHidden">
+           <bool>true</bool>
           </property>
           <property name="contextMenuPolicy">
            <enum>Qt::CustomContextMenu</enum>
@@ -1682,9 +1688,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>SourceListWidget</class>
-   <extends>QListWidget</extends>
-   <header>source-list-widget.hpp</header>
+   <class>SourceTreeWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>source-tree-widget.hpp</header>
   </customwidget>
  </customwidgets>
  <resources>

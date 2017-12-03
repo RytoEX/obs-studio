@@ -8,6 +8,8 @@ class QLabel;
 class QLineEdit;
 class QListWidget;
 class QListWidgetItem;
+class QTreeWidget;
+class QTreeWidgetItem;
 class VisibilityCheckBox;
 class LockedCheckBox;
 
@@ -68,3 +70,7 @@ void SetupVisibilityItem(QListWidget *list, QListWidgetItem *item,
 		obs_source_t *source);
 void SetupVisibilityItem(QListWidget *list, QListWidgetItem *item,
 		obs_sceneitem_t *sceneItem);
+void SetupVisibilityItem(QTreeWidget *list, QTreeWidgetItem *item,
+	obs_source_t *source);
+void SetupVisibilityItem(QTreeWidget *list, QTreeWidgetItem *item,
+	obs_sceneitem_t *sceneItem);

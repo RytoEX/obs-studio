@@ -16,6 +16,7 @@
 ******************************************************************************/
 
 #include <QListWidget>
+#include <source-tree-widget.hpp>
 
 QListWidgetItem *TakeListItem(QListWidget *widget, int row)
 {
@@ -41,6 +42,34 @@ void ClearListItems(QListWidget *widget)
 
 	for (int i = 0; i < widget->count(); i++)
 		delete widget->itemWidget(widget->item(i));
+
+	widget->clear();
+}
+
+QTreeWidgetItem *TakeListItem(SourceTreeWidget *widget, int row)
+{
+	QTreeWidgetItem *item = widget->item(row);
+
+	if (item)
+		delete widget->itemWidget(item, 0);
+
+	return widget->takeItem(row);
+}
+
+void DeleteListItem(SourceTreeWidget *widget, QTreeWidgetItem *item)
+{
+	if (item) {
+		delete widget->itemWidget(item, 0);
+		delete item;
+	}
+}
+
+void ClearListItems(SourceTreeWidget *widget)
+{
+	widget->setCurrentItem(nullptr, QItemSelectionModel::Clear);
+
+	for (int i = 0; i < widget->count(); i++)
+		delete widget->itemWidget(widget->item(i), 0);
 
 	widget->clear();
 }

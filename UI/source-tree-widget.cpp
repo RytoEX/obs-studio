@@ -3,25 +3,25 @@
 #include <vector>
 
 #include "qt-wrappers.hpp"
-#include "source-list-widget.hpp"
+#include "source-tree-widget.hpp"
 
 Q_DECLARE_METATYPE(OBSSceneItem);
 
-void SourceListWidget::mouseDoubleClickEvent(QMouseEvent *event)
+void SourceTreeWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::LeftButton)
-		QListWidget::mouseDoubleClickEvent(event);
+		QTreeWidget::mouseDoubleClickEvent(event);
 }
 
-void SourceListWidget::dropEvent(QDropEvent *event)
+void SourceTreeWidget::dropEvent(QDropEvent *event)
 {
-	QListWidget::dropEvent(event);
+	QTreeWidget::dropEvent(event);
 	if (!event->isAccepted() || !count())
 		return;
 
 	auto GetSceneItem = [&](int i)
 	{
-		return item(i)->data(Qt::UserRole).value<OBSSceneItem>();
+		return item(i)->data(0, Qt::UserRole).value<OBSSceneItem>();
 	};
 
 	std::vector<obs_sceneitem_t*> newOrder;

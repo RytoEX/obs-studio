@@ -24,6 +24,9 @@
 
 class QListWidget;
 class QListWidgetItem;
+class QTreeWidget;
+class QTreeWidgetItem;
+class SourceTreeWidget;
 
 QListWidgetItem *TakeListItem(QListWidget *widget, int row);
 void DeleteListItem(QListWidget *widget, QListWidgetItem *item);
@@ -40,3 +43,7 @@ void InsertQObjectByName(std::vector<QObjectPtr> &controls, QObjectPtr control)
 
 	controls.insert(found_at, control);
 }
+
+QTreeWidgetItem *TakeListItem(SourceTreeWidget *widget, int row);
+void DeleteListItem(SourceTreeWidget *widget, QTreeWidgetItem *item);
+void ClearListItems(SourceTreeWidget *widget);

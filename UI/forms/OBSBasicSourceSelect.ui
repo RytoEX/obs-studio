@@ -40,7 +40,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QListWidget" name="sourceList">
+      <widget class="SourceTreeWidget" name="sourceList">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -70,6 +70,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SourceTreeWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>source-tree-widget.hpp</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
