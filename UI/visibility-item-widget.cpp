@@ -192,10 +192,12 @@ void VisibilityItemWidget::OBSSourceRenamed(void *param, calldata_t *data)
 
 void VisibilityItemWidget::VisibilityClicked(bool visible)
 {
-	if (item)
+	if (item) {
 		obs_sceneitem_set_visible(item, visible);
-	else
+		//if (item->childCount())
+	} else {
 		obs_source_set_enabled(source, visible);
+	}
 }
 
 void VisibilityItemWidget::LockClicked(bool locked)

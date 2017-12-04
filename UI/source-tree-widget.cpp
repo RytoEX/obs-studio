@@ -13,11 +13,23 @@ void SourceTreeWidget::mouseDoubleClickEvent(QMouseEvent *event)
 		QTreeWidget::mouseDoubleClickEvent(event);
 }
 
+/* dragDropMode = QAbstractItemView::InternalMove
+ * defaultDropAction = Qt::TargetMoveAction
+ * only triggered when reordering internally
+ */
 void SourceTreeWidget::dropEvent(QDropEvent *event)
 {
 	QTreeWidget::dropEvent(event);
 	if (!event->isAccepted() || !count())
 		return;
+
+	QPoint dropPos = event->pos();
+	QTreeWidgetItem *dropTargetItem = itemAt(dropPos);
+	if (dropTargetItem) {
+		QString dropTargetName = dropTargetItem->text(0);
+		std::string dtName = dropTargetName.toStdString();
+		int numChildren = dropTargetItem->childCount();
+	}
 
 	auto GetSceneItem = [&](int i)
 	{

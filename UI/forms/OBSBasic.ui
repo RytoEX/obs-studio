@@ -525,9 +525,6 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="columnCount">
-           <number>1</number>
-          </property>
           <property name="headerHidden">
            <bool>true</bool>
           </property>
