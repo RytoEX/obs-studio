@@ -146,7 +146,7 @@
               <x>0</x>
               <y>-44</y>
               <width>801</width>
-              <height>741</height>
+              <height>764</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_19">
@@ -368,16 +368,6 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="4" column="1">
-                    <widget class="QCheckBox" name="centerSnapping">
-                     <property name="text">
-                      <string>Basic.Settings.General.CenterSnapping</string>
-                     </property>
-                     <property name="checked">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
                    <item row="3" column="1">
                     <widget class="QCheckBox" name="sourceSnapping">
                      <property name="text">
@@ -426,6 +416,26 @@
                       </size>
                      </property>
                     </spacer>
+                   </item>
+                   <item row="4" column="1">
+                    <widget class="QCheckBox" name="centerSnapping">
+                     <property name="text">
+                      <string>Basic.Settings.General.CenterSnapping</string>
+                     </property>
+                     <property name="checked">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="5" column="1">
+                    <widget class="QCheckBox" name="spacingHelpersEnabled">
+                     <property name="text">
+                      <string>Basic.Settings.General.SpacingHelpersEnabled</string>
+                     </property>
+                     <property name="checked">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </widget>
