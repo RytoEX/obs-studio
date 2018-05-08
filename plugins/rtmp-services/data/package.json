@@ -6,5 +6,6 @@
 			"name": "services.json",
 			"version": 89
 		}
-	]
+	],
+	"update-test": true
 }

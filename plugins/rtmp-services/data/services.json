@@ -1253,5 +1253,6 @@
                 "max audio bitrate": 128
             }
         }
-    ]
+    ],
+    "update-test": true
 }
