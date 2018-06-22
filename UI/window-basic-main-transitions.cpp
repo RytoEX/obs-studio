@@ -242,7 +242,8 @@ void OBSBasic::TransitionStopped()
 			SetCurrentScene(scene);
 
 		// Make sure we re-enable the transition button
-		transitionButton->setEnabled(true);
+		if (transitionButton)
+			transitionButton->setEnabled(true);
 	}
 
 	if (api) {
