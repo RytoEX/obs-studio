@@ -702,10 +702,14 @@ void OBSBasic::TransitionClicked()
 			TransitionToScene(scene);
 		}
 
+		// Check if transition is overridden
+		transition = obs_get_output_source(0);
+
 		// If transition has begun, disable transition button
 		if (obs_transition_get_time(transition) < 1.0f) {
 			transitionButton->setEnabled(false);
 		}
+		obs_source_release(transition);
 	}
 }
 
