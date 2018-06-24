@@ -313,6 +313,10 @@ void OBSBasic::TransitionToScene(OBSSource source, bool force, bool direct,
 	OBSSource transition = obs_get_output_source(0);
 	obs_source_release(transition);
 
+	// If actively transitioning, block new transitions from starting
+	if (obs_transition_get_time(transition) < 1.0f)
+		goto cleanup;
+
 	if (force) {
 		obs_transition_set(transition, source);
 		if (api)
