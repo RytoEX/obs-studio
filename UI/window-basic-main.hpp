@@ -301,6 +301,8 @@ private:
 	obs_data_array_t *SaveQuickTransitions();
 	void ClearQuickTransitionWidgets();
 	void RefreshQuickTransitions();
+	void DisableQuickTransitionWidgets();
+	void EnableQuickTransitionWidgets();
 	void CreateDefaultQuickTransitions();
 
 	QMenu *CreatePerSceneTransitionMenu();

@@ -244,6 +244,8 @@ void OBSBasic::TransitionStopped()
 		// Make sure we re-enable the transition button
 		if (transitionButton)
 			transitionButton->setEnabled(true);
+
+		EnableQuickTransitionWidgets();
 	}
 
 	if (api) {
@@ -349,8 +351,12 @@ void OBSBasic::TransitionToScene(OBSSource source, bool force, bool direct,
 		obs_scene_release(scene);
 
 	// If transition has begun, disable Transition button
-	if (transitionButton && obs_transition_get_time(transition) < 1.0f)
-		transitionButton->setEnabled(false);
+	if (obs_transition_get_time(transition) < 1.0f) {
+		if (transitionButton)
+			transitionButton->setEnabled(false);
+
+		DisableQuickTransitionWidgets();
+	}
 }
 
 static inline void SetComboTransition(QComboBox *combo, obs_source_t *tr)
@@ -1112,6 +1118,48 @@ void OBSBasic::RefreshQuickTransitions()
 
 	for (QuickTransition &qt : quickTransitions)
 		AddQuickTransitionId(qt.id);
+}
+
+void OBSBasic::DisableQuickTransitionWidgets()
+{
+	if (!IsPreviewProgramMode())
+		return;
+
+	QVBoxLayout *programLayout =
+		reinterpret_cast<QVBoxLayout*>(programOptions->layout());
+
+	for (int idx = 0;; idx++) {
+		QLayoutItem *item = programLayout->itemAt(idx);
+		if (!item)
+			break;
+
+		QWidget *widget = item->widget();
+		if (!widget)
+			continue;
+
+		widget->setEnabled(false);
+	}
+}
+
+void OBSBasic::EnableQuickTransitionWidgets()
+{
+	if (!IsPreviewProgramMode())
+		return;
+
+	QVBoxLayout *programLayout =
+		reinterpret_cast<QVBoxLayout*>(programOptions->layout());
+
+	for (int idx = 0;; idx++) {
+		QLayoutItem *item = programLayout->itemAt(idx);
+		if (!item)
+			break;
+
+		QWidget *widget = item->widget();
+		if (!widget)
+			continue;
+
+		widget->setEnabled(true);
+	}
 }
 
 void OBSBasic::SetPreviewProgramMode(bool enabled)
