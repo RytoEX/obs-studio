@@ -347,9 +347,6 @@ void OBSBasic::TransitionToScene(OBSSource source, bool force, bool direct,
 			TransitionFullyStopped();
 	}
 
-	if (usingPreviewProgram && sceneDuplicationMode)
-		obs_scene_release(scene);
-
 	// If transition has begun, disable Transition button
 	if (obs_transition_get_time(transition) < 1.0f) {
 		if (transitionButton)
@@ -357,6 +354,10 @@ void OBSBasic::TransitionToScene(OBSSource source, bool force, bool direct,
 
 		DisableQuickTransitionWidgets();
 	}
+
+	cleanup:
+	if (usingPreviewProgram && sceneDuplicationMode)
+		obs_scene_release(scene);
 }
 
 static inline void SetComboTransition(QComboBox *combo, obs_source_t *tr)
