@@ -347,6 +347,10 @@ void OBSBasic::TransitionToScene(OBSSource source, bool force, bool direct,
 
 	if (usingPreviewProgram && sceneDuplicationMode)
 		obs_scene_release(scene);
+
+	// If transition has begun, disable Transition button
+	if (transitionButton && obs_transition_get_time(transition) < 1.0f)
+		transitionButton->setEnabled(false);
 }
 
 static inline void SetComboTransition(QComboBox *combo, obs_source_t *tr)
@@ -693,24 +697,8 @@ void OBSBasic::CreateProgramDisplay()
 
 void OBSBasic::TransitionClicked()
 {
-	if (previewProgramMode) {
-		obs_source_t *transition = GetCurrentTransition();
-
-		// Checking if transition is ongoing first
-		if (obs_transition_get_time(transition) >= 1.0f) {
-			OBSScene scene = GetCurrentScene();
-			TransitionToScene(scene);
-		}
-
-		// Check if transition is overridden
-		transition = obs_get_output_source(0);
-
-		// If transition has begun, disable transition button
-		if (obs_transition_get_time(transition) < 1.0f) {
-			transitionButton->setEnabled(false);
-		}
-		obs_source_release(transition);
-	}
+	if (previewProgramMode)
+		TransitionToScene(GetCurrentScene());
 }
 
 void OBSBasic::CreateProgramOptions()
