@@ -318,8 +318,10 @@ static inline bool init_output(media_remux_job_t job, const char *out_filename)
 			     "media_remux: Failed to copy parameters");
 			return false;
 		}
+		/* // probably move to after avformat_transfer_internal_stream_timing_info
 		if (in_stream->codec->time_base.num && !out_stream->codec->time_base.num)
 			out_stream->codec->time_base = in_stream->codec->time_base;
+		*/
 
 		out_stream->time_base = out_stream->codec->time_base;
 		if (in_stream->codec->codec_type == AVMEDIA_TYPE_VIDEO
@@ -332,6 +334,30 @@ static inline bool init_output(media_remux_job_t job, const char *out_filename)
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(57, 48, 101)
 		out_stream->codecpar->codec_tag = 0;
 #else
+		// FFmpeg experiment
+		AVRational time_base_tmp = av_add_q(av_stream_get_codec_timebase(
+				out_stream), (AVRational) { 0, 1 });
+
+		int copy_tb = -1;
+		ret = avformat_transfer_internal_stream_timing_info(
+				job->ofmt_ctx->oformat, out_stream, in_stream,
+				copy_tb);
+		if (ret < 0)
+			return ret;
+
+		// copy timebase while removing common factors
+		if (out_stream->time_base.num <= 0 || out_stream->time_base.den <= 0)
+			out_stream->time_base = av_add_q(
+					av_stream_get_codec_timebase(out_stream),
+					(AVRational) { 0, 1 });
+
+		// copy estimated duration as a hint to the muxer
+		if (out_stream->duration <= 0 && in_stream->duration > 0)
+			out_stream->duration = av_rescale_q(in_stream->duration,
+					in_stream->time_base, out_stream->time_base);
+
+		// end experiment
+
 		out_stream->codec->codec_tag = 0;
 		out_stream->time_base = out_stream->codec->time_base;
 		if (job->ofmt_ctx->oformat->flags & AVFMT_GLOBALHEADER)
@@ -470,7 +496,14 @@ bool media_remux_job_process(media_remux_job_t job,
 	MOVMuxContext *mov = job->ofmt_ctx->priv_data;
 	MOVTrack *track = &mov->tracks[0];
 
-	ret = avformat_write_header(job->ofmt_ctx, NULL);
+	AVDictionary *params = NULL;
+	// need to find a way to fetch video stream fps/time_base
+	//job->ofmt_ctx->
+	av_dict_set(&params, "video_track_timescale", "30", 0);
+
+	//ret = avformat_write_header(job->ofmt_ctx, NULL);
+	ret = avformat_write_header(job->ofmt_ctx, &params);
+	av_dict_free(&params);
 	if (ret < 0) {
 		blog(LOG_ERROR, "media_remux: Error opening output file: %s",
 		     av_err2str(ret));
