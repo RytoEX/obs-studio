@@ -318,6 +318,11 @@ static inline bool init_output(media_remux_job_t job, const char *out_filename)
 			     "media_remux: Failed to copy parameters");
 			return false;
 		}
+		out_stream->time_base = out_stream->codec->time_base;
+		if (in_stream->codec->codec_type == AVMEDIA_TYPE_VIDEO
+				&& in_stream->avg_frame_rate.num
+				&& in_stream->avg_frame_rate.den)
+			out_stream->avg_frame_rate = in_stream->avg_frame_rate;
 
 		av_dict_copy(&out_stream->metadata, in_stream->metadata, 0);
 
