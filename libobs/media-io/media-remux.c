@@ -37,6 +37,216 @@ struct media_remux_job {
 	AVFormatContext *ifmt_ctx, *ofmt_ctx;
 };
 
+
+// experiment
+typedef struct {
+	struct AVAESCTR* aes_ctr;
+	uint8_t* auxiliary_info;
+	size_t auxiliary_info_size;
+	size_t auxiliary_info_alloc_size;
+	uint32_t auxiliary_info_entries;
+
+	/* subsample support */
+	int use_subsamples;
+	uint16_t subsample_count;
+	size_t auxiliary_info_subsample_start;
+	uint8_t* auxiliary_info_sizes;
+	size_t  auxiliary_info_sizes_alloc_size;
+} MOVMuxCencContext;
+
+typedef struct MOVIentry {
+	uint64_t     pos;
+	int64_t      dts;
+	unsigned int size;
+	unsigned int samples_in_chunk;
+	unsigned int chunkNum;              ///< Chunk number if the current entry is a chunk start otherwise 0
+	unsigned int entries;
+	int          cts;
+#define MOV_SYNC_SAMPLE         0x0001
+#define MOV_PARTIAL_SYNC_SAMPLE 0x0002
+#define MOV_DISPOSABLE_SAMPLE   0x0004
+	uint32_t     flags;
+} MOVIentry;
+
+typedef struct HintSample {
+	uint8_t *data;
+	int size;
+	int sample_number;
+	int offset;
+	int own_data;
+} HintSample;
+
+typedef struct HintSampleQueue {
+	int size;
+	int len;
+	HintSample *samples;
+} HintSampleQueue;
+
+typedef struct MOVFragmentInfo {
+	int64_t offset;
+	int64_t time;
+	int64_t duration;
+	int64_t tfrf_offset;
+	int size;
+} MOVFragmentInfo;
+
+typedef struct MOVTrack {
+	int         mode;
+	int         entry;
+	unsigned    timescale;
+	uint64_t    time;
+	int64_t     track_duration;
+	int         last_sample_is_subtitle_end;
+	long        sample_count;
+	long        sample_size;
+	long        chunkCount;
+	int         has_keyframes;
+	int         has_disposable;
+#define MOV_TRACK_CTTS         0x0001
+#define MOV_TRACK_STPS         0x0002
+#define MOV_TRACK_ENABLED      0x0004
+	uint32_t    flags;
+#define MOV_TIMECODE_FLAG_DROPFRAME     0x0001
+#define MOV_TIMECODE_FLAG_24HOURSMAX    0x0002
+#define MOV_TIMECODE_FLAG_ALLOWNEGATIVE 0x0004
+	uint32_t    timecode_flags;
+	int         language;
+	int         track_id;
+	int         tag; ///< stsd fourcc
+	AVStream        *st;
+	AVCodecParameters *par;
+	int multichannel_as_mono;
+
+	int         vos_len;
+	uint8_t     *vos_data;
+	MOVIentry   *cluster;
+	unsigned    cluster_capacity;
+	int         audio_vbr;
+	int         height; ///< active picture (w/o VBI) height for D-10/IMX
+	uint32_t    tref_tag;
+	int         tref_id; ///< trackID of the referenced track
+	int64_t     start_dts;
+	int64_t     start_cts;
+	int64_t     end_pts;
+	int         end_reliable;
+	int64_t     dts_shift;
+
+	int         hint_track;   ///< the track that hints this track, -1 if no hint track is set
+	int         src_track;    ///< the track that this hint (or tmcd) track describes
+	AVFormatContext *rtp_ctx; ///< the format context for the hinting rtp muxer
+	uint32_t    prev_rtp_ts;
+	int64_t     cur_rtp_ts_unwrapped;
+	uint32_t    max_packet_size;
+
+	int64_t     default_duration;
+	uint32_t    default_sample_flags;
+	uint32_t    default_size;
+
+	HintSampleQueue sample_queue;
+
+	AVIOContext *mdat_buf;
+	int64_t     data_offset;
+	int64_t     frag_start;
+	int         frag_discont;
+	int         entries_flushed;
+
+	int         nb_frag_info;
+	MOVFragmentInfo *frag_info;
+	unsigned    frag_info_capacity;
+
+	struct {
+		int     first_packet_seq;
+		int     first_packet_entry;
+		int     first_packet_seen;
+		int     first_frag_written;
+		int     packet_seq;
+		int     packet_entry;
+		int     slices;
+	} vc1_info;
+
+	void       *eac3_priv;
+
+	MOVMuxCencContext cenc;
+
+	uint32_t palette[AVPALETTE_COUNT];
+	int pal_done;
+
+	int is_unaligned_qt_rgb;
+} MOVTrack;
+
+typedef enum {
+	MOV_ENC_NONE = 0,
+	MOV_ENC_CENC_AES_CTR,
+} MOVEncryptionScheme;
+
+typedef enum {
+	MOV_PRFT_NONE = 0,
+	MOV_PRFT_SRC_WALLCLOCK,
+	MOV_PRFT_SRC_PTS,
+	MOV_PRFT_NB
+} MOVPrftBox;
+
+typedef struct MOVMuxContext {
+	const AVClass *av_class;
+	int     mode;
+	int64_t time;
+	int     nb_streams;
+	int     nb_meta_tmcd;  ///< number of new created tmcd track based on metadata (aka not data copy)
+	int     chapter_track; ///< qt chapter track number
+	int64_t mdat_pos;
+	uint64_t mdat_size;
+	MOVTrack *tracks;
+
+	int flags;
+	int rtp_flags;
+
+	int iods_skip;
+	int iods_video_profile;
+	int iods_audio_profile;
+
+	int moov_written;
+	int fragments;
+	int max_fragment_duration;
+	int min_fragment_duration;
+	int max_fragment_size;
+	int ism_lookahead;
+	AVIOContext *mdat_buf;
+	int first_trun;
+
+	int video_track_timescale;
+
+	int reserved_moov_size; ///< 0 for disabled, -1 for automatic, size otherwise
+	int64_t reserved_header_pos;
+
+	char *major_brand;
+
+	int per_stream_grouping;
+	AVFormatContext *fc;
+
+	int use_editlist;
+	float gamma;
+
+	int frag_interleave;
+	int missing_duration_warned;
+
+	char *encryption_scheme_str;
+	MOVEncryptionScheme encryption_scheme;
+	uint8_t *encryption_key;
+	int encryption_key_len;
+	uint8_t *encryption_kid;
+	int encryption_kid_len;
+
+	int need_rewrite_extradata;
+
+	int use_stream_ids_as_track_ids;
+	int track_ids_ok;
+	int write_tmcd;
+} MOVMuxContext;
+
+
+// end exp
+
+
 static inline void init_size(media_remux_job_t job, const char *in_filename)
 {
 #ifdef _MSC_VER
