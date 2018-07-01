@@ -355,6 +355,9 @@ static inline bool init_output(media_remux_job_t job, const char *out_filename)
 		}
 	}
 
+	MOVMuxContext *mov = job->ofmt_ctx->priv_data;
+	MOVTrack *track = &mov->tracks[0];
+
 	return true;
 }
 
@@ -463,6 +466,9 @@ bool media_remux_job_process(media_remux_job_t job,
 
 	if (!job)
 		return success;
+
+	MOVMuxContext *mov = job->ofmt_ctx->priv_data;
+	MOVTrack *track = &mov->tracks[0];
 
 	ret = avformat_write_header(job->ofmt_ctx, NULL);
 	if (ret < 0) {
