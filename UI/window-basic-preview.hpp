@@ -67,10 +67,6 @@ private:
 
 	struct gs_vb_data *helperLinesVB;
 
-	/*
-	size_t currentSizeLabel;
-	obs_source_t *sizeLabels[PREVIEW_SPACING_LABEL_COUNT];
-	*/
 	obs_source_t *guideLabelLeft;
 	obs_source_t *guideLabelTop;
 	obs_source_t *guideLabelRight;

@@ -83,11 +83,6 @@ OBSBasicPreview::OBSBasicPreview(QWidget *parent, Qt::WindowFlags flags)
 	helperLinesVB->tvarray[0].array =
 		bzalloc(sizeof(struct vec2) * helperLinesVB->num);
 
-	/*
-	for (int i = 0; i < PREVIEW_SPACING_LABEL_COUNT; i++) {
-		sizeLabels[i] = nullptr;
-	}
-	*/
 	guideLabelLeft = nullptr;
 	guideLabelTop = nullptr;
 	guideLabelRight = nullptr;
@@ -96,11 +91,7 @@ OBSBasicPreview::OBSBasicPreview(QWidget *parent, Qt::WindowFlags flags)
 
 OBSBasicPreview::~OBSBasicPreview() {
 	gs_vbdata_destroy(helperLinesVB);
-	/*
-	for (int i = 0; i < PREVIEW_SPACING_LABEL_COUNT; i++) {
-		obs_source_release(sizeLabels[i]);
-	}
-	*/
+
 	obs_source_release(guideLabelLeft);
 	obs_source_release(guideLabelTop);
 	obs_source_release(guideLabelRight);
@@ -1300,12 +1291,6 @@ void OBSBasicPreview::DrawSingleSpacingHelper(vec3 &start, vec3 &end,
 	std::string lengthStr;
 	lengthStr = std::to_string((int)lengthPx) + " px";
 
-	/*
-	if (!sizeLabels[currentSizeLabel]) {
-		sizeLabels[currentSizeLabel] = CreateLabel("Spacing Helper");
-	}
-	obs_source_t *sizeLabel = sizeLabels[currentSizeLabel];
-	*/
 	SetLabelText(sizeLabel, lengthStr.c_str(), 12);
 
 	// testing
@@ -1345,13 +1330,6 @@ void OBSBasicPreview::DrawSingleSpacingHelper(vec3 &start, vec3 &end,
 	if (abs(length) >= minSize) {
 		DrawLabel(labelPos, sizeLabel, viewport);
 	}
-
-	/*
-	currentSizeLabel++;
-	if (currentSizeLabel > (PREVIEW_SPACING_LABEL_COUNT - 1)) {
-		currentSizeLabel = 0;
-	}
-	*/
 }
 
 static void boxCoordsToView(vec3 *coord, matrix4 &boxTransform,
