@@ -62,7 +62,7 @@ private:
 	struct gs_vb_data *helperLinesVB;
 
 	size_t currentSizeLabel;
-	obs_source_t* sizeLabels[PREVIEW_SPACING_LABEL_COUNT];
+	obs_source_t *sizeLabels[PREVIEW_SPACING_LABEL_COUNT];
 
 	static vec2 GetMouseEventPos(QMouseEvent *event);
 	static bool DrawSelectedItem(obs_scene_t *scene, obs_sceneitem_t *item,
@@ -90,8 +90,8 @@ private:
 	void ProcessClick(const vec2 &pos);
 
 	void DrawSingleSpacingHelper(vec3 &start, vec3 &end, vec3 &viewport);
-	void DrawSpacingHelpers(obs_sceneitem_t* sceneitem,
-		vec3 &viewport, float previewScale);
+	void DrawSpacingHelpers(obs_sceneitem_t *sceneitem, vec3 &viewport,
+			float previewScale);
 
 public:
 	OBSBasicPreview(QWidget *parent, Qt::WindowFlags flags = 0);

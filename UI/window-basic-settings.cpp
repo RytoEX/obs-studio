@@ -2664,8 +2664,8 @@ void OBSBasicSettings::SaveGeneralSettings()
 				ui->snapDistance->value());
 	if (WidgetChanged(ui->spacingHelpersEnabled))
 		config_set_bool(GetGlobalConfig(), "BasicWindow",
-			"SpacingHelpersEnabled",
-			ui->spacingHelpersEnabled->isChecked());
+				"SpacingHelpersEnabled",
+				ui->spacingHelpersEnabled->isChecked());
 	if (WidgetChanged(ui->doubleClickSwitch))
 		config_set_bool(GetGlobalConfig(), "BasicWindow",
 				"TransitionOnDoubleClick",
