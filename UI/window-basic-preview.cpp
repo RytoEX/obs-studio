@@ -28,7 +28,7 @@ static obs_source_t *CreateLabel(const char *name)
 #endif
 
 	obs_data_set_int(font, "flags", 0);
-	obs_data_set_int(font, "size", 1);
+	obs_data_set_int(font, "size", 12);
 
 	obs_data_set_obj(settings, "font", font);
 	obs_data_set_string(settings, "text", name);
