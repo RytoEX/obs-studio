@@ -1381,10 +1381,10 @@ void OBSBasicPreview::DrawSpacingHelpers(obs_sceneitem_t *sceneitem,
 	vec3_set(&viewBottom, boxBottom.x, 1000.0f, 1.0f);
 
 	// Clip border coords to view
-	viewLeft.x = qMax(0.0f, viewLeft.x);
-	viewRight.x = qMin(1.0f, viewRight.x);
-	viewTop.y = qMax(0.0f, viewTop.y);
-	viewBottom.y = qMin(1.0f, viewBottom.y);
+	viewLeft.x = maxfunc(0.0f, viewLeft.x);
+	viewRight.x = minfunc(1.0f, viewRight.x);
+	viewTop.y = maxfunc(0.0f, viewTop.y);
+	viewBottom.y = minfunc(1.0f, viewBottom.y);
 
 	// Clip lines to view boundaries
 	vec3_max(&boxLeft, &boxLeft, &viewLeft);
