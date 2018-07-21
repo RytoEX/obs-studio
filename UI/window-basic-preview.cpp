@@ -88,10 +88,10 @@ OBSBasicPreview::OBSBasicPreview(QWidget *parent, Qt::WindowFlags flags)
 		sizeLabels[i] = nullptr;
 	}
 	*/
-	guideLabelLeft = CreateLabel("Spacing Helper - Left");
-	guideLabelTop = CreateLabel("Spacing Helper - Top");
-	guideLabelRight = CreateLabel("Spacing Helper - Right");
-	guideLabelBottom = CreateLabel("Spacing Helper - Bottom");
+	guideLabelLeft = nullptr;
+	guideLabelTop = nullptr;
+	guideLabelRight = nullptr;
+	guideLabelBottom = nullptr;
 }
 
 OBSBasicPreview::~OBSBasicPreview() {
@@ -1442,6 +1442,15 @@ void OBSBasicPreview::DrawSpacingHelpers(obs_sceneitem_t *sceneitem,
 
 	// Draw text labels
 	// if rotated past 45-deg, rotate sides clockwise
+	if (!guideLabelTop)
+		guideLabelTop = CreateLabel("Spacing Helper - Top");
+	if (!guideLabelRight)
+		guideLabelRight = CreateLabel("Spacing Helper - Right");
+	if (!guideLabelBottom)
+		guideLabelBottom = CreateLabel("Spacing Helper - Bottom");
+	if (!guideLabelLeft)
+		guideLabelLeft = CreateLabel("Spacing Helper - Left");
+
 	DrawSingleSpacingHelper(viewTop, boxTop, viewport, guideLabelTop);
 	DrawSingleSpacingHelper(boxRight, viewRight, viewport, guideLabelRight);
 	DrawSingleSpacingHelper(boxBottom, viewBottom, viewport, guideLabelBottom);
