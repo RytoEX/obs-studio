@@ -45,6 +45,12 @@ private:
 	matrix4      itemToScreen;
 	matrix4      invGroupTransform;
 
+	gs_vertbuffer_t *guidelines = nullptr;
+	gs_vertbuffer_t *guidelineLeft = nullptr;
+	gs_vertbuffer_t *guidelineTop = nullptr;
+	gs_vertbuffer_t *guidelineRight = nullptr;
+	gs_vertbuffer_t *guidelineBottom = nullptr;
+
 	vec2         startPos;
 	vec2         lastMoveOffset;
 	vec2         scrollingFrom;
@@ -61,8 +67,14 @@ private:
 
 	struct gs_vb_data *helperLinesVB;
 
+	/*
 	size_t currentSizeLabel;
 	obs_source_t *sizeLabels[PREVIEW_SPACING_LABEL_COUNT];
+	*/
+	obs_source_t *guideLabelLeft;
+	obs_source_t *guideLabelTop;
+	obs_source_t *guideLabelRight;
+	obs_source_t *guideLabelBottom;
 
 	static vec2 GetMouseEventPos(QMouseEvent *event);
 	static bool DrawSelectedItem(obs_scene_t *scene, obs_sceneitem_t *item,
@@ -89,7 +101,8 @@ private:
 
 	void ProcessClick(const vec2 &pos);
 
-	void DrawSingleSpacingHelper(vec3 &start, vec3 &end, vec3 &viewport);
+	void DrawSingleSpacingHelper(vec3 &start, vec3 &end, vec3 &viewport,
+			obs_source_t *sizeLabel);
 	void DrawSpacingHelpers(obs_sceneitem_t *sceneitem, vec3 &viewport,
 			float previewScale);
 

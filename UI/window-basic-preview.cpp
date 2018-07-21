@@ -14,9 +14,55 @@
 
 /* TODO: make C++ math classes and clean up code here later */
 
+static obs_source_t *CreateLabel(const char *name)
+{
+	obs_data_t *settings = obs_data_create();
+	obs_data_t *font = obs_data_create();
+
+#if defined(_WIN32)
+	obs_data_set_string(font, "face", "Arial");
+#elif defined(__APPLE__)
+	obs_data_set_string(font, "face", "Helvetica");
+#else
+	obs_data_set_string(font, "face", "Monospace");
+#endif
+
+	obs_data_set_int(font, "flags", 0);
+	obs_data_set_int(font, "size", 1);
+
+	obs_data_set_obj(settings, "font", font);
+	obs_data_set_string(settings, "text", name);
+	obs_data_set_bool(settings, "outline", true);
+
+	obs_source_t *txtSource = obs_source_create_private("text_ft2_source",
+			name, settings);
+	obs_source_addref(txtSource);
+
+	obs_data_release(font);
+	obs_data_release(settings);
+
+	return txtSource;
+}
+
+static void SetLabelText(obs_source_t *source, const char *text,
+		int fontSize)
+{
+	if (!source)
+		return;
+
+	obs_data_t *settings = obs_source_get_settings(source);
+	obs_data_t *font = obs_data_get_obj(settings, "font");
+
+	obs_data_set_string(settings, "text", text);
+	obs_data_set_int(font, "size", fontSize);
+	obs_source_update(source, settings);
+
+	obs_data_release(font);
+	obs_data_release(settings);
+}
+
 OBSBasicPreview::OBSBasicPreview(QWidget *parent, Qt::WindowFlags flags)
-	: OBSQTDisplay(parent, flags),
-	  currentSizeLabel(0)
+	: OBSQTDisplay(parent, flags)
 {
 	ResetScrollingOffset();
 	setMouseTracking(true);
@@ -37,16 +83,28 @@ OBSBasicPreview::OBSBasicPreview(QWidget *parent, Qt::WindowFlags flags)
 	helperLinesVB->tvarray[0].array =
 		bzalloc(sizeof(struct vec2) * helperLinesVB->num);
 
+	/*
 	for (int i = 0; i < PREVIEW_SPACING_LABEL_COUNT; i++) {
 		sizeLabels[i] = nullptr;
 	}
+	*/
+	guideLabelLeft = CreateLabel("Spacing Helper - Left");
+	guideLabelTop = CreateLabel("Spacing Helper - Top");
+	guideLabelRight = CreateLabel("Spacing Helper - Right");
+	guideLabelBottom = CreateLabel("Spacing Helper - Bottom");
 }
 
 OBSBasicPreview::~OBSBasicPreview() {
 	gs_vbdata_destroy(helperLinesVB);
+	/*
 	for (int i = 0; i < PREVIEW_SPACING_LABEL_COUNT; i++) {
 		obs_source_release(sizeLabels[i]);
 	}
+	*/
+	obs_source_release(guideLabelLeft);
+	obs_source_release(guideLabelTop);
+	obs_source_release(guideLabelRight);
+	obs_source_release(guideLabelBottom);
 }
 
 vec2 OBSBasicPreview::GetMouseEventPos(QMouseEvent *event)
@@ -1188,53 +1246,6 @@ void OBSBasicPreview::mouseMoveEvent(QMouseEvent *event)
 	}
 }
 
-obs_source_t *CreateLabel(const char *name)
-{
-	obs_data_t *settings = obs_data_create();
-	obs_data_t *font = obs_data_create();
-
-#if defined(_WIN32)
-	obs_data_set_string(font, "face", "Arial");
-#elif defined(__APPLE__)
-	obs_data_set_string(font, "face", "Helvetica");
-#else
-	obs_data_set_string(font, "face", "Monospace");
-#endif
-
-	obs_data_set_int(font, "flags", 0);
-	obs_data_set_int(font, "size", 1);
-
-	obs_data_set_obj(settings, "font", font);
-	obs_data_set_string(settings, "text", name);
-	obs_data_set_bool(settings, "outline", true);
-
-	obs_source_t *txtSource = obs_source_create_private("text_ft2_source",
-			name, settings);
-	obs_source_addref(txtSource);
-
-	obs_data_release(font);
-	obs_data_release(settings);
-
-	return txtSource;
-}
-
-static void SetLabelText(obs_source_t *source, const char *text,
-		int fontSize)
-{
-	if (!source)
-		return;
-
-	obs_data_t *settings = obs_source_get_settings(source);
-	obs_data_t *font = obs_data_get_obj(settings, "font");
-
-	obs_data_set_string(settings, "text", text);
-	obs_data_set_int(font, "size", fontSize);
-	obs_source_update(source, settings);
-
-	obs_data_release(font);
-	obs_data_release(settings);
-}
-
 static void DrawCircleAtPos(float x, float y)
 {
 	struct vec3 pos;
@@ -1267,7 +1278,7 @@ static void DrawLabel(vec3 &pos, obs_source_t *source, vec3 &viewport)
 }
 
 void OBSBasicPreview::DrawSingleSpacingHelper(vec3 &start, vec3 &end,
-		vec3 &viewport)
+		vec3 &viewport, obs_source_t *sizeLabel)
 {
 	const float labelMargin = 0.005f;
 	const float virtualLabelSizeFactor = 1.05f;
@@ -1289,11 +1300,24 @@ void OBSBasicPreview::DrawSingleSpacingHelper(vec3 &start, vec3 &end,
 	std::string lengthStr;
 	lengthStr = std::to_string((int)lengthPx) + " px";
 
+	/*
 	if (!sizeLabels[currentSizeLabel]) {
 		sizeLabels[currentSizeLabel] = CreateLabel("Spacing Helper");
 	}
 	obs_source_t *sizeLabel = sizeLabels[currentSizeLabel];
+	*/
 	SetLabelText(sizeLabel, lengthStr.c_str(), 12);
+
+	// testing
+	obs_data_t *settings = obs_source_get_settings(sizeLabel);
+	obs_data_t *font = obs_data_get_obj(settings, "font");
+	const char *labelText = obs_data_get_string(settings, "text");
+	long long fontSize = obs_data_get_int(font, "size");
+
+	//obs_source_update(source, settings);
+	obs_data_release(font);
+	obs_data_release(settings);
+	//end tests
 
 	vec3 labelSize;
 	vec3 labelPos;
@@ -1321,10 +1345,12 @@ void OBSBasicPreview::DrawSingleSpacingHelper(vec3 &start, vec3 &end,
 		DrawLabel(labelPos, sizeLabel, viewport);
 	}
 
+	/*
 	currentSizeLabel++;
 	if (currentSizeLabel > (PREVIEW_SPACING_LABEL_COUNT - 1)) {
 		currentSizeLabel = 0;
 	}
+	*/
 }
 
 static void boxCoordsToView(vec3 *coord, matrix4 &boxTransform,
@@ -1415,10 +1441,11 @@ void OBSBasicPreview::DrawSpacingHelpers(obs_sceneitem_t *sceneitem,
 	gs_vertexbuffer_destroy(vb);
 
 	// Draw text labels
-	DrawSingleSpacingHelper(viewTop, boxTop, viewport);
-	DrawSingleSpacingHelper(boxRight, viewRight, viewport);
-	DrawSingleSpacingHelper(boxBottom, viewBottom, viewport);
-	DrawSingleSpacingHelper(viewLeft, boxLeft, viewport);
+	// if rotated past 45-deg, rotate sides clockwise
+	DrawSingleSpacingHelper(viewTop, boxTop, viewport, guideLabelTop);
+	DrawSingleSpacingHelper(boxRight, viewRight, viewport, guideLabelRight);
+	DrawSingleSpacingHelper(boxBottom, viewBottom, viewport, guideLabelBottom);
+	DrawSingleSpacingHelper(viewLeft, boxLeft, viewport, guideLabelLeft);
 
 	gs_matrix_pop();
 }
