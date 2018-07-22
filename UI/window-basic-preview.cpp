@@ -1363,6 +1363,7 @@ void OBSBasicPreview::DrawSpacingHelpers(obs_sceneitem_t *sceneitem,
 	gs_matrix_scale(&viewport);
 
 	// Compute positions of TRBL points of item box
+	// probably use a vector, then check rotation, and push/pop/shift the vector as needed
 	vec3 boxLeft;
 	vec3 boxRight;
 	vec3 boxTop;
@@ -1422,7 +1423,6 @@ void OBSBasicPreview::DrawSpacingHelpers(obs_sceneitem_t *sceneitem,
 	gs_vertexbuffer_destroy(vb);
 
 	// Draw text labels
-	// if rotated past 45-deg, rotate sides clockwise
 	if (!guideLabelTop)
 		guideLabelTop = CreateLabel("Spacing Helper - Top");
 	if (!guideLabelRight)
@@ -1432,6 +1432,7 @@ void OBSBasicPreview::DrawSpacingHelpers(obs_sceneitem_t *sceneitem,
 	if (!guideLabelLeft)
 		guideLabelLeft = CreateLabel("Spacing Helper - Left");
 
+	// if rotated past 45-deg, rotate sides clockwise
 	DrawSingleSpacingHelper(viewTop, boxTop, viewport, guideLabelTop);
 	DrawSingleSpacingHelper(boxRight, viewRight, viewport, guideLabelRight);
 	DrawSingleSpacingHelper(boxBottom, viewBottom, viewport, guideLabelBottom);
