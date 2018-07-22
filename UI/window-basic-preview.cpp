@@ -1302,12 +1302,12 @@ void OBSBasicPreview::DrawSingleSpacingHelper(vec3 &start, vec3 &end,
 	vec3_set(&labelPos, end.x, end.y, end.z);
 	if (horizontal) {
 		// Horizontal line
-		labelPos.x -= ((end.x - start.x) / 2) - (labelSize.x / 2);
+		labelPos.x -= ((end.x - start.x) - labelSize.x) / 2;
 		labelPos.y += LABEL_MARGIN;
 		minSize = labelSize.x * VIRTUAL_LABEL_SIZE_FACTOR;
 	} else {
 		// Vertical line
-		labelPos.y -= ((end.y - start.y) / 2) - (labelSize.y / 2);
+		labelPos.y -= ((end.y - start.y) - labelSize.y) / 2;
 		labelPos.x += LABEL_MARGIN;
 		minSize = labelSize.y * VIRTUAL_LABEL_SIZE_FACTOR;
 	}
