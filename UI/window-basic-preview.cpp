@@ -1270,8 +1270,8 @@ static void DrawLabel(vec3 &pos, obs_source_t *source, vec3 &viewport)
 void OBSBasicPreview::DrawSingleSpacingHelper(vec3 &start, vec3 &end,
 		vec3 &viewport, obs_source_t *sizeLabel)
 {
-	const float labelMargin = 0.005f;
-	const float virtualLabelSizeFactor = 1.05f;
+#define LABEL_MARGIN               0.005f
+#define VIRTUAL_LABEL_SIZE_FACTOR  1.05f
 
 	obs_video_info ovi;
 	obs_get_video_info(&ovi);
@@ -1305,18 +1305,20 @@ void OBSBasicPreview::DrawSingleSpacingHelper(vec3 &start, vec3 &end,
 	if (horizontal) {
 		// Horizontal line
 		labelPos.x -= ((end.x - start.x) / 2) - (labelSize.x / 2);
-		labelPos.y += labelMargin;
-		minSize = labelSize.x * virtualLabelSizeFactor;
+		labelPos.y += LABEL_MARGIN;
+		minSize = labelSize.x * VIRTUAL_LABEL_SIZE_FACTOR;
 	} else {
 		// Vertical line
 		labelPos.y -= ((end.y - start.y) / 2) - (labelSize.y / 2);
-		labelPos.x += labelMargin;
-		minSize = labelSize.y * virtualLabelSizeFactor;
+		labelPos.x += LABEL_MARGIN;
+		minSize = labelSize.y * VIRTUAL_LABEL_SIZE_FACTOR;
 	}
 
 	if (abs(length) >= minSize) {
 		DrawLabel(labelPos, sizeLabel, viewport);
 	}
+#undef LABEL_MARGIN
+#undef VIRTUAL_LABEL_SIZE_FACTOR
 }
 
 static void boxCoordsToView(vec3 *coord, matrix4 &boxTransform,
