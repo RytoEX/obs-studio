@@ -1278,17 +1278,15 @@ void OBSBasicPreview::DrawSingleSpacingHelper(vec3 &start, vec3 &end,
 
 	bool horizontal = ((end.x - start.x) >= (end.y - start.y));
 
-	float length;
 	float lengthPx;
-	length = sqrt(pow(end.x - start.x, 2) + pow(end.y - start.y, 2));
+	float length = sqrt(pow(end.x - start.x, 2) + pow(end.y - start.y, 2));
 	if (horizontal) {
 		lengthPx = length * ovi.base_width;
 	} else {
 		lengthPx = length * ovi.base_height;
 	}
 
-	std::string lengthStr;
-	lengthStr = std::to_string((int)lengthPx) + " px";
+	std::string lengthStr = std::to_string((int)lengthPx) + " px";
 
 	SetLabelText(sizeLabel, lengthStr.c_str(), 12);
 
