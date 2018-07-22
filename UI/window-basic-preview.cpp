@@ -1292,18 +1292,6 @@ void OBSBasicPreview::DrawSingleSpacingHelper(vec3 &start, vec3 &end,
 
 	SetLabelText(sizeLabel, lengthStr.c_str(), 12);
 
-	// testing
-	obs_data_t *settings = obs_source_get_settings(sizeLabel);
-	obs_data_t *font = obs_data_get_obj(settings, "font");
-	const char *labelText = obs_data_get_string(settings, "text");
-	long long fontSize = obs_data_get_int(font, "size");
-	const char *labelName = obs_source_get_name(sizeLabel);
-
-	//obs_source_update(source, settings);
-	obs_data_release(font);
-	obs_data_release(settings);
-	//end tests
-
 	vec3 labelSize;
 	vec3 labelPos;
 	vec3_set(&labelSize,
