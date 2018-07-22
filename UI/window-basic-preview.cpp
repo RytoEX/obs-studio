@@ -36,9 +36,6 @@ static obs_source_t *CreateLabel(const char *name)
 
 	obs_source_t *txtSource = obs_source_create_private("text_ft2_source",
 			name, settings);
-	//obs_source_addref(txtSource);
-	//obs_source_release(txtSource);
-	// need to release this source manually, or are these release automatically later?
 
 	obs_data_release(font);
 	obs_data_release(settings);
