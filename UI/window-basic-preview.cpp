@@ -1409,7 +1409,7 @@ void OBSBasicPreview::DrawSpacingHelpers(obs_sceneitem_t *sceneitem,
 
 	gs_vertexbuffer_destroy(vb);
 
-	// Draw text labels
+	// Create text labels if they don't exist yet
 	if (!guideLabelTop)
 		guideLabelTop = CreateLabel("Spacing Helper - Top");
 	if (!guideLabelRight)
