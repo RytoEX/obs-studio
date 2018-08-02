@@ -2414,6 +2414,47 @@ void OBSBasicSettings::LoadHotkeySettings(obs_hotkey_id ignoreKey)
 	widget->setLayout(layout);
 	ui->hotkeyPage->setWidget(widget);
 
+	auto searchLayout = new QGridLayout();
+	auto searchWidget = new QWidget();
+	searchWidget->setLayout(searchLayout);
+
+	auto searchLabel = new QLabel("Search: ");
+	auto search = new QLineEdit();
+
+	auto setRowVisible = [=](int row, bool visible, QLayoutItem *label) {
+		label->widget()->setVisible(visible);
+
+		auto field = layout->itemAt(row, QFormLayout::FieldRole);
+		if (field)
+			field->widget()->setVisible(visible);
+	};
+
+	auto searchFunction = [=](const QString &text) {
+		for (int i = 0; i < layout->rowCount(); i++) {
+			auto label = layout->itemAt(i, QFormLayout::LabelRole);
+			if (label) {
+				OBSHotkeyLabel *item =
+					qobject_cast<OBSHotkeyLabel*>(
+					label->widget());
+				if(item) {
+					if (item->text().toLower()
+						.contains(text.toLower()))
+						setRowVisible(i, true, label);
+					else
+						setRowVisible(i, false, label);
+				}
+			}
+		}
+	};
+
+	connect(search, &QLineEdit::textChanged,
+		this, searchFunction);
+
+	searchLayout->addWidget(searchLabel, 0, 0);
+	searchLayout->addWidget(search, 0, 1);
+
+	layout->addRow(searchWidget);
+
 	using namespace std;
 	using encoders_elem_t =
 		tuple<OBSEncoder, QPointer<QLabel>, QPointer<QWidget>>;
