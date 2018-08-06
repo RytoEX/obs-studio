@@ -2421,34 +2421,47 @@ void OBSBasicSettings::LoadHotkeySettings(obs_hotkey_id ignoreKey)
 	auto searchLabel = new QLabel("Search: ");
 	auto search = new QLineEdit();
 
-	auto setRowVisible = [=](int row, bool visible, QLayoutItem *label) {
-		label->widget()->setVisible(visible);
-
-		auto field = layout->itemAt(row, QFormLayout::FieldRole);
-		if (field)
-			field->widget()->setVisible(visible);
+	auto setRowVisible = [=](QWidget *label_widget, QWidget *field_widget,
+			bool visible) {
+		label_widget->setVisible(visible);
+		field_widget->setVisible(visible);
 	};
 
 	auto searchFunction = [=](const QString &text) {
-		for (int i = 0; i < layout->rowCount(); i++) {
+		const QString text_lower = text.toLower();
+		int rows = layout->rowCount();
+		widget->setUpdatesEnabled(false);
+		for (int i = 0; i < rows; i++) {
 			auto label = layout->itemAt(i, QFormLayout::LabelRole);
-			if (label) {
-				OBSHotkeyLabel *item =
-					qobject_cast<OBSHotkeyLabel*>(
-					label->widget());
-				if(item) {
-					if (item->text().toLower()
-						.contains(text.toLower()))
-						setRowVisible(i, true, label);
-					else
-						setRowVisible(i, false, label);
-				}
-			}
+			if (!label)
+				continue;
+
+			QWidget *label_widget = label->widget();
+			if (!label_widget)
+				continue;
+
+			OBSHotkeyLabel *item = qobject_cast<OBSHotkeyLabel*>(
+					label_widget);
+			if(!item)
+				continue;
+
+			QLayoutItem *field = layout->itemAt(i,
+					QFormLayout::FieldRole);
+			if (!field)
+				continue;
+
+			QWidget *field_widget = field->widget();
+			if (!field_widget)
+				continue;
+
+			bool contains = item->text().toLower().contains(text_lower);
+			setRowVisible(label_widget, field_widget, contains);
 		}
+		widget->setUpdatesEnabled(true);
 	};
 
 	connect(search, &QLineEdit::textChanged,
-		this, searchFunction);
+			this, searchFunction);
 
 	searchLayout->addWidget(searchLabel, 0, 0);
 	searchLayout->addWidget(search, 0, 1);
