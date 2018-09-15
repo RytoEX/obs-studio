@@ -6119,8 +6119,7 @@ void OBSBasic::on_resetUI_triggered()
 		ui->sourcesDock,
 		ui->mixerDock,
 		ui->transitionsDock,
-		ui->controlsDock,
-		ui->statsDock
+		ui->controlsDock
 	};
 
 	QList<int> sizes {
@@ -6136,7 +6135,7 @@ void OBSBasic::on_resetUI_triggered()
 	ui->mixerDock->setVisible(true);
 	ui->transitionsDock->setVisible(true);
 	ui->controlsDock->setVisible(true);
-	ui->statsDock->setVisible(true);
+	ui->statsDock->setVisible(false);
 
 	resizeDocks(docks, {cy, cy, cy, cy, cy}, Qt::Vertical);
 	resizeDocks(docks, sizes, Qt::Horizontal);

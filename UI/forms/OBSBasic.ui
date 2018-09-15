@@ -1102,6 +1102,9 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="statsDock">
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="minimumSize">
     <size>
      <width>168</width>
@@ -1679,7 +1682,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Basic.Stats</string>
