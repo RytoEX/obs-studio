@@ -555,6 +555,7 @@ OBSBasicSettings::OBSBasicSettings(QWidget *parent)
 	HookWidget(ui->enableNewSocketLoop,  CHECK_CHANGED,  ADV_CHANGED);
 	HookWidget(ui->enableLowLatencyMode, CHECK_CHANGED,  ADV_CHANGED);
 	HookWidget(ui->hotkeyFocusType,      COMBO_CHANGED,  ADV_CHANGED);
+	HookWidget(ui->dockLayoutType,       COMBO_CHANGED,  ADV_CHANGED);
 	HookWidget(ui->autoRemux,            CHECK_CHANGED,  ADV_CHANGED);
 	HookWidget(ui->dynBitrate,           CHECK_CHANGED,  ADV_CHANGED);
 	/* clang-format on */
@@ -568,6 +569,15 @@ OBSBasicSettings::OBSBasicSettings(QWidget *parent)
 	ADD_HOTKEY_FOCUS_TYPE("DisableHotkeysOutOfFocus");
 
 #undef ADD_HOTKEY_FOCUS_TYPE
+
+#define ADD_DOCK_LAYOUT_TYPE(s)      \
+	ui->dockLayoutType->addItem( \
+		QTStr("Basic.Settings.Advanced.DockLayout." s), s)
+
+	ADD_DOCK_LAYOUT_TYPE("FullWidthTopBottom");
+	ADD_DOCK_LAYOUT_TYPE("FullHeightLeftRight");
+
+#undef ADD_DOCK_LAYOUT_TYPE
 
 	ui->simpleOutputVBitrate->setSingleStep(50);
 	ui->simpleOutputVBitrate->setSuffix(" Kbps");
@@ -2508,6 +2518,8 @@ void OBSBasicSettings::LoadAdvancedSettings()
 	bool autoRemux = config_get_bool(main->Config(), "Video", "AutoRemux");
 	const char *hotkeyFocusType = config_get_string(
 		App()->GlobalConfig(), "General", "HotkeyFocusType");
+	const char *dockLayoutType = config_get_string(
+		App()->GlobalConfig(), "General", "DockLayoutType");
 	bool dynBitrate =
 		config_get_bool(main->Config(), "Output", "DynamicBitrate");
 
@@ -2592,6 +2604,7 @@ void OBSBasicSettings::LoadAdvancedSettings()
 #endif
 
 	SetComboByValue(ui->hotkeyFocusType, hotkeyFocusType);
+	SetComboByValue(ui->dockLayoutType, dockLayoutType);
 
 	loading = false;
 }
@@ -3216,6 +3229,12 @@ void OBSBasicSettings::SaveAdvancedSettings()
 		QString str = GetComboData(ui->hotkeyFocusType);
 		config_set_string(App()->GlobalConfig(), "General",
 				  "HotkeyFocusType", QT_TO_UTF8(str));
+	}
+	if (WidgetChanged(ui->dockLayoutType)) {
+		QString str = GetComboData(ui->dockLayoutType);
+		config_set_string(App()->GlobalConfig(), "General",
+				  "DockLayoutType", QT_TO_UTF8(str));
+		main->SetDockLayout(str);
 	}
 
 #ifdef __APPLE__

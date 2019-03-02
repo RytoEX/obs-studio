@@ -9545,6 +9545,49 @@ QAction *OBSBasic::AddDockWidget(QDockWidget *dock)
 	return action;
 }
 
+void OBSBasic::SetDockLayout(DockLayout layout)
+{
+	switch (layout) {
+	case DockLayout::FullWidthTopBottom:
+		setCorner(Qt::TopLeftCorner, Qt::TopDockWidgetArea);
+		setCorner(Qt::BottomLeftCorner, Qt::BottomDockWidgetArea);
+		setCorner(Qt::TopRightCorner, Qt::TopDockWidgetArea);
+		setCorner(Qt::BottomRightCorner, Qt::BottomDockWidgetArea);
+		break;
+	case DockLayout::FullHeightLeftRight:
+		setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
+		setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+		setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
+		setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
+		break;
+	case DockLayout::FullWidthTop:
+		setCorner(Qt::TopLeftCorner, Qt::TopDockWidgetArea);
+		setCorner(Qt::TopRightCorner, Qt::TopDockWidgetArea);
+		break;
+	case DockLayout::FullWidthBottom:
+		setCorner(Qt::BottomLeftCorner, Qt::BottomDockWidgetArea);
+		setCorner(Qt::BottomRightCorner, Qt::BottomDockWidgetArea);
+		break;
+	case DockLayout::FullHeightLeft:
+		setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
+		setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+		break;
+	case DockLayout::FullHeightRight:
+		setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
+		setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
+		break;
+	}
+}
+
+void OBSBasic::SetDockLayout(QString layout)
+{
+	if (layout == "FullWidthTopBottom") {
+		SetDockLayout(DockLayout::FullWidthTopBottom);
+	} else if (layout == "FullHeightLeftRight") {
+		SetDockLayout(DockLayout::FullHeightLeftRight);
+	}
+}
+
 OBSBasic *OBSBasic::Get()
 {
 	return reinterpret_cast<OBSBasic *>(App()->GetMainWindow());

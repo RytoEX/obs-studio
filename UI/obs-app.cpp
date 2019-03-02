@@ -477,6 +477,9 @@ bool OBSApp::InitGlobalConfigDefaults()
 	config_set_default_string(globalConfig, "General", "HotkeyFocusType",
 				  "NeverDisableHotkeys");
 
+	config_set_default_string(globalConfig, "General", "DockLayoutType",
+				  "FullWidthTopBottom");
+
 	config_set_default_bool(globalConfig, "BasicWindow",
 				"VerticalVolControl", false);
 
