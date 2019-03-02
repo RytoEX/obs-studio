@@ -179,6 +179,15 @@ class OBSBasic : public OBSMainWindow {
 		DropType_Url,
 	};
 
+	enum DockLayout {
+		Full_Width_TopBottom,
+		Full_Height_LeftRight,
+		Full_Width_Top,
+		Full_Width_Bottom,
+		Full_Height_Left,
+		Full_Height_Right
+	};
+
 private:
 	obs_frontend_callbacks *api = nullptr;
 
@@ -827,6 +836,8 @@ public:
 	void CreateFiltersWindow(obs_source_t *source);
 
 	QAction *AddDockWidget(QDockWidget *dock);
+	void SetDockLayout(DockLayout layout);
+	void SwapDockLayout();
 
 	static OBSBasic *Get();
 

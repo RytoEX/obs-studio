@@ -1942,6 +1942,9 @@ void OBSBasic::OBSInit()
 	QMetaObject::invokeMethod(this, "DeferredSysTrayLoad",
 				  Qt::QueuedConnection, Q_ARG(int, 10));
 #endif
+
+	//SetDockLayout(DockLayout::Full_Height_LeftRight);
+	SetDockLayout(DockLayout::Full_Height_Right);
 }
 
 void OBSBasic::OnFirstLoad()
@@ -8012,6 +8015,51 @@ QAction *OBSBasic::AddDockWidget(QDockWidget *dock)
 	}
 
 	return action;
+}
+
+void OBSBasic::SetDockLayout(DockLayout layout)
+{
+	switch (layout) {
+	case DockLayout::Full_Width_TopBottom:
+		setCorner(Qt::TopLeftCorner, Qt::TopDockWidgetArea);
+		setCorner(Qt::BottomLeftCorner, Qt::BottomDockWidgetArea);
+		setCorner(Qt::TopRightCorner, Qt::TopDockWidgetArea);
+		setCorner(Qt::BottomRightCorner, Qt::BottomDockWidgetArea);
+		break;
+	case DockLayout::Full_Height_LeftRight:
+		setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
+		setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+		setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
+		setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
+		break;
+	case DockLayout::Full_Width_Top:
+		setCorner(Qt::TopLeftCorner, Qt::TopDockWidgetArea);
+		setCorner(Qt::TopRightCorner, Qt::TopDockWidgetArea);
+		break;
+	case DockLayout::Full_Width_Bottom:
+		setCorner(Qt::BottomLeftCorner, Qt::BottomDockWidgetArea);
+		setCorner(Qt::BottomRightCorner, Qt::BottomDockWidgetArea);
+		break;
+	case DockLayout::Full_Height_Left:
+		setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
+		setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+		break;
+	case DockLayout::Full_Height_Right:
+		setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
+		setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
+		break;
+	}
+}
+
+void OBSBasic::SwapDockLayout()
+{
+	bool defaultDockLayout = config_get_bool(GetGlobalConfig(),
+			"BasicWindow", "DefaultDockLayout");
+
+	if (defaultDockLayout)
+		SetDockLayout(DockLayout::Full_Height_LeftRight);
+	else
+		SetDockLayout(DockLayout::Full_Width_TopBottom);
 }
 
 OBSBasic *OBSBasic::Get()
