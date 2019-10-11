@@ -18,7 +18,6 @@ void RecordButton::resizeEvent(QResizeEvent *event)
 	main->pause->setAttribute(Qt::WA_LayoutUsesWidgetRect);
 #endif // __APPLE__
 
-
 	event->accept();
 }
 
