@@ -7845,6 +7845,7 @@ void OBSBasic::UpdatePause(bool activate)
 		pause.reset(new QPushButton());
 		pause->setAccessibleName(QTStr("Basic.Main.PauseRecording"));
 		pause->setToolTip(QTStr("Basic.Main.PauseRecording"));
+		pause->setText("p");
 		pause->setCheckable(true);
 		pause->setChecked(false);
 		pause->setProperty("themeID",

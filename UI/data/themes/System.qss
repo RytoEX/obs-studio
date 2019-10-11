@@ -40,7 +40,7 @@
 }
 
 * [themeID="pauseIconSmall"] {
-    qproperty-icon: url(:/res/images/media-pause.svg);
+    /* qproperty-icon: url(:/res/images/media-pause.svg); */
 }
 
 MuteCheckBox {
