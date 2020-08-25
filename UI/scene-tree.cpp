@@ -62,6 +62,13 @@ int SceneTree::GetGridItemHeight()
 
 bool SceneTree::eventFilter(QObject *obj, QEvent *event)
 {
+	if (event->type() == QEvent::KeyPress) {
+		QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+		blog(LOG_INFO, "scene rename - any key pressed");
+		if (Qt::Key_F2 == keyEvent->key()) {
+			blog(LOG_INFO, "F2 key pressed - scene rename");
+		}
+	}
 	return QObject::eventFilter(obj, event);
 }
 

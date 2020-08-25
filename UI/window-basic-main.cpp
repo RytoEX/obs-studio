@@ -189,6 +189,24 @@ void assignDockToggle(QDockWidget *dock, QAction *action)
 extern void RegisterTwitchAuth();
 extern void RegisterRestreamAuth();
 
+void OBSBasic::setRenameSceneShortcut()
+{
+#ifdef __APPLE__
+	renameScene->setShortcut({Qt::Key_Return});
+#else
+	renameScene->setShortcut({Qt::Key_F2});
+#endif
+}
+
+void OBSBasic::setRenameSourceShortcut()
+{
+#ifdef __APPLE__
+	renameSource->setShortcut({Qt::Key_Return});
+#else
+	renameSource->setShortcut({Qt::Key_F2});
+#endif
+}
+
 OBSBasic::OBSBasic(QWidget *parent)
 	: OBSMainWindow(parent), ui(new Ui::OBSBasic)
 {
@@ -302,30 +320,27 @@ OBSBasic::OBSBasic(QWidget *parent)
 	connect(diskFullTimer, SIGNAL(timeout()), this,
 		SLOT(CheckDiskSpaceRemaining()));
 
-	QAction *renameScene = new QAction(ui->scenesDock);
+	renameScene = new QAction(ui->scenesDock);
 	renameScene->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	connect(renameScene, SIGNAL(triggered()), this, SLOT(EditSceneName()));
 	ui->scenesDock->addAction(renameScene);
 
-	QAction *renameSource = new QAction(ui->sourcesDock);
+	renameSource = new QAction(ui->sourcesDock);
 	renameSource->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	connect(renameSource, SIGNAL(triggered()), this,
 		SLOT(EditSceneItemName()));
 	ui->sourcesDock->addAction(renameSource);
 
 #ifdef __APPLE__
-	renameScene->setShortcut({Qt::Key_Return});
-	renameSource->setShortcut({Qt::Key_Return});
-
 	ui->actionRemoveSource->setShortcuts({Qt::Key_Backspace});
 	ui->actionRemoveScene->setShortcuts({Qt::Key_Backspace});
 
 	ui->action_Settings->setMenuRole(QAction::PreferencesRole);
 	ui->actionE_xit->setMenuRole(QAction::QuitRole);
-#else
-	renameScene->setShortcut({Qt::Key_F2});
-	renameSource->setShortcut({Qt::Key_F2});
 #endif
+
+	setRenameSceneShortcut();
+	setRenameSourceShortcut();
 
 	auto addNudge = [this](const QKeySequence &seq, const char *s) {
 		QAction *nudge = new QAction(ui->preview);
@@ -4390,12 +4405,17 @@ void OBSBasic::on_scenes_currentItemChanged(QListWidgetItem *current,
 
 void OBSBasic::EditSceneName()
 {
+	//renameScene->setShortcut({QKeySequence()});
+	//const QSignalBlocker blocker(renameScene);
+	disconnect(renameScene, nullptr, nullptr, nullptr);
 	QListWidgetItem *item = ui->scenes->currentItem();
 	Qt::ItemFlags flags = item->flags();
 
 	item->setFlags(flags | Qt::ItemIsEditable);
 	ui->scenes->editItem(item);
 	item->setFlags(flags);
+	connect(renameScene, SIGNAL(triggered()), this, SLOT(EditSceneName()));
+	//setRenameSceneShortcut();
 }
 
 void OBSBasic::AddProjectorMenuMonitors(QMenu *parent, QObject *target,

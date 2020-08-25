@@ -282,6 +282,8 @@ private:
 	QPointer<QMenu> deinterlaceMenu;
 	QPointer<QMenu> perSceneTransitionMenu;
 	QPointer<QObject> shortcutFilter;
+	QPointer<QAction> renameScene;
+	QPointer<QAction> renameSource;
 
 	QPointer<QWidget> programWidget;
 	QPointer<QVBoxLayout> programLayout;
@@ -351,6 +353,11 @@ private:
 	void CloseDialogs();
 	void ClearSceneData();
 	void ClearProjectors();
+
+	void setRenameSceneShortcut();
+	void setRenameSourceShortcut();
+	void clearRenameSceneShortcut();
+	void clearRenameSourceShortcut();
 
 	void Nudge(int dist, MoveDir dir);
 
