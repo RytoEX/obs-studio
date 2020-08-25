@@ -4407,14 +4407,19 @@ void OBSBasic::EditSceneName()
 {
 	//renameScene->setShortcut({QKeySequence()});
 	//const QSignalBlocker blocker(renameScene);
-	disconnect(renameScene, nullptr, nullptr, nullptr);
+	//disconnect(renameScene, nullptr, nullptr, nullptr);
+	ui->scenesDock->removeAction(renameScene);
 	QListWidgetItem *item = ui->scenes->currentItem();
 	Qt::ItemFlags flags = item->flags();
 
 	item->setFlags(flags | Qt::ItemIsEditable);
 	ui->scenes->editItem(item);
 	item->setFlags(flags);
-	connect(renameScene, SIGNAL(triggered()), this, SLOT(EditSceneName()));
+	// ui->scenes->editItem(item) is not blocking, so these would execute
+	// right after starting editing and cancel the whole point.
+	// removing the action here and adding it back in SceneNameEdited will work
+	//ui->scenesDock->addAction(renameScene);
+	//connect(renameScene, SIGNAL(triggered()), this, SLOT(EditSceneName()));
 	//setRenameSceneShortcut();
 }
 
@@ -5443,6 +5448,8 @@ void OBSBasic::SceneNameEdited(QWidget *editor,
 
 	obs_source_t *source = obs_scene_get_source(scene);
 	RenameListItem(this, ui->scenes, source, text);
+
+	ui->scenesDock->addAction(renameScene);
 
 	if (api)
 		api->on_event(OBS_FRONTEND_EVENT_SCENE_LIST_CHANGED);

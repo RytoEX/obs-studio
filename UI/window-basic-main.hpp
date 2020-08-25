@@ -356,8 +356,6 @@ private:
 
 	void setRenameSceneShortcut();
 	void setRenameSourceShortcut();
-	void clearRenameSceneShortcut();
-	void clearRenameSourceShortcut();
 
 	void Nudge(int dist, MoveDir dir);
 
