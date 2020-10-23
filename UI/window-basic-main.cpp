@@ -1944,7 +1944,11 @@ void OBSBasic::OBSInit()
 #endif
 
 	//SetDockLayout(DockLayout::Full_Height_LeftRight);
-	SetDockLayout(DockLayout::Full_Height_Right);
+	//SetDockLayout(DockLayout::Full_Height_Right);
+	setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
+	setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+	setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
+	setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 }
 
 void OBSBasic::OnFirstLoad()
