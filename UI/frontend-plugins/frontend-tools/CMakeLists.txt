@@ -10,7 +10,7 @@ if(UNIX AND NOT APPLE)
 	link_libraries(${X11_LIBRARIES})
 	include_directories(${X11_INCLUDE_DIR})
 
-	find_package(Qt5X11Extras REQUIRED)
+	find_package(Qt6 COMPONENTS X11Extras REQUIRED)
 endif()
 
 include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/deps/obs-scripting")
@@ -107,7 +107,7 @@ else()
 		auto-scene-switcher-nix.cpp)
 endif()
 
-qt5_wrap_ui(frontend-tools_UI_HEADERS
+qt_wrap_ui(frontend-tools_UI_HEADERS
 	${frontend-tools_UI}
 	${frontend-tools_PLATFORM_UI})
 
@@ -122,12 +122,12 @@ target_link_libraries(frontend-tools
 	${frontend-tools_PLATFORM_LIBS}
 	${EXTRA_LIBS}
 	obs-frontend-api
-	Qt5::Widgets
+	Qt::Widgets
 	libobs)
 
 if(UNIX AND NOT APPLE)
 	target_link_libraries(frontend-tools
-		Qt5::X11Extras)
+		Qt::X11Extras)
 endif()
 
 set_target_properties(frontend-tools PROPERTIES FOLDER "frontend")

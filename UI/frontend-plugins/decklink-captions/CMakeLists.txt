@@ -26,7 +26,7 @@ if(APPLE)
             ${COCOA})
 endif()
 
-qt5_wrap_ui(decklink-captions_UI_HEADERS
+qt_wrap_ui(decklink-captions_UI_HEADERS
         ${decklink-captions_UI})
 
 add_library(decklink-captions MODULE
@@ -37,7 +37,7 @@ add_library(decklink-captions MODULE
 target_link_libraries(decklink-captions
         ${frontend-tools_PLATFORM_LIBS}
         obs-frontend-api
-        Qt5::Widgets
+        Qt::Widgets
         libobs)
 set_target_properties(decklink-captions PROPERTIES FOLDER "plugins/decklink")
 

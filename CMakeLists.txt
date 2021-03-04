@@ -254,7 +254,7 @@ if(NOT INSTALLER_RUN)
 			list(APPEND CMAKE_PREFIX_PATH "$ENV{QTDIR}")
 		endif()
 
-		find_package(Qt5Widgets ${FIND_MODE})
+		find_package(Qt6 COMPONENTS Widgets ${FIND_MODE})
 	endif()
 
 	add_subdirectory(deps)

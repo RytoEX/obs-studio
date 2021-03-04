@@ -39,8 +39,8 @@ add_library(mac-virtualcam MODULE
 target_link_libraries(mac-virtualcam
 	libobs
 	obs-frontend-api
-	Qt5::Core
-	Qt5::Widgets
+	Qt::Core
+	Qt::Widgets
 	${AVFOUNDATION}
 	${APPKIT}
 	${COCOA}
