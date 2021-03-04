@@ -305,7 +305,11 @@ void SourceTreeItem::mouseDoubleClickEvent(QMouseEvent *event)
 	}
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void SourceTreeItem::enterEvent(QEvent *event)
+#else
+void SourceTreeItem::enterEvent(QEnterEvent *event)
+#endif
 {
 	QWidget::enterEvent(event);
 
