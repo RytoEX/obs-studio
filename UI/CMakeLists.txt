@@ -48,17 +48,15 @@ set(CMAKE_AUTOMOC TRUE)
 
 find_package(Threads REQUIRED)
 
-find_package(Qt5Widgets ${FIND_MODE})
-find_package(Qt5Svg ${FIND_MODE})
-find_package(Qt5Xml ${FIND_MODE})
+find_package(Qt6 COMPONENTS Widgets Svg Xml ${FIND_MODE})
 
 find_package(FFmpeg REQUIRED COMPONENTS avcodec avutil avformat)
 
-if(NOT Qt5Widgets_FOUND)
+if(NOT Qt6Widgets_FOUND)
 	if (ENABLE_UI)
-		message(FATAL_ERROR "Failed to find Qt5")
+		message(FATAL_ERROR "Failed to find Qt6")
 	else()
-		message(STATUS "Qt5 not found - UI disabled")
+		message(STATUS "Qt6 not found - UI disabled")
 		return()
 	endif()
 endif()
@@ -121,17 +119,17 @@ elseif(APPLE)
 	endif()
 
 elseif(UNIX)
-	find_package(Qt5Gui REQUIRED)
+	find_package(Qt6 COMPONENTS Gui REQUIRED)
 
-	include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
+	include_directories(${Qt6Gui_PRIVATE_INCLUDE_DIRS})
 
 	set(obs_PLATFORM_SOURCES
 		platform-x11.cpp)
 
 	set(obs_PLATFORM_LIBRARIES
 		${obs_PLATFORM_LIBRARIES}
-		Qt5::Gui
-		Qt5::GuiPrivate)
+		Qt6::Gui
+		Qt6::GuiPrivate)
 
 	if("${CMAKE_SYSTEM_NAME}" MATCHES "FreeBSD")
 		list(APPEND obs_PLATFORM_LIBRARIES
@@ -376,8 +374,8 @@ set(obs_UI
 set(obs_QRC
 	forms/obs.qrc)
 
-qt5_wrap_ui(obs_UI_HEADERS ${obs_UI})
-qt5_add_resources(obs_QRC_SOURCES ${obs_QRC})
+qt_wrap_ui(obs_UI_HEADERS ${obs_UI})
+qt_add_resources(obs_QRC_SOURCES ${obs_QRC})
 
 add_executable(obs WIN32
 	obs.manifest
@@ -403,9 +401,9 @@ endif()
 target_link_libraries(obs
 	libobs
 	Threads::Threads
-	Qt5::Widgets
-	Qt5::Svg
-	Qt5::Xml
+	Qt6::Widgets
+	Qt6::Svg
+	Qt6::Xml
 	obs-frontend-api
 	${FFMPEG_LIBRARIES}
 	${LIBCURL_LIBRARIES}

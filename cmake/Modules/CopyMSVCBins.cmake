@@ -158,44 +158,44 @@ if (NOT ZLIB_BIN_FILES)
 endif()
 
 file(GLOB QT_DEBUG_BIN_FILES
-	"${Qt5Core_DIR}/../../../bin/Qt5Cored.dll"
-	"${Qt5Core_DIR}/../../../bin/Qt5Guid.dll"
-	"${Qt5Core_DIR}/../../../bin/Qt5Widgetsd.dll"
-	"${Qt5Core_DIR}/../../../bin/Qt5Svgd.dll"
-	"${Qt5Core_DIR}/../../../bin/Qt5Xmld.dll"
-	"${Qt5Core_DIR}/../../../bin/Qt5Networkd.dll"
-	"${Qt5Core_DIR}/../../../bin/libGLESv2d.dll"
-	"${Qt5Core_DIR}/../../../bin/libEGLd.dll")
+	"${Qt6Core_DIR}/../../../bin/Qt6Cored.dll"
+	"${Qt6Core_DIR}/../../../bin/Qt6Guid.dll"
+	"${Qt6Core_DIR}/../../../bin/Qt6Widgetsd.dll"
+	"${Qt6Core_DIR}/../../../bin/Qt6Svgd.dll"
+	"${Qt6Core_DIR}/../../../bin/Qt6Xmld.dll"
+	"${Qt6Core_DIR}/../../../bin/Qt6Networkd.dll"
+	"${Qt6Core_DIR}/../../../bin/libGLESv2d.dll"
+	"${Qt6Core_DIR}/../../../bin/libEGLd.dll")
 file(GLOB QT_DEBUG_PLAT_BIN_FILES
-	"${Qt5Core_DIR}/../../../plugins/platforms/qwindowsd.dll")
+	"${Qt6Core_DIR}/../../../plugins/platforms/qwindowsd.dll")
 file(GLOB QT_DEBUG_STYLES_BIN_FILES
-	"${Qt5Core_DIR}/../../../plugins/styles/qwindowsvistastyled.dll")
+	"${Qt6Core_DIR}/../../../plugins/styles/qwindowsvistastyled.dll")
 file(GLOB QT_DEBUG_ICONENGINE_BIN_FILES
-	"${Qt5Core_DIR}/../../../plugins/iconengines/qsvgicond.dll")
+	"${Qt6Core_DIR}/../../../plugins/iconengines/qsvgicond.dll")
 file(GLOB QT_DEBUG_IMAGEFORMATS_BIN_FILES
-	"${Qt5Core_DIR}/../../../plugins/imageformats/qsvgd.dll")
+	"${Qt6Core_DIR}/../../../plugins/imageformats/qsvgd.dll")
 
 
 file(GLOB QT_BIN_FILES
-	"${Qt5Core_DIR}/../../../bin/Qt5Core.dll"
-	"${Qt5Core_DIR}/../../../bin/Qt5Gui.dll"
-	"${Qt5Core_DIR}/../../../bin/Qt5Widgets.dll"
-	"${Qt5Core_DIR}/../../../bin/Qt5Svg.dll"
-	"${Qt5Core_DIR}/../../../bin/Qt5Xml.dll"
-	"${Qt5Core_DIR}/../../../bin/Qt5Network.dll"
-	"${Qt5Core_DIR}/../../../bin/libGLESv2.dll"
-	"${Qt5Core_DIR}/../../../bin/libEGL.dll")
+	"${Qt6Core_DIR}/../../../bin/Qt6Core.dll"
+	"${Qt6Core_DIR}/../../../bin/Qt6Gui.dll"
+	"${Qt6Core_DIR}/../../../bin/Qt6Widgets.dll"
+	"${Qt6Core_DIR}/../../../bin/Qt6Svg.dll"
+	"${Qt6Core_DIR}/../../../bin/Qt6Xml.dll"
+	"${Qt6Core_DIR}/../../../bin/Qt6Network.dll"
+	"${Qt6Core_DIR}/../../../bin/libGLESv2.dll"
+	"${Qt6Core_DIR}/../../../bin/libEGL.dll")
 file(GLOB QT_PLAT_BIN_FILES
-	"${Qt5Core_DIR}/../../../plugins/platforms/qwindows.dll")
+	"${Qt6Core_DIR}/../../../plugins/platforms/qwindows.dll")
 file(GLOB QT_STYLES_BIN_FILES
-	"${Qt5Core_DIR}/../../../plugins/styles/qwindowsvistastyle.dll")
+	"${Qt6Core_DIR}/../../../plugins/styles/qwindowsvistastyle.dll")
 file(GLOB QT_ICONENGINE_BIN_FILES
-	"${Qt5Core_DIR}/../../../plugins/iconengines/qsvgicon.dll")	
+	"${Qt6Core_DIR}/../../../plugins/iconengines/qsvgicon.dll")
 file(GLOB QT_IMAGEFORMATS_BIN_FILES
-	"${Qt5Core_DIR}/../../../plugins/imageformats/qsvg.dll")	
+	"${Qt6Core_DIR}/../../../plugins/imageformats/qsvg.dll")
 
 file(GLOB QT_ICU_BIN_FILES
-	"${Qt5Core_DIR}/../../../bin/icu*.dll")
+	"${Qt6Core_DIR}/../../../bin/icu*.dll")
 
 set(ALL_BASE_BIN_FILES
 	${FFMPEG_BIN_FILES}

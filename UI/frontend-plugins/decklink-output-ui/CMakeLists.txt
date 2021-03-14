@@ -53,7 +53,7 @@ if(APPLE)
 		${COCOA})
 endif()
 
-qt5_wrap_ui(decklink-ouput-ui_UI_HEADERS
+qt_wrap_ui(decklink-ouput-ui_UI_HEADERS
 	${decklink-ouput-ui_UI})
 
 add_library(decklink-ouput-ui MODULE
@@ -64,7 +64,7 @@ add_library(decklink-ouput-ui MODULE
 target_link_libraries(decklink-ouput-ui
 	${frontend-tools_PLATFORM_LIBS}
 	obs-frontend-api
-	Qt5::Widgets
+	Qt6::Widgets
 	libobs)
 
 set_target_properties(decklink-ouput-ui PROPERTIES FOLDER "frontend")

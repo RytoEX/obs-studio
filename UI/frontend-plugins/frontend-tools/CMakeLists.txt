@@ -105,7 +105,7 @@ else()
 		auto-scene-switcher-nix.cpp)
 endif()
 
-qt5_wrap_ui(frontend-tools_UI_HEADERS
+qt_wrap_ui(frontend-tools_UI_HEADERS
 	${frontend-tools_UI}
 	${frontend-tools_PLATFORM_UI})
 
@@ -120,7 +120,7 @@ target_link_libraries(frontend-tools
 	${frontend-tools_PLATFORM_LIBS}
 	${EXTRA_LIBS}
 	obs-frontend-api
-	Qt5::Widgets
+	Qt6::Widgets
 	libobs)
 
 set_target_properties(frontend-tools PROPERTIES FOLDER "frontend")
