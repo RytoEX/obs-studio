@@ -253,7 +253,24 @@ bool media_remux_job_process(media_remux_job_t job,
 	if (!job)
 		return success;
 
-	ret = avformat_write_header(job->ofmt_ctx, NULL);
+	AVDictionary *params = NULL;
+	AVRational avg_frame_rate = job->ifmt_ctx->streams[0]->avg_frame_rate;
+	blog(LOG_INFO,
+	     "Remux input file info:\n"
+	     "avg_frame_rate.num: %d\n"
+	     "avg_frame_rate.den: %d\n"
+	     "nb_streams: %d",
+	     avg_frame_rate.num, avg_frame_rate.den, job->ifmt_ctx->nb_streams);
+
+	if (avg_frame_rate.den == 1) {
+		char video_frame_rate[20];
+		snprintf(video_frame_rate, sizeof(video_frame_rate), "%d",
+			 avg_frame_rate.num);
+		av_dict_set(&params, "video_track_timescale", video_frame_rate,
+			    0);
+	}
+	ret = avformat_write_header(job->ofmt_ctx, &params);
+	av_dict_free(&params);
 	if (ret < 0) {
 		blog(LOG_ERROR, "media_remux: Error opening output file: %s",
 		     av_err2str(ret));
