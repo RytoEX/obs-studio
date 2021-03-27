@@ -8,6 +8,8 @@ using namespace Gdiplus;
 
 extern HINSTANCE dll_inst;
 static std::vector<uint8_t> placeholder;
+static wchar_t file[MAX_PATH] = {'\0'};
+static bool initialized = false;
 
 /* XXX: optimize this later.  or don't, it's only called once. */
 
@@ -78,11 +80,21 @@ static void convert_placeholder(const uint8_t *rgb_in, int width, int height)
 	}
 }
 
-static bool load_placeholder_internal()
+static bool file_exists(const wchar_t *tmp_file)
 {
-	Status s;
+	if (GetFileAttributes(tmp_file) == INVALID_FILE_ATTRIBUTES &&
+	    GetLastError() == ERROR_FILE_NOT_FOUND) {
+		return false;
+	} else {
+		return true;
+	}
+}
 
-	wchar_t file[MAX_PATH];
+static bool get_file_path()
+{
+	wchar_t custom_file[MAX_PATH] = {'\0'};
+	wchar_t old_file[MAX_PATH] = {'\0'};
+	std::fill(std::begin(file), std::end(file), 0);
 	if (!GetModuleFileNameW(dll_inst, file, MAX_PATH)) {
 		return false;
 	}
@@ -94,7 +106,27 @@ static bool load_placeholder_internal()
 
 	slash[1] = 0;
 
-	StringCbCat(file, sizeof(file), L"placeholder.png");
+	StringCbCopy(old_file, sizeof(old_file), file);
+	StringCbCopy(custom_file, sizeof(custom_file), file);
+	StringCbCat(custom_file, sizeof(custom_file), L"custom-placeholder.png");
+
+	if (file_exists(custom_file)) {
+		StringCbCopy(file, sizeof(file), custom_file);
+	} else {
+		StringCbCat(file, sizeof(file), L"placeholder.png");
+	}
+	if (wcscmp(old_file, file) == 0) {
+		initialized = true;
+	} else {
+		initialized = false;
+	}
+
+	return true;
+}
+
+static bool load_placeholder_internal()
+{
+	Status s;
 
 	Bitmap bmp(file);
 	if (bmp.GetLastStatus() != Status::Ok) {
@@ -131,7 +163,12 @@ static bool load_placeholder()
 const uint8_t *get_placeholder()
 {
 	static bool failed = false;
-	static bool initialized = false;
+
+	get_file_path();
+
+	if (wcslen(file) == 0 || !file_exists(file)) {
+		initialized = false;
+	}
 
 	if (initialized) {
 		return placeholder.data();
