@@ -376,10 +376,50 @@ static json_t *open_json_file(const char *file)
 	return list;
 }
 
+static json_t *merge_user_services_files(void)
+{
+	json_t *user_service = json_array();
+	json_t *user_services = json_array();
+	char *path = obs_module_config_path("user_defined/");
+	os_dir_t *dir = os_opendir(path);
+
+	if (dir) {
+		struct dstr dir_path = {0};
+		struct os_dirent *ent;
+
+		for (;;) {
+			const char *ext;
+
+			ent = os_readdir(dir);
+			if (!ent)
+				break;
+			if (ent->directory)
+				continue;
+
+			ext = os_get_path_extension(ent->d_name);
+			if (!astrcmpi(ext, ".json") == 0)
+				continue;
+
+			dstr_copy(&dir_path, path);
+			dstr_cat(&dir_path, ent->d_name);
+			user_service = open_json_file(dir_path.array);
+			json_array_extend(user_services, user_service);
+		}
+
+		json_decref(user_service);
+		dstr_free(&dir_path);
+		os_closedir(dir);
+	}
+	bfree(path);
+
+	return user_services;
+}
+
 static json_t *open_services_file(void)
 {
 	char *file;
 	json_t *root = NULL;
+	json_t *user_services = NULL;
 
 	file = obs_module_config_path("services.json");
 	if (file) {
@@ -394,6 +434,10 @@ static json_t *open_services_file(void)
 			bfree(file);
 		}
 	}
+
+	user_services = merge_user_services_files();
+	json_array_extend(root, user_services);
+	json_decref(user_services);
 
 	return root;
 }
