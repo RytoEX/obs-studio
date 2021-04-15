@@ -1,7 +1,9 @@
 #include <windows.h>
+#include <shlobj_core.h>
 #include <strsafe.h>
 #include <gdiplus.h>
 #include <stdint.h>
+#include <string>
 #include <vector>
 
 using namespace Gdiplus;
@@ -81,23 +83,45 @@ static void convert_placeholder(const uint8_t *rgb_in, int width, int height)
 	}
 }
 
-static bool load_placeholder_internal()
+static std::vector<std::wstring> get_placeholder_paths()
 {
-	Status s;
-
-	wchar_t file[MAX_PATH];
-	if (!GetModuleFileNameW(dll_inst, file, MAX_PATH)) {
-		return false;
+	std::vector<std::wstring> paths;
+	wchar_t dll_path[MAX_PATH] = {'\0'};
+	wchar_t new_file[MAX_PATH] = {'\0'};
+	if (!GetModuleFileNameW(dll_inst, dll_path, MAX_PATH)) {
+		return paths;
 	}
 
-	wchar_t *slash = wcsrchr(file, '\\');
+	wchar_t *slash = wcsrchr(dll_path, '\\');
 	if (!slash) {
-		return false;
+		return paths;
 	}
 
 	slash[1] = 0;
 
-	StringCbCat(file, sizeof(file), L"placeholder.png");
+	PWSTR pszPath = NULL;
+	HRESULT hr = SHGetKnownFolderPath(FOLDERID_RoamingAppData,
+					  KF_FLAG_DEFAULT, NULL, &pszPath);
+	if (hr == S_OK) {
+		StringCbCopy(new_file, sizeof(new_file), pszPath);
+		StringCbCat(
+			new_file, sizeof(new_file),
+			L"\\obs-studio\\plugin_config\\win-dshow\\custom-placeholder.png");
+		paths.emplace_back(std::wstring(new_file));
+		StringCbCopy(new_file, sizeof(new_file), dll_path);
+	}
+	CoTaskMemFree(pszPath);
+
+	StringCbCopy(new_file, sizeof(new_file), dll_path);
+	StringCbCat(new_file, sizeof(new_file), L"placeholder.png");
+	paths.emplace_back(std::wstring(new_file));
+
+	return paths;
+}
+
+static bool load_placeholder_internal(const wchar_t *file)
+{
+	Status s;
 
 	Bitmap bmp(file);
 	if (bmp.GetLastStatus() != Status::Ok) {
@@ -127,7 +151,12 @@ bool initialize_placeholder()
 	ULONG_PTR token;
 	GdiplusStartup(&token, &si, nullptr);
 
-	initialized = load_placeholder_internal();
+	std::vector<std::wstring> paths = get_placeholder_paths();
+	for (auto &file : paths) {
+		initialized = load_placeholder_internal(file.data());
+		if (initialized)
+			break;
+	}
 
 	GdiplusShutdown(token);
 	return initialized;
