@@ -2057,6 +2057,12 @@ void OBSBasic::OBSInit()
 	OnFirstLoad();
 
 	activateWindow();
+
+	QObject::connect(&testCornerTimer, &QTimer::timeout, this,
+		&OBSBasic::SwapDockLayout);
+	//testCornerTimer.start(5000);
+
+	blog(LOG_INFO, "Corners:\n%s", GetCorners().c_str());
 }
 
 void OBSBasic::OnFirstLoad()
@@ -9545,6 +9551,35 @@ QAction *OBSBasic::AddDockWidget(QDockWidget *dock)
 	return action;
 }
 
+std::string OBSBasic::DockWidgetAreaToString(Qt::DockWidgetArea area)
+{
+	switch (area) {
+	case Qt::LeftDockWidgetArea:
+		return "LeftDockWidgetArea";
+	case Qt::RightDockWidgetArea:
+		return "RightDockWidgetArea";
+	case Qt::TopDockWidgetArea:
+		return "TopDockWidgetArea";
+	case Qt::BottomDockWidgetArea:
+		return "BottomDockWidgetArea";
+	case Qt::AllDockWidgetAreas:
+		return "AllDockWidgetAreas";
+	case Qt::NoDockWidgetArea:
+		return "NoDockWidgetArea";
+	default:
+		return "Unknown";
+	}
+}
+
+std::string OBSBasic::GetCorners()
+{
+	
+	return "TopLeft: " + DockWidgetAreaToString(corner(Qt::TopLeftCorner)) + "\n" +
+			"TopRight: " + DockWidgetAreaToString(corner(Qt::TopRightCorner)) + "\n" +
+			"BottomLeft: " + DockWidgetAreaToString(corner(Qt::BottomLeftCorner)) + "\n" +
+			"BottomRight: " + DockWidgetAreaToString(corner(Qt::BottomRightCorner));
+}
+
 void OBSBasic::SetDockLayout(DockLayout layout)
 {
 	switch (layout) {
@@ -9586,6 +9621,34 @@ void OBSBasic::SetDockLayout(QString layout)
 	} else if (layout == "FullHeightLeftRight") {
 		SetDockLayout(DockLayout::FullHeightLeftRight);
 	}
+}
+
+void OBSBasic::SwapDockLayout()
+{
+	blog(LOG_INFO, "SwapDockLayout");
+	QString dockLayoutType = config_get_string(
+		App()->GlobalConfig(), "General", "DockLayoutType");
+
+	if (dockLayoutType == "FullWidthTopBottom") {
+		config_set_string(App()->GlobalConfig(), "General",
+				  "DockLayoutType", "FullHeightLeftRight");
+		SetDockLayout("FullHeightLeftRight");
+		blog(LOG_INFO,
+		     "Current Dock Layout: %s\n"
+		     "New Dock Layout: %s",
+		     dockLayoutType.toUtf8().constData(), "FullHeightLeftRight");
+	} else if (dockLayoutType == "FullHeightLeftRight") {
+		config_set_string(App()->GlobalConfig(), "General",
+				  "DockLayoutType", "FullWidthTopBottom");
+		SetDockLayout("FullWidthTopBottom");
+		blog(LOG_INFO,
+		     "Current Dock Layout: %s\n"
+		     "New Dock Layout: %s",
+		     dockLayoutType.toUtf8().constData(), "FullWidthTopBottom");
+	}
+
+	blog(LOG_INFO, "Corners:\n%s", GetCorners().c_str());
+	qApp->processEvents();
 }
 
 OBSBasic *OBSBasic::Get()

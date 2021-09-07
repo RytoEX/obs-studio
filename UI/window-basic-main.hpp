@@ -342,6 +342,8 @@ private:
 	QScopedPointer<QThread> patronJsonThread;
 	std::string patronJson;
 
+	QTimer testCornerTimer;
+
 	void UpdateMultiviewProjectorMenu();
 
 	void DrawBackdrop(float cx, float cy);
@@ -914,8 +916,11 @@ public:
 	void CreateFiltersWindow(obs_source_t *source);
 
 	QAction *AddDockWidget(QDockWidget *dock);
+	std::string DockWidgetAreaToString(Qt::DockWidgetArea area);
+	std::string GetCorners();
 	void SetDockLayout(DockLayout layout);
 	void SetDockLayout(QString layout);
+	void SwapDockLayout();
 
 	static OBSBasic *Get();
 

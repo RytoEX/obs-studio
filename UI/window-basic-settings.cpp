@@ -3234,7 +3234,7 @@ void OBSBasicSettings::SaveAdvancedSettings()
 		QString str = GetComboData(ui->dockLayoutType);
 		config_set_string(App()->GlobalConfig(), "General",
 				  "DockLayoutType", QT_TO_UTF8(str));
-		main->SetDockLayout(str);
+		//main->SetDockLayout(str);
 	}
 
 #ifdef __APPLE__
