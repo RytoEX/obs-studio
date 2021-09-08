@@ -2060,7 +2060,7 @@ void OBSBasic::OBSInit()
 
 	QObject::connect(&testCornerTimer, &QTimer::timeout, this,
 		&OBSBasic::SwapDockLayout);
-	//testCornerTimer.start(5000);
+	testCornerTimer.start(8000);
 
 	blog(LOG_INFO, "Corners:\n%s", GetCorners().c_str());
 }
@@ -9648,7 +9648,9 @@ void OBSBasic::SwapDockLayout()
 	}
 
 	blog(LOG_INFO, "Corners:\n%s", GetCorners().c_str());
-	qApp->processEvents();
+
+	//this->update();
+	//qApp->processEvents();
 }
 
 OBSBasic *OBSBasic::Get()
