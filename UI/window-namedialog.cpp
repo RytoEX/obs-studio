@@ -50,6 +50,11 @@ NameDialog::NameDialog(QWidget *parent) : QDialog(parent)
 	connect(buttonbox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
 
+NameDialog::~NameDialog()
+{
+	blog(LOG_INFO, "NameDialog destroyed");
+}
+
 static bool IsWhitespace(char ch)
 {
 	return ch == ' ' || ch == '\t';
@@ -81,6 +86,7 @@ bool NameDialog::AskForName(QWidget *parent, const QString &title,
 	dialog.userText->selectAll();
 
 	if (dialog.exec() != DialogCode::Accepted) {
+		App()->UpdateHotkeyFocusSetting();
 		return false;
 	}
 	userTextInput = dialog.userText->text().toUtf8().constData();
@@ -107,6 +113,7 @@ bool NameDialog::AskForNameWithOption(QWidget *parent, const QString &title,
 	dialog.checkbox->setChecked(optionChecked);
 
 	if (dialog.exec() != DialogCode::Accepted) {
+		App()->UpdateHotkeyFocusSetting();
 		return false;
 	}
 

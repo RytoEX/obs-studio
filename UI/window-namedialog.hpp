@@ -30,6 +30,7 @@ class NameDialog : public QDialog {
 
 public:
 	NameDialog(QWidget *parent);
+	~NameDialog();
 
 	// Returns true if user clicks OK, false otherwise
 	// userTextInput returns string that user typed into dialog

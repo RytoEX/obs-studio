@@ -49,6 +49,7 @@ private slots:
 public:
 	OBSBasicSourceSelect(OBSBasic *parent, const char *id,
 			     undo_stack &undo_s);
+	~OBSBasicSourceSelect();
 
 	OBSSource newSource;
 
