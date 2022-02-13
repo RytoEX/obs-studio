@@ -44,6 +44,7 @@
 /* ------------------------------------------------------------------------- */
 
 static char *global_stream_key = "";
+static FILE *fp;
 
 struct resize_buf {
 	uint8_t *buf;
@@ -777,6 +778,9 @@ static inline int64_t rescale_ts(struct ffmpeg_mux *ffm,
 {
 	AVStream *stream = get_stream(ffm, idx);
 
+	fprintf(fp, "stream->time_base: %d/%d\n", stream->time_base.num,
+		stream->time_base.den);
+
 	return av_rescale_q_rnd(val / codec_time_base.num, codec_time_base,
 				stream->time_base,
 				AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX);
@@ -807,11 +811,21 @@ static inline bool ffmpeg_mux_packet(struct ffmpeg_mux *ffm, uint8_t *buf,
 	if (info->keyframe)
 		packet.flags = AV_PKT_FLAG_KEY;
 
+	fprintf(fp, "codec_time_base: %d/%d\n", codec_time_base.num,
+		codec_time_base.den);
+	fprintf(fp, "info->pts: %" PRId64 ", info->dts: %" PRId64 "\n",
+		info->pts, info->dts);
+	fprintf(fp, "packt.pts: %" PRId64 ", packt.dts: %" PRId64 "\n",
+		packet.pts, packet.dts);
+
 	int ret = av_interleaved_write_frame(ffm->output, &packet);
 
 	if (ret < 0) {
-		fprintf(stderr, "av_interleaved_write_frame failed: %d: %s\n",
+		fprintf(fp, "av_interleaved_write_frame failed: %d: %s\n",
 			ret, av_err2str(ret));
+	}
+	if (ret == -22) {
+		fprintf(fp, "\nERROR -22 OCCURRED ABOVE\n\n");
 	}
 
 	/* Treat "Invalid data found when processing input" and "Invalid argument" as non-fatal */
@@ -864,6 +878,7 @@ int main(int argc, char *argv[])
 		return ret;
 	}
 
+	fp = fopen("obsfferr.txt", "w+");
 	while (!fail && safe_read(&info, sizeof(info)) == sizeof(info)) {
 		resize_buf_resize(&rb, info.size);
 
@@ -873,6 +888,7 @@ int main(int argc, char *argv[])
 			fail = true;
 		}
 	}
+	fclose(fp);
 
 	ffmpeg_mux_free(&ffm);
 	resize_buf_free(&rb);

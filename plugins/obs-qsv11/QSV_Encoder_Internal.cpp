@@ -210,6 +210,16 @@ bool QSV_Encoder_Internal::InitParams(qsv_param_t *pParams)
 	m_mfxEncParams.mfx.FrameInfo.CropW = pParams->nWidth;
 	m_mfxEncParams.mfx.FrameInfo.CropH = pParams->nHeight;
 	m_mfxEncParams.mfx.GopRefDist = pParams->nbFrames + 1;
+	info("pParams->nbframes: %u\n"
+	     "GopRefDist: %u\n"
+	     "EncodedOrder: %u",
+	     pParams->nbFrames, m_mfxEncParams.mfx.GopRefDist,
+	     m_mfxEncParams.mfx.EncodedOrder);
+	if (!m_mfxEncParams.mfx.EncodedOrder) {
+		info("push_back timestamps");
+	} else {
+		info("PreserveTimeStamp");
+	}
 
 	enum qsv_cpu_platform qsv_platform = qsv_get_cpu_platform();
 	if ((qsv_platform >= QSV_CPU_PLATFORM_ICL) &&
@@ -569,6 +579,7 @@ mfxStatus QSV_Encoder_Internal::Encode(uint64_t ts, uint8_t *pDataY,
 	sts = LoadNV12(pSurface, pDataY, pDataUV, strideY, strideUV);
 	MSDK_CHECK_RESULT(sts, MFX_ERR_NONE, sts);
 	pSurface->Data.TimeStamp = ts;
+	info("pSurface->Data.TimeStamp: %llu", pSurface->Data.TimeStamp);
 
 	if (m_bUseD3D11 || m_bD3D9HACK) {
 		sts = m_mfxAllocator.Unlock(m_mfxAllocator.pthis,
