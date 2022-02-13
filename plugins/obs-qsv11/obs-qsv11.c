@@ -925,6 +925,15 @@ static void parse_packet(struct obs_qsv *obsqsv, struct encoder_packet *packet,
 	     packet->dts);
 #endif
 
+	// comment/ifdef this out if you want to see the original behavior
+	// and get broken file due to bad DTS
+#if true
+	if (packet->dts == 3002) {
+		info("manually adjusting dts 3002 to 3003");
+		packet->dts = 3003;
+	}
+#endif
+
 	*received_packet = true;
 	pBS->DataLength = 0;
 
