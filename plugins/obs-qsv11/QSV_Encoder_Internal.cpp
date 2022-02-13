@@ -212,9 +212,11 @@ bool QSV_Encoder_Internal::InitParams(qsv_param_t *pParams)
 	m_mfxEncParams.mfx.GopRefDist = pParams->nbFrames + 1;
 	info("pParams->nbframes: %u\n"
 	     "GopRefDist: %u\n"
-	     "EncodedOrder: %u",
+	     "EncodedOrder: %u\n"
+	     "DecodedOrder: %u\n",
 	     pParams->nbFrames, m_mfxEncParams.mfx.GopRefDist,
-	     m_mfxEncParams.mfx.EncodedOrder);
+	     m_mfxEncParams.mfx.EncodedOrder,
+	     m_mfxEncParams.mfx.DecodedOrder);
 	if (!m_mfxEncParams.mfx.EncodedOrder) {
 		info("push_back timestamps");
 	} else {
