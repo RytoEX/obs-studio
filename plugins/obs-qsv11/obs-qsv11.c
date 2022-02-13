@@ -887,34 +887,42 @@ static void parse_packet(struct obs_qsv *obsqsv, struct encoder_packet *packet,
 
 	/* ------------------------------------ */
 
-	//bool iFrame = pBS->FrameType & MFX_FRAMETYPE_I;
-	//bool bFrame = pBS->FrameType & MFX_FRAMETYPE_B;
+	bool iFrame = pBS->FrameType & MFX_FRAMETYPE_I;
+	bool bFrame = pBS->FrameType & MFX_FRAMETYPE_B;
 	bool pFrame = pBS->FrameType & MFX_FRAMETYPE_P;
 	//int iType = iFrame ? 0 : (bFrame ? 1 : (pFrame ? 2 : -1));
+	char *iType = iFrame ? "I" : (bFrame ? "B" : (pFrame ? "P" : "?"));
 	//int64_t interval = obsqsv->params.nbFrames + 1;
 
 	// In case MSDK doesn't support automatic DecodeTimeStamp, do manual
 	// calculation
 	if (g_pts2dtsShift >= 0) {
 		if (g_bFirst) {
+			info("parse_packet: g_bFirst");
 			packet->dts = packet->pts - 3 * obsqsv->params.nFpsDen;
 		} else if (pFrame) {
+			info("parse_packet: pFrame");
 			packet->dts = packet->pts - 10 * obsqsv->params.nFpsDen;
 			g_prevDts = packet->dts;
 		} else {
+			info("parse_packet: g_pts2dtsShift else");
 			packet->dts = g_prevDts + obsqsv->params.nFpsDen;
 			g_prevDts = packet->dts;
 		}
 	} else {
+		//info("parse_packet: else");
 		packet->dts = pBS->DecodeTimeStamp * fps_num / 90000;
 	}
 
-#if 0
+#if 1
 	info("parse packet:\n"
-		"\tFrameType: %d\n"
-		"\tpts:       %d\n"
-		"\tdts:       %d",
-		iType, packet->pts, packet->dts);
+	     "\tTimeStamp:       %llu\n"
+	     "\tDecodeTimeStamp: %lld\n"
+	     "\tFrameType:       %s\n"
+	     "\tpts:             %d\n"
+	     "\tdts:             %d\n",
+	     pBS->TimeStamp, pBS->DecodeTimeStamp, iType, packet->pts,
+	     packet->dts);
 #endif
 
 	*received_packet = true;
@@ -941,6 +949,8 @@ static bool obs_qsv_encode(void *data, struct encoder_frame *frame,
 	int ret;
 
 	mfxU64 qsvPTS = frame->pts * 90000 / voi->fps_num;
+	info("frame->pts: %lld\n"
+	     "qsvPTS: %llu", frame->pts, qsvPTS);
 
 	// FIXME: remove null check from the top of this function
 	// if we actually do expect null frames to complete output.
