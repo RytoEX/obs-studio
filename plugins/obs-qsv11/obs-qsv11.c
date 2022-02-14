@@ -105,6 +105,7 @@ static unsigned short g_verMinor;
 static int64_t g_pts2dtsShift;
 static int64_t g_prevDts;
 static bool g_bFirst;
+static bool g_NeedDtsFix;
 
 static const char *obs_qsv_getname(void *type_data)
 {
@@ -652,7 +653,7 @@ static void *obs_qsv_create(obs_data_t *settings, obs_encoder_t *encoder)
 
 		blog(LOG_INFO,
 		     "\tinterval:       %d\n"
-		     "\tGopPictSize:    %d\n"
+		     "\tGopPicSize:    %d\n"
 		     "\tg_pts2dtsShift: %d",
 		     interval, GopPicSize, g_pts2dtsShift);
 	} else
@@ -666,6 +667,7 @@ static void *obs_qsv_create(obs_data_t *settings, obs_encoder_t *encoder)
 	obsqsv->performance_token = os_request_high_performance("qsv encoding");
 
 	g_bFirst = true;
+	g_NeedDtsFix = true;
 
 	return obsqsv;
 }
@@ -928,10 +930,28 @@ static void parse_packet(struct obs_qsv *obsqsv, struct encoder_packet *packet,
 	// comment/ifdef this out if you want to see the original behavior
 	// and get broken file due to bad DTS
 #if true
+	if (g_NeedDtsFix) {
+		if (packet->dts % obsqsv->params.nFpsDen != 0) {
+			int64_t old_dts = packet->dts;
+			int64_t offset = obsqsv->params.nFpsDen - (
+				packet->dts % obsqsv->params.nFpsDen);
+			packet->dts += offset;
+			info("info\n"
+			     "old_dts: %lld\n"
+			     "offset:  %lld\n"
+			     "fps_den: %u\n",
+			     old_dts, offset, obsqsv->params.nFpsDen);
+			info("manually adjusted dts from %lld to %lld", old_dts,
+			     packet->dts);
+			g_NeedDtsFix = false;
+		}
+	}
+	/*
 	if (packet->dts == 3002) {
 		info("manually adjusting dts 3002 to 3003");
 		packet->dts = 3003;
 	}
+	*/
 #endif
 
 	*received_packet = true;
