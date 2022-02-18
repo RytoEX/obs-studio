@@ -660,16 +660,66 @@ static bool parse_sample(struct vt_h264_encoder *enc, CMSampleBufferRef buffer,
 	CMTime pts = CMSampleBufferGetPresentationTimeStamp(buffer);
 	CMTime dts = CMSampleBufferGetDecodeTimeStamp(buffer);
 
+	VT_LOG(LOG_INFO, "parse_sample: CMSampleBufferGet PTS/DTS");
+	CFStringRef cfs_pts = CMTimeCopyDescription(NULL, pts);
+	char *log_pts = NULL;
+	log_pts = cfstr_copy_cstr(cfs_pts, kCFStringEncodingUTF8);
+	if (log_pts) {
+		VT_LOG(LOG_INFO, "pts: %s", log_pts);
+	}
+	bfree(log_pts);
+	CFRelease(cfs_pts);
+
+	CFStringRef cfs_dts = CMTimeCopyDescription(NULL, dts);
+	char *log_dts = NULL;
+	log_dts = cfstr_copy_cstr(cfs_dts, kCFStringEncodingUTF8);
+	if (log_dts) {
+		VT_LOG(LOG_INFO, "dts: %s", log_dts);
+	}
+	bfree(log_dts);
+	CFRelease(cfs_dts);
+
 	pts = CMTimeMultiplyByFloat64(pts,
 				      ((Float64)enc->fps_num / enc->fps_den));
 	dts = CMTimeMultiplyByFloat64(dts,
 				      ((Float64)enc->fps_num / enc->fps_den));
 
-	if (CMTIME_IS_INVALID(dts))
+	VT_LOG(LOG_INFO, "CMTimeMultiplyByFloat64 PTS/DTS");
+	CFStringRef cfs_pts_mul = CMTimeCopyDescription(NULL, pts);
+	char *log_pts_mul = NULL;
+	log_pts_mul = cfstr_copy_cstr(cfs_pts_mul, kCFStringEncodingUTF8);
+	if (log_pts_mul) {
+		VT_LOG(LOG_INFO, "pts: %s", log_pts_mul);
+	}
+	bfree(log_pts_mul);
+	CFRelease(cfs_pts_mul);
+
+	CFStringRef cfs_dts_mul = CMTimeCopyDescription(NULL, dts);
+	char *log_dts_mul = NULL;
+	log_dts_mul = cfstr_copy_cstr(cfs_dts_mul, kCFStringEncodingUTF8);
+	if (log_dts_mul) {
+		VT_LOG(LOG_INFO, "dts: %s", log_dts_mul);
+	}
+	bfree(log_dts_mul);
+	CFRelease(cfs_dts_mul);
+
+	if (CMTIME_IS_INVALID(dts)) {
+		VT_LOG(LOG_INFO, "CMTime is invalid, set dts to pts");
 		dts = pts;
-	// imitate x264's negative dts when bframes might have pts < dts
-	else if (enc->bframes)
+	} else if (enc->bframes) {
+		// imitate x264's negative dts when bframes might have pts < dts
+		VT_LOG(LOG_INFO, "subtract off from dts");
 		dts = CMTimeSubtract(dts, off);
+	}
+
+	CFStringRef cfs_dts_sub = CMTimeCopyDescription(NULL, dts);
+	char *log_dts_sub = NULL;
+	log_dts_sub = cfstr_copy_cstr(cfs_dts_sub, kCFStringEncodingUTF8);
+	if (log_dts_sub) {
+		VT_LOG(LOG_INFO, "dts: %s", log_dts_sub);
+	}
+	bfree(log_dts_sub);
+	CFRelease(cfs_dts_sub);
 
 	bool keyframe = is_sample_keyframe(buffer);
 
@@ -690,6 +740,9 @@ static bool parse_sample(struct vt_h264_encoder *enc, CMSampleBufferRef buffer,
 	packet->data = enc->packet_data.array;
 	packet->size = enc->packet_data.num;
 	packet->keyframe = keyframe;
+
+	VT_LOG(LOG_INFO, "packet->pts: %lld; packet->dts: %lld",
+		packet->pts, packet->dts);
 
 	// VideoToolbox produces packets with priority lower than the RTMP code
 	// expects, which causes it to be unable to recover from frame drops.
@@ -773,6 +826,33 @@ static bool vt_h264_encode(void *data, struct encoder_frame *frame,
 	CMTime dur = CMTimeMake(enc->fps_den, enc->fps_num);
 	CMTime off = CMTimeMultiply(dur, 2);
 	CMTime pts = CMTimeMultiply(dur, frame->pts);
+
+	CFStringRef cfs_dur = CMTimeCopyDescription(NULL, dur);
+	char *log_dur = NULL;
+	log_dur = cfstr_copy_cstr(cfs_dur, kCFStringEncodingUTF8);
+	if (log_dur) {
+		VT_LOG(LOG_INFO, "dur: %s", log_dur);
+	}
+	bfree(log_dur);
+	CFRelease(cfs_dur);
+
+	CFStringRef cfs_off = CMTimeCopyDescription(NULL, off);
+	char *log_off = NULL;
+	log_off = cfstr_copy_cstr(cfs_off, kCFStringEncodingUTF8);
+	if (log_off) {
+		VT_LOG(LOG_INFO, "off: %s", log_off);
+	}
+	bfree(log_off);
+	CFRelease(cfs_off);
+
+	CFStringRef cfs_pts = CMTimeCopyDescription(NULL, pts);
+	char *log_pts = NULL;
+	log_pts = cfstr_copy_cstr(cfs_pts, kCFStringEncodingUTF8);
+	if (log_pts) {
+		VT_LOG(LOG_INFO, "pts: %s", log_pts);
+	}
+	bfree(log_pts);
+	CFRelease(cfs_pts);
 
 	CVPixelBufferRef pixbuf = NULL;
 

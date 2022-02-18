@@ -8,6 +8,7 @@ on:
       - master
       - 'release/**'
       - qsv-debug
+      - debug-mac-vth264
     tags:
       - '*'
   pull_request:
