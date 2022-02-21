@@ -845,7 +845,8 @@ static void parse_packet(struct obs_qsv *obsqsv, struct encoder_packet *packet,
 	packet->data = obsqsv->packet_data.array;
 	packet->size = obsqsv->packet_data.num;
 	packet->type = OBS_ENCODER_VIDEO;
-	packet->pts = pBS->TimeStamp * fps_num / 90000;
+	packet->pts = round((float)pBS->TimeStamp * fps_num / 90000);
+	//packet->pts = pBS->TimeStamp * fps_num / 90000;
 	packet->keyframe = (pBS->FrameType & MFX_FRAMETYPE_IDR);
 
 	uint16_t frameType = pBS->FrameType;
@@ -911,7 +912,7 @@ static void parse_packet(struct obs_qsv *obsqsv, struct encoder_packet *packet,
 		}
 	} else {
 		//info("parse_packet: else");
-		packet->dts = pBS->DecodeTimeStamp * fps_num / 90000;
+		packet->dts = round((float)pBS->DecodeTimeStamp * fps_num / 90000);
 	}
 
 #if 1
@@ -928,23 +929,8 @@ static void parse_packet(struct obs_qsv *obsqsv, struct encoder_packet *packet,
 	// comment/ifdef this out if you want to see the original behavior
 	// and get broken file due to bad DTS
 #if true
-	// pts also end up broken because of float to int truncation
-	int64_t pts_offset_mod = packet->pts % obsqsv->params.nFpsDen;
-	if (pts_offset_mod != 0) {
-		int64_t old_pts = packet->pts;
-		int64_t pts_offset = obsqsv->params.nFpsDen - pts_offset_mod;
-		packet->pts += pts_offset;
-		info("info\n"
-		     "old_pts: %lld\n"
-		     "new_pts: %lld\n"
-		     "pts_offset_mod: %lld\n"
-		     "pts_offset:  %lld\n"
-		     "fps_den: %u\n",
-		     old_pts, packet->pts, pts_offset_mod, pts_offset,
-		     obsqsv->params.nFpsDen);
-		info("manually adjusted pts from %lld to %lld", old_pts,
-		     packet->pts);
-	}
+	// DTS seem to need additional checks to ensure they are unique and
+	// monotonic.
 	int64_t dts_offset_mod = llabs(packet->dts) % obsqsv->params.nFpsDen;
 	if (dts_offset_mod != 0) {
 		int64_t old_dts = packet->dts;
