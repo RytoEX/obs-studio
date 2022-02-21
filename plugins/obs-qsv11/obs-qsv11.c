@@ -105,7 +105,6 @@ static unsigned short g_verMinor;
 static int64_t g_pts2dtsShift;
 static int64_t g_prevDts;
 static bool g_bFirst;
-static bool g_NeedDtsFix;
 
 static const char *obs_qsv_getname(void *type_data)
 {
@@ -667,7 +666,6 @@ static void *obs_qsv_create(obs_data_t *settings, obs_encoder_t *encoder)
 	obsqsv->performance_token = os_request_high_performance("qsv encoding");
 
 	g_bFirst = true;
-	g_NeedDtsFix = true;
 
 	return obsqsv;
 }
@@ -930,28 +928,43 @@ static void parse_packet(struct obs_qsv *obsqsv, struct encoder_packet *packet,
 	// comment/ifdef this out if you want to see the original behavior
 	// and get broken file due to bad DTS
 #if true
-	if (g_NeedDtsFix) {
-		if (packet->dts % obsqsv->params.nFpsDen != 0) {
-			int64_t old_dts = packet->dts;
-			int64_t offset = obsqsv->params.nFpsDen - (
-				packet->dts % obsqsv->params.nFpsDen);
-			packet->dts += offset;
-			info("info\n"
-			     "old_dts: %lld\n"
-			     "offset:  %lld\n"
-			     "fps_den: %u\n",
-			     old_dts, offset, obsqsv->params.nFpsDen);
-			info("manually adjusted dts from %lld to %lld", old_dts,
-			     packet->dts);
-			g_NeedDtsFix = false;
+	// pts also end up broken because of float to int truncation
+	int64_t pts_offset_mod = packet->pts % obsqsv->params.nFpsDen;
+	if (pts_offset_mod != 0) {
+		int64_t old_pts = packet->pts;
+		int64_t pts_offset = obsqsv->params.nFpsDen - pts_offset_mod;
+		packet->pts += pts_offset;
+		info("info\n"
+		     "old_pts: %lld\n"
+		     "new_pts: %lld\n"
+		     "pts_offset_mod: %lld\n"
+		     "pts_offset:  %lld\n"
+		     "fps_den: %u\n",
+		     old_pts, packet->pts, pts_offset_mod, pts_offset,
+		     obsqsv->params.nFpsDen);
+		info("manually adjusted pts from %lld to %lld", old_pts,
+		     packet->pts);
+	}
+	int64_t dts_offset_mod = llabs(packet->dts) % obsqsv->params.nFpsDen;
+	if (dts_offset_mod != 0) {
+		int64_t old_dts = packet->dts;
+		int64_t dts_offset = obsqsv->params.nFpsDen - dts_offset_mod;
+		if (packet->dts < 0) {
+			packet->dts -= dts_offset;
+		} else {
+			packet->dts += dts_offset;
 		}
+		info("info\n"
+		     "old_dts: %lld\n"
+		     "new_dts: %lld\n"
+		     "dts_offset_mod: %lld\n"
+		     "dts_offset:  %lld\n"
+		     "fps_den: %u\n",
+		     old_dts, packet->dts, dts_offset_mod, dts_offset,
+		     obsqsv->params.nFpsDen);
+		info("manually adjusted dts from %lld to %lld", old_dts,
+		     packet->dts);
 	}
-	/*
-	if (packet->dts == 3002) {
-		info("manually adjusting dts 3002 to 3003");
-		packet->dts = 3003;
-	}
-	*/
 #endif
 
 	*received_packet = true;
