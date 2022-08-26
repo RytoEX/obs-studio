@@ -70,7 +70,49 @@ void SceneTree::resizeEvent(QResizeEvent *event)
 {
 	if (gridMode) {
 		int scrollWid = verticalScrollBar()->sizeHint().width();
-		int h = visualItemRect(item(count() - 1)).bottom();
+		const int item_count = count(); // # of items in QListWidget
+		const int height_ = height(); // height of widget excluding any window frame
+		// QListWidgetItem QListWidget::item(int row)
+		// selects row-th item
+		// QRect QListWidget::visualItemRect(const QListWidgetItem *item)
+		// Returns the rectangle on the viewport occupied by the item at item.
+		// int QRect::bottom()
+		// Returns the y-coordinate of the rectangle's bottom edge.
+		// Note that for historical reasons this function returns top() + height() - 1;
+		// use y() + height() to retrieve the true y-coordinate.
+		// WAIT.
+		// visualItemRect
+		// Returns the rectangle on THE VIEWPORT occupied by the item at item.
+		// what if it's not visible?
+		//
+		// the viewport's origin changes as you scroll
+		//
+		// visualItemRect returns the rectangle relative to current scroll position of the
+		// currently visible view of the QListWidget
+		// the further "out of view" the last QListWidgetItem is, the larger the value of h.
+		// the closer the last QListWidgetItem is to the top of the view of the QListWidget, the smaller the value of h.
+		//
+		// h is supposed to be the y coordinate of the bottom of the last item in the QListWidget
+		// this is used to check "is the bottom of the last widget below the height of the enclosing frame/widget"
+		// however, if scrolled to the bottom, this incorrectly asserts that
+		// "the bottom of the last widget is above the height of the enclosing frame/widget", so scrollbars are disabled
+		// this might be resolved by using y() + height() instead of bottom() ?
+		//
+		// when scrolled all the way to the bottom, the h < height() is true by 1 pixel
+		// thus, y() + height(), which should be 1 pixel larger than bottom(), should resolve this
+		const QRect lastitem = visualItemRect(item(count() - 1));
+		//int h = visualItemRect(item(count() - 1)).bottom();
+		int h = lastitem.y() + lastitem.height();
+		int lastY = lastitem.y();
+		int lastHeight = lastitem.height();
+		int h2 = lastY + lastHeight;
+		/*
+		blog(LOG_INFO, "resize h: %d", h);
+		blog(LOG_INFO, "resize height: %d", height_);
+		blog(LOG_INFO, "resize lastY: %d", lastY);
+		blog(LOG_INFO, "resize lastHeight: %d", lastHeight);
+		blog(LOG_INFO, "resize h2: %d", h2);
+		*/
 
 		if (h < height()) {
 			setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -113,7 +155,11 @@ void SceneTree::dropEvent(QDropEvent *event)
 
 	if (gridMode) {
 		int scrollWid = verticalScrollBar()->sizeHint().width();
-		int h = visualItemRect(item(count() - 1)).bottom();
+		const QRect firstItem = visualItemRect(item(0));
+		const QRect lastItem = visualItemRect(item(count() - 1));
+		//int h = visualItemRect(item(count() - 1)).bottom();
+		int h = lastItem.y() + lastItem.height();
+		const int firstItemY = abs(firstItem.y());
 
 		if (h < height()) {
 			setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -131,7 +177,7 @@ void SceneTree::dropEvent(QDropEvent *event)
 #endif
 
 		int x = (float)point.x() / wid * ceil(wid / maxWidth);
-		int y = point.y() / itemHeight;
+		int y = (point.y() + firstItemY) / itemHeight;
 
 		int r = x + y * ceil(wid / maxWidth);
 
@@ -142,6 +188,11 @@ void SceneTree::dropEvent(QDropEvent *event)
 	}
 
 	QListWidget::dropEvent(event);
+	//RepositionGrid(); // doesn't work
+	//resize(size()); // doesn't work
+	// works, but causes new and exciting quirks with scrollbars and scrolling
+	QResizeEvent resEvent(size(), size());
+	SceneTree::resizeEvent(&resEvent);
 
 	QTimer::singleShot(100, [this]() { emit scenesReordered(); });
 }
@@ -149,7 +200,15 @@ void SceneTree::dropEvent(QDropEvent *event)
 void SceneTree::RepositionGrid(QDragMoveEvent *event)
 {
 	int scrollWid = verticalScrollBar()->sizeHint().width();
-	int h = visualItemRect(item(count() - 1)).bottom();
+	const QRect firstItem = visualItemRect(item(0));
+	const QRect lastItem = visualItemRect(item(count() - 1));
+	//int h = visualItemRect(item(count() - 1)).bottom();
+	int h = lastItem.y() + lastItem.height();
+	const int firstItemY = abs(firstItem.y());
+	const int height_ = height();
+	blog(LOG_INFO, "repgrid h: %d", h);
+	blog(LOG_INFO, "repgrid height: %d", height_);
+	blog(LOG_INFO, "repgrid firstItemY: %d", firstItemY);
 
 	if (h < height()) {
 		setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -167,14 +226,24 @@ void SceneTree::RepositionGrid(QDragMoveEvent *event)
 		QPoint point = event->pos();
 #endif
 
+		// x/y coords are relative to viewport's scrolled origin, not widget's
+		// true origin
+		// x is probably always okay
+		// y needs to be adjusted for scrolling
 		int x = (float)point.x() / wid * ceil(wid / maxWidth);
-		int y = point.y() / itemHeight;
+		int y = (point.y() + firstItemY) / itemHeight;
 
 		int r = x + y * ceil(wid / maxWidth);
 		int orig = selectedIndexes()[0].row();
 
+		blog(LOG_INFO, "repgrid x: %d", x);
+		blog(LOG_INFO, "repgrid y: %d", y);
+		blog(LOG_INFO, "repgrid r: %d", r);
+		blog(LOG_INFO, "repgrid o: %d", orig);
+
 		for (int i = 0; i < count(); i++) {
 			auto *wItem = item(i);
+			blog(LOG_INFO, "repgrid i: %d", i);
 
 			if (wItem->isSelected())
 				continue;
@@ -187,7 +256,19 @@ void SceneTree::RepositionGrid(QDragMoveEvent *event)
 
 			int xPos = (i + off) % (int)ceil(wid / maxWidth);
 			int yPos = (i + off) / (int)ceil(wid / maxWidth);
-			QSize g = gridSize();
+			QSize g = gridSize(); // gridSize() is the size of the grid spacing (cell size)
+			int gw = g.width();
+			int gh = g.height();
+
+			//*
+			//blog(LOG_INFO, "repgrid i: %d", i);
+			blog(LOG_INFO, "visrectbottom: %d", h);
+			blog(LOG_INFO, "offset: %d", off);
+			blog(LOG_INFO, "xPos: %d", xPos);
+			blog(LOG_INFO, "yPos: %d", yPos);
+			blog(LOG_INFO, "gw: %d", gw);
+			blog(LOG_INFO, "gh: %d", gh);
+			//*/
 
 			QPoint position(xPos * g.width(), yPos * g.height());
 			setPositionForIndex(position, index);
@@ -214,6 +295,7 @@ void SceneTree::RepositionGrid(QDragMoveEvent *event)
 void SceneTree::dragMoveEvent(QDragMoveEvent *event)
 {
 	if (gridMode) {
+		blog(LOG_INFO, "SceneTree dragMoveEvent gridMode");
 		RepositionGrid(event);
 	}
 
