@@ -31,6 +31,8 @@ private:
 
 protected:
 	virtual bool eventFilter(QObject *obj, QEvent *event) override;
+	virtual void currentChanged(const QModelIndex &current, const QModelIndex &previous) override;
+	virtual void mousePressEvent(QMouseEvent *event) override;
 	virtual void resizeEvent(QResizeEvent *event) override;
 	virtual void startDrag(Qt::DropActions supportedActions) override;
 	virtual void dropEvent(QDropEvent *event) override;

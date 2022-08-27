@@ -63,7 +63,42 @@ int SceneTree::GetGridItemHeight()
 
 bool SceneTree::eventFilter(QObject *obj, QEvent *event)
 {
+	QString name = obj->objectName();
+	const char *cName = name.toStdString().c_str();
+	QEvent::Type eType = event->type();
+	if (event->isSinglePointEvent()) {
+		//blog(LOG_INFO, "qobj: %s", cName);
+		//blog(LOG_INFO, "qeType: %d", eType);
+	}
 	return QObject::eventFilter(obj, event);
+}
+
+void SceneTree::currentChanged(const QModelIndex &current, const QModelIndex &previous)
+{
+	if (previous.isValid() && !current.isValid()) {
+		blog(LOG_INFO, "no new item selected");
+	}
+	const int prevIndex = previous.row();
+	const int currIndex = current.row();
+	blog(LOG_INFO, "prevIndex: %d", prevIndex);
+	blog(LOG_INFO, "currIndex: %d", currIndex);
+}
+
+void SceneTree::mousePressEvent(QMouseEvent *event)
+{
+	QEvent::Type eType = event->type();
+	blog(LOG_INFO, "qeType: %d", eType);
+
+	//const QList<QListWidgetItem *> items = selectedItems();
+	//const qsizetype numItems = items.count();
+	const QListWidgetItem *item = currentItem();
+
+	//blog(LOG_INFO, "numItems: %d", numItems);
+	if (item) {
+		//return;
+	}
+
+	QListWidget::mousePressEvent(event);
 }
 
 void SceneTree::resizeEvent(QResizeEvent *event)
