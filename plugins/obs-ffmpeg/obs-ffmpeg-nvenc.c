@@ -21,6 +21,7 @@
 #endif
 
 #include "obs-ffmpeg-video-encoders.h"
+#include "external/nvEncodeAPI.h"
 
 #define do_log(level, format, ...)                          \
 	blog(level, "[FFmpeg NVENC encoder: '%s'] " format, \
@@ -96,6 +97,115 @@ static void set_psycho_aq(struct nvenc_encoder *enc, bool psycho_aq)
 	av_opt_set_int(enc->ffve.context->priv_data, "temporal-aq", psycho_aq,
 		       0);
 }
+
+#define MAX_REGISTERED_FRAMES 64
+
+typedef struct NvencSurface {
+	NV_ENC_INPUT_PTR input_surface;
+	AVFrame *in_ref;
+	int reg_idx;
+	int width;
+	int height;
+	int pitch;
+
+	NV_ENC_OUTPUT_PTR output_surface;
+	NV_ENC_BUFFER_FORMAT format;
+} NvencSurface;
+
+typedef struct NvencDynLoadFunctions {
+	void *cuda_dl;
+	void *nvenc_dl;
+
+	NV_ENCODE_API_FUNCTION_LIST nvenc_funcs;
+	int nvenc_device_count;
+} NvencDynLoadFunctions;
+
+typedef struct NvencContext {
+	AVClass *avclass;
+
+	NvencDynLoadFunctions nvenc_dload_funcs;
+
+	NV_ENC_INITIALIZE_PARAMS init_encode_params;
+	NV_ENC_CONFIG encode_config;
+	void *cu_context;
+	void *cu_context_internal;
+	void *cu_stream;
+	void *d3d11_device;
+
+	AVFrame *frame;
+
+	int nb_surfaces;
+	NvencSurface *surfaces;
+
+	void *unused_surface_queue;
+	void *output_surface_queue;
+	void *output_surface_ready_queue;
+	void *timestamp_list;
+
+	NV_ENC_SEI_PAYLOAD *sei_data;
+	int sei_data_size;
+
+	struct {
+		void *ptr;
+		int ptr_index;
+		NV_ENC_REGISTERED_PTR regptr;
+		int mapped;
+		NV_ENC_MAP_INPUT_RESOURCE in_map;
+	} registered_frames[MAX_REGISTERED_FRAMES];
+	int nb_registered_frames;
+
+	/* the actual data pixel format, different from
+     * AVCodecContext.pix_fmt when using hwaccel frames on input */
+	enum AVPixelFormat data_pix_fmt;
+
+	int support_dyn_bitrate;
+
+	void *nvencoder;
+
+	int preset;
+	int profile;
+	int level;
+	int tier;
+	int rc;
+	int cbr;
+	int twopass;
+	int device;
+	int flags;
+	int async_depth;
+	int rc_lookahead;
+	int aq;
+	int no_scenecut;
+	int forced_idr;
+	int b_adapt;
+	int temporal_aq;
+	int zerolatency;
+	int nonref_p;
+	int strict_gop;
+	int aq_strength;
+	float quality;
+	int aud;
+	int bluray_compat;
+	int init_qp_p;
+	int init_qp_b;
+	int init_qp_i;
+	int cqp;
+	int qp_cb_offset;
+	int qp_cr_offset;
+	int weighted_pred;
+	int coder;
+	int b_ref_mode;
+	int a53_cc;
+	int s12m_tc;
+	int dpb_size;
+	int tuning_info;
+	int multipass;
+	int ldkfs;
+	int extra_sei;
+	int intra_refresh;
+	int single_slice_intra_refresh;
+	int constrained_encoding;
+	int udu_sei;
+} NvencContext;
 
 static bool nvenc_update(struct nvenc_encoder *enc, obs_data_t *settings,
 			 bool psycho_aq)
@@ -321,6 +431,29 @@ static void *nvenc_create_internal(obs_data_t *settings, obs_encoder_t *encoder,
 
 	if (!nvenc_update(enc, settings, psycho_aq))
 		goto fail;
+
+	NvencContext *ctx = enc->ffve.context->priv_data;
+	NV_ENC_CONFIG *config = &ctx->encode_config;
+	info("debug:\n"
+	     "\tticks_per_frame: %d\n"
+	     "\tframeIntervalP:  %d\n",
+	     enc->ffve.context->ticks_per_frame, config->frameIntervalP);
+
+	AVCodecContext *avctx = enc->ffve.context;
+	AVRational tpf = (AVRational){avctx->ticks_per_frame, 1};
+	AVRational reduced = av_mul_q(avctx->framerate, tpf);
+	AVRational inversed = av_inv_q(reduced);
+
+	info("debug:\n"
+	     "\tfps:      %d/%d\n"
+	     "\ttimebase: %d/%d\n"
+	     "\ttpf:      %d/%d\n"
+	     "\treduce:   %d/%d\n"
+	     "\tinverse:  %d/%d\n",
+	     avctx->framerate.num, avctx->framerate.den,
+	     avctx->time_base.num, avctx->time_base.den,
+	     tpf.num, tpf.den, reduced.num, reduced.den, inversed.num,
+	     inversed.den);
 
 	return enc;
 

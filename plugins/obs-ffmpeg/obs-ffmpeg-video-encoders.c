@@ -75,6 +75,8 @@ void ffmpeg_video_encoder_update(struct ffmpeg_video_encoder *enc, int bitrate,
 	enc->context->width = obs_encoder_get_width(enc->encoder);
 	enc->context->height = obs_encoder_get_height(enc->encoder);
 	enc->context->time_base = (AVRational){voi->fps_den, voi->fps_num};
+	enc->context->framerate = (AVRational){voi->fps_num, voi->fps_den};
+	enc->context->ticks_per_frame = voi->fps_den;
 	enc->context->pix_fmt = pix_fmt;
 	enc->context->color_range = info->range == VIDEO_RANGE_FULL
 					    ? AVCOL_RANGE_JPEG
@@ -237,6 +239,7 @@ bool ffmpeg_video_encode(struct ffmpeg_video_encoder *enc,
 	copy_data(enc->vframe, frame, enc->height, enc->context->pix_fmt);
 
 	enc->vframe->pts = frame->pts;
+	info("frame.pts: %lld\n", frame->pts);
 	ret = avcodec_send_frame(enc->context, enc->vframe);
 	if (ret == 0)
 		ret = avcodec_receive_packet(enc->context, &av_pkt);
@@ -266,6 +269,10 @@ bool ffmpeg_video_encode(struct ffmpeg_video_encoder *enc,
 		packet->type = OBS_ENCODER_VIDEO;
 		packet->keyframe = !!(av_pkt.flags & AV_PKT_FLAG_KEY);
 		*received_packet = true;
+
+		info("pkt.pts: %lld\n"
+		     "pkt.dts: %lld\n",
+		     packet->pts, packet->dts);
 
 		const int64_t recv_ts_nsec =
 			(int64_t)util_mul_div64(
