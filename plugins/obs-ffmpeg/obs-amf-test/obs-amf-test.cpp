@@ -15,12 +15,13 @@
 using namespace amf;
 
 #ifdef _MSC_VER
-extern "C" __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+//extern "C" __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #endif
 
 #define AMD_VENDOR_ID 0x1002
 
 struct adapter_caps {
+	std::wstring name;
 	bool is_amd = false;
 	bool supports_avc = false;
 	bool supports_hevc = false;
@@ -55,6 +56,8 @@ static bool get_adapter_caps(IDXGIFactory *factory, uint32_t adapter_idx)
 	if (desc.VendorId != AMD_VENDOR_ID)
 		return true;
 
+	printf("Description: %S\n", desc.Description);
+	caps.name = desc.Description;
 	caps.is_amd = true;
 
 	ComPtr<IDXGIOutput> output;
@@ -140,6 +143,7 @@ try {
 
 	for (auto &[idx, caps] : adapter_info) {
 		printf("[%u]\n", idx);
+		printf("name=%S\n", caps.name.c_str());
 		printf("is_amd=%s\n", caps.is_amd ? "true" : "false");
 		printf("supports_avc=%s\n",
 		       caps.supports_avc ? "true" : "false");
