@@ -462,6 +462,8 @@ static void create_video_stream(struct ffmpeg_mux *ffm)
 	context->extradata_size = ffm->video_header.size;
 	context->time_base =
 		(AVRational){ffm->params.fps_den, ffm->params.fps_num};
+	context->framerate =
+		(AVRational){ffm->params.fps_num, ffm->params.fps_den};
 
 	ffm->video_stream->time_base = context->time_base;
 #if LIBAVFORMAT_VERSION_MAJOR < 59

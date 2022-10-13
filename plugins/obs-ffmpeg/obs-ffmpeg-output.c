@@ -256,6 +256,7 @@ static bool create_video_stream(struct ffmpeg_data *data)
 	context->width = data->config.scale_width;
 	context->height = data->config.scale_height;
 	context->time_base = (AVRational){ovi.fps_den, ovi.fps_num};
+	context->framerate = (AVRational){ovi.fps_num, ovi.fps_den};
 	context->gop_size = data->config.gop_size;
 	context->pix_fmt = closest_format;
 	context->color_range = data->config.color_range;
@@ -269,6 +270,8 @@ static bool create_video_stream(struct ffmpeg_data *data)
 	context->thread_count = 0;
 
 	data->video->time_base = context->time_base;
+	data->video->avg_frame_rate = context->framerate;
+	//data->video->r_frame_rate = context->framerate;
 
 	if (data->output->oformat->flags & AVFMT_GLOBALHEADER)
 		context->flags |= CODEC_FLAG_GLOBAL_H;
