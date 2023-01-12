@@ -38,11 +38,12 @@ enum class Section : int {
 
 inline bool OBSBasicSettings::IsCustomService() const
 {
-	return ui->service->currentData().toInt() == (int)ListOpt::Custom;
+	return false;
 }
 
 void OBSBasicSettings::InitStreamPage()
 {
+#if 0
 	ui->connectAccount2->setVisible(false);
 	ui->disconnectAccount->setVisible(false);
 	ui->bandwidthTestEnable->setVisible(false);
@@ -101,10 +102,12 @@ void OBSBasicSettings::InitStreamPage()
 		SLOT(UpdateAdvNetworkGroup()));
 	connect(ui->customServer, SIGNAL(textChanged(const QString &)), this,
 		SLOT(UpdateAdvNetworkGroup()));
+#endif
 }
 
 void OBSBasicSettings::LoadStream1Settings()
 {
+#if 0
 	bool ignoreRecommended =
 		config_get_bool(main->Config(), "Stream1", "IgnoreRecommended");
 
@@ -203,10 +206,12 @@ void OBSBasicSettings::LoadStream1Settings()
 
 	QMetaObject::invokeMethod(this, "UpdateResFPSLimits",
 				  Qt::QueuedConnection);
+#endif
 }
 
 void OBSBasicSettings::SaveStream1Settings()
 {
+#if 0
 	bool customServer = IsCustomService();
 	const char *service_id = customServer ? "rtmp_custom" : "rtmp_common";
 
@@ -274,10 +279,12 @@ void OBSBasicSettings::SaveStream1Settings()
 	}
 
 	SaveCheckBox(ui->ignoreRecommended, "Stream1", "IgnoreRecommended");
+#endif
 }
 
 void OBSBasicSettings::UpdateMoreInfoLink()
 {
+#if 0
 	if (IsCustomService()) {
 		ui->moreInfoButton->hide();
 		return;
@@ -302,10 +309,12 @@ void OBSBasicSettings::UpdateMoreInfoLink()
 		ui->moreInfoButton->show();
 	}
 	obs_properties_destroy(props);
+#endif
 }
 
 void OBSBasicSettings::UpdateKeyLink()
 {
+#if 0
 	QString serviceName = ui->service->currentText();
 	QString customServer = ui->customServer->text().trimmed();
 	QString streamKeyLink;
@@ -341,10 +350,12 @@ void OBSBasicSettings::UpdateKeyLink()
 		ui->getStreamKeyButton->show();
 	}
 	obs_properties_destroy(props);
+#endif
 }
 
 void OBSBasicSettings::LoadServices(bool showAll)
 {
+#if 0
 	obs_properties_t *props = obs_get_service_properties("rtmp_common");
 
 	OBSDataAutoRelease settings = obs_data_create();
@@ -391,6 +402,7 @@ void OBSBasicSettings::LoadServices(bool showAll)
 	obs_properties_destroy(props);
 
 	ui->service->blockSignals(false);
+#endif
 }
 
 static inline bool is_auth_service(const std::string &service)
@@ -406,6 +418,7 @@ static inline bool is_external_oauth(const std::string &service)
 static void reset_service_ui_fields(Ui::OBSBasicSettings *ui,
 				    std::string &service, bool loading)
 {
+#if 0
 	bool external_oauth = is_external_oauth(service);
 	if (external_oauth) {
 		ui->streamKeyWidget->setVisible(false);
@@ -434,6 +447,7 @@ static void reset_service_ui_fields(Ui::OBSBasicSettings *ui,
 	ui->connectedAccountLabel->setVisible(false);
 	ui->connectedAccountText->setVisible(false);
 	ui->disconnectAccount->setVisible(false);
+#endif
 }
 
 #if YOUTUBE_ENABLED
@@ -455,11 +469,12 @@ static void get_yt_ch_title(Ui::OBSBasicSettings *ui)
 
 void OBSBasicSettings::UseStreamKeyAdvClicked()
 {
-	ui->streamKeyWidget->setVisible(true);
+	//ui->streamKeyWidget->setVisible(true);
 }
 
 void OBSBasicSettings::on_service_currentIndexChanged(int)
 {
+	/*
 	bool showMore = ui->service->currentData().toInt() ==
 			(int)ListOpt::ShowAll;
 	if (showMore)
@@ -513,10 +528,12 @@ void OBSBasicSettings::on_service_currentIndexChanged(int)
 		auth = main->auth;
 		OnAuthConnected();
 	}
+	*/
 }
 
 void OBSBasicSettings::UpdateServerList()
 {
+	/*
 	QString serviceName = ui->service->currentText();
 	bool showMore = ui->service->currentData().toInt() ==
 			(int)ListOpt::ShowAll;
@@ -549,10 +566,12 @@ void OBSBasicSettings::UpdateServerList()
 	}
 
 	obs_properties_destroy(props);
+	*/
 }
 
 void OBSBasicSettings::on_show_clicked()
 {
+	/*
 	if (ui->key->echoMode() == QLineEdit::Password) {
 		ui->key->setEchoMode(QLineEdit::Normal);
 		ui->show->setText(QTStr("Hide"));
@@ -560,10 +579,12 @@ void OBSBasicSettings::on_show_clicked()
 		ui->key->setEchoMode(QLineEdit::Password);
 		ui->show->setText(QTStr("Show"));
 	}
+	*/
 }
 
 void OBSBasicSettings::on_authPwShow_clicked()
 {
+	/*
 	if (ui->authPw->echoMode() == QLineEdit::Password) {
 		ui->authPw->setEchoMode(QLineEdit::Normal);
 		ui->authPwShow->setText(QTStr("Hide"));
@@ -571,15 +592,18 @@ void OBSBasicSettings::on_authPwShow_clicked()
 		ui->authPw->setEchoMode(QLineEdit::Password);
 		ui->authPwShow->setText(QTStr("Show"));
 	}
+	*/
 }
 
 OBSService OBSBasicSettings::SpawnTempService()
 {
-	bool custom = IsCustomService();
+	
+	bool custom = false;
 	const char *service_id = custom ? "rtmp_custom" : "rtmp_common";
 
 	OBSDataAutoRelease settings = obs_data_create();
 
+	/*
 	if (!custom) {
 		obs_data_set_string(settings, "service",
 				    QT_TO_UTF8(ui->service->currentText()));
@@ -592,7 +616,7 @@ OBSService OBSBasicSettings::SpawnTempService()
 			QT_TO_UTF8(ui->customServer->text().trimmed()));
 	}
 	obs_data_set_string(settings, "key", QT_TO_UTF8(ui->key->text()));
-
+	*/
 	OBSServiceAutoRelease newService = obs_service_create(
 		service_id, "temp_service", settings, nullptr);
 	return newService.Get();
@@ -600,6 +624,7 @@ OBSService OBSBasicSettings::SpawnTempService()
 
 void OBSBasicSettings::OnOAuthStreamKeyConnected()
 {
+	/*
 	OAuthStreamKey *a = reinterpret_cast<OAuthStreamKey *>(auth.get());
 
 	if (a) {
@@ -640,10 +665,12 @@ void OBSBasicSettings::OnOAuthStreamKeyConnected()
 	}
 
 	ui->streamStackWidget->setCurrentIndex((int)Section::StreamKey);
+	*/
 }
 
 void OBSBasicSettings::OnAuthConnected()
 {
+	/*
 	std::string service = QT_TO_UTF8(ui->service->currentText());
 	Auth::Type type = Auth::AuthType(service);
 
@@ -656,10 +683,12 @@ void OBSBasicSettings::OnAuthConnected()
 		stream1Changed = true;
 		EnableApplyButton(true);
 	}
+	*/
 }
 
 void OBSBasicSettings::on_connectAccount_clicked()
 {
+	/*
 	std::string service = QT_TO_UTF8(ui->service->currentText());
 
 	OAuth::DeleteCookies(service);
@@ -670,6 +699,7 @@ void OBSBasicSettings::on_connectAccount_clicked()
 
 		ui->useStreamKeyAdv->setVisible(false);
 	}
+	*/
 }
 
 #define DISCONNECT_COMFIRM_TITLE \
@@ -679,6 +709,7 @@ void OBSBasicSettings::on_connectAccount_clicked()
 
 void OBSBasicSettings::on_disconnectAccount_clicked()
 {
+	/*
 	QMessageBox::StandardButton button;
 
 	button = OBSMessageBox::question(this, QTStr(DISCONNECT_COMFIRM_TITLE),
@@ -709,15 +740,17 @@ void OBSBasicSettings::on_disconnectAccount_clicked()
 
 	ui->connectedAccountLabel->setVisible(false);
 	ui->connectedAccountText->setVisible(false);
+	*/
 }
 
 void OBSBasicSettings::on_useStreamKey_clicked()
 {
-	ui->streamStackWidget->setCurrentIndex((int)Section::StreamKey);
+	//ui->streamStackWidget->setCurrentIndex((int)Section::StreamKey);
 }
 
 void OBSBasicSettings::on_useAuth_toggled()
 {
+	/*
 	if (!IsCustomService())
 		return;
 
@@ -727,13 +760,15 @@ void OBSBasicSettings::on_useAuth_toggled()
 	ui->authUsername->setVisible(use_auth);
 	ui->authPwLabel->setVisible(use_auth);
 	ui->authPwWidget->setVisible(use_auth);
+	*/
 }
 
 void OBSBasicSettings::UpdateVodTrackSetting()
 {
+#if 0
 	bool enableForCustomServer = config_get_bool(
 		GetGlobalConfig(), "General", "EnableCustomServerVodTrack");
-	bool enableVodTrack = ui->service->currentText() == "Twitch";
+	bool enableVodTrack = true;
 	bool wasEnabled = !!vodTrackCheckbox;
 
 	if (enableForCustomServer && IsCustomService())
@@ -751,11 +786,11 @@ void OBSBasicSettings::UpdateVodTrackSetting()
 
 	/* -------------------------------------- */
 	/* simple output mode vod track widgets   */
-
-	bool simpleAdv = ui->simpleOutAdvanced->isChecked();
+	
+	//bool simpleAdv = ui->simpleOutAdvanced->isChecked();
 	bool vodTrackEnabled = config_get_bool(main->Config(), "SimpleOutput",
 					       "VodTrackEnabled");
-
+	/*
 	simpleVodTrack = new QCheckBox(this);
 	simpleVodTrack->setText(
 		QTStr("Basic.Settings.Output.Simple.TwitchVodTrack"));
@@ -771,7 +806,7 @@ void OBSBasicSettings::UpdateVodTrackSetting()
 		   SLOT(OutputsChanged()));
 	connect(ui->simpleOutAdvanced, SIGNAL(toggled(bool)),
 		simpleVodTrack.data(), SLOT(setVisible(bool)));
-
+	*/
 	/* -------------------------------------- */
 	/* advanced output mode vod track widgets */
 
@@ -813,6 +848,7 @@ void OBSBasicSettings::UpdateVodTrackSetting()
 	for (int i = 0; i < MAX_AUDIO_MIXES; i++) {
 		vodTrack[i]->setChecked((i + 1) == trackIndex);
 	}
+#endif
 }
 
 OBSService OBSBasicSettings::GetStream1Service()
@@ -823,6 +859,7 @@ OBSService OBSBasicSettings::GetStream1Service()
 
 void OBSBasicSettings::UpdateServiceRecommendations()
 {
+	/*
 	bool customServer = IsCustomService();
 	ui->ignoreRecommended->setVisible(!customServer);
 	ui->enforceSettingsLabel->setVisible(!customServer);
@@ -893,10 +930,12 @@ void OBSBasicSettings::UpdateServiceRecommendations()
 	}
 #endif
 	ui->enforceSettingsLabel->setText(text);
+	*/
 }
 
 void OBSBasicSettings::DisplayEnforceWarning(bool checked)
 {
+	/*
 	if (IsCustomService())
 		return;
 
@@ -922,11 +961,13 @@ void OBSBasicSettings::DisplayEnforceWarning(bool checked)
 	}
 
 	SimpleRecordingEncoderChanged();
+	*/
 }
 
 bool OBSBasicSettings::ResFPSValid(obs_service_resolution *res_list,
 				   size_t res_count, int max_fps)
 {
+	/*
 	if (!res_count && !max_fps)
 		return true;
 
@@ -961,6 +1002,7 @@ bool OBSBasicSettings::ResFPSValid(obs_service_resolution *res_list,
 			return false;
 	}
 
+	*/
 	return true;
 }
 
@@ -987,6 +1029,7 @@ extern void set_closest_res(int &cx, int &cy,
  */
 void OBSBasicSettings::UpdateResFPSLimits()
 {
+#if 0
 	if (loading)
 		return;
 
@@ -1188,10 +1231,13 @@ void OBSBasicSettings::UpdateResFPSLimits()
 
 	lastIgnoreRecommended = (int)ignoreRecommended;
 	lastServiceIdx = idx;
+#endif
 }
 
 bool OBSBasicSettings::IsServiceOutputHasNetworkFeatures()
 {
+	return true;
+	/*
 	if (IsCustomService())
 		return ui->customServer->text().startsWith("rtmp");
 
@@ -1205,6 +1251,7 @@ bool OBSBasicSettings::IsServiceOutputHasNetworkFeatures()
 		return true;
 
 	return false;
+	*/
 }
 
 static bool service_supports_codec(const char **codecs, const char *codec)
@@ -1236,6 +1283,8 @@ static inline bool service_supports_encoder(const char **codecs,
 
 bool OBSBasicSettings::ServiceAndCodecCompatible()
 {
+	return true;
+	/*
 	if (IsCustomService())
 		return true;
 	if (ui->service->currentData().toInt() == (int)ListOpt::ShowAll)
@@ -1258,6 +1307,7 @@ bool OBSBasicSettings::ServiceAndCodecCompatible()
 	}
 
 	return service_supports_codec(codecs, codec);
+	*/
 }
 
 /* we really need a way to find fallbacks in a less hardcoded way. maybe. */
@@ -1287,6 +1337,8 @@ static QString get_simple_fallback(const QString &enc)
 
 bool OBSBasicSettings::ServiceSupportsCodecCheck()
 {
+	return true;
+#if 0
 	if (ServiceAndCodecCompatible()) {
 		if (lastServiceIdx != ui->service->currentIndex())
 			ResetEncoders(true);
@@ -1335,6 +1387,7 @@ bool OBSBasicSettings::ServiceSupportsCodecCheck()
 
 	ResetEncoders(true);
 	return true;
+#endif
 }
 
 #define TEXT_USE_STREAM_ENC \
@@ -1342,21 +1395,21 @@ bool OBSBasicSettings::ServiceSupportsCodecCheck()
 
 void OBSBasicSettings::ResetEncoders(bool streamOnly)
 {
-	QString lastAdvEnc = ui->advOutEncoder->currentData().toString();
-	QString lastEnc = ui->simpleOutStrEncoder->currentData().toString();
+	//QString lastAdvEnc = ui->advOutEncoder->currentData().toString();
+	//QString lastEnc = ui->simpleOutStrEncoder->currentData().toString();
 	OBSService service = SpawnTempService();
 	const char **codecs = obs_service_get_supported_video_codecs(service);
 	const char *type;
 	size_t idx = 0;
 
-	QSignalBlocker s1(ui->simpleOutStrEncoder);
-	QSignalBlocker s2(ui->advOutEncoder);
+	//QSignalBlocker s1(ui->simpleOutStrEncoder);
+	//QSignalBlocker s2(ui->advOutEncoder);
 
 	/* ------------------------------------------------- */
 	/* clear encoder lists                               */
 
-	ui->simpleOutStrEncoder->clear();
-	ui->advOutEncoder->clear();
+	//ui->simpleOutStrEncoder->clear();
+	//ui->advOutEncoder->clear();
 
 	if (!streamOnly) {
 		ui->advOutRecEncoder->clear();
@@ -1394,15 +1447,17 @@ void OBSBasicSettings::ResetEncoders(bool streamOnly)
 		QString qName = QT_UTF8(name);
 		QString qType = QT_UTF8(type);
 
+		/*
 		if (is_streaming_codec && service_supports_codec(codecs, codec))
 			ui->advOutEncoder->addItem(qName, qType);
+		*/
 		if (!streamOnly)
 			ui->advOutRecEncoder->addItem(qName, qType);
 	}
 
 	/* ------------------------------------------------- */
 	/* load simple stream encoders                       */
-
+#if 0
 #define ENCODER_STR(str) QTStr("Basic.Settings.Output.Simple.Encoder." str)
 
 	ui->simpleOutStrEncoder->addItem(ENCODER_STR("Software"),
@@ -1467,10 +1522,11 @@ void OBSBasicSettings::ResetEncoders(bool streamOnly)
 #endif
 #endif
 #undef ENCODER_STR
+#endif
 
 	/* ------------------------------------------------- */
 	/* Find fallback encoders                            */
-
+	/*
 	if (!lastAdvEnc.isEmpty()) {
 		int idx = ui->advOutEncoder->findData(lastAdvEnc);
 		if (idx == -1) {
@@ -1483,7 +1539,8 @@ void OBSBasicSettings::ResetEncoders(bool streamOnly)
 		idx = ui->advOutEncoder->findData(lastAdvEnc);
 		ui->advOutEncoder->setCurrentIndex(idx);
 	}
-
+	*/
+	/*
 	if (!lastEnc.isEmpty()) {
 		int idx = ui->simpleOutStrEncoder->findData(lastEnc);
 		if (idx == -1) {
@@ -1496,4 +1553,5 @@ void OBSBasicSettings::ResetEncoders(bool streamOnly)
 		idx = ui->simpleOutStrEncoder->findData(lastEnc);
 		ui->simpleOutStrEncoder->setCurrentIndex(idx);
 	}
+	*/
 }

@@ -49,6 +49,7 @@ QColor OBSBasicSettings::GetColor(uint32_t colorVal, QString label)
 
 void OBSBasicSettings::LoadA11ySettings(bool presetChange)
 {
+	/*
 	config_t *config = GetGlobalConfig();
 
 	if (!presetChange) {
@@ -108,10 +109,12 @@ void OBSBasicSettings::LoadA11ySettings(bool presetChange)
 	}
 
 	UpdateA11yColors();
+	*/
 }
 
 void OBSBasicSettings::SaveA11ySettings()
 {
+	/*
 	config_t *config = GetGlobalConfig();
 
 	config_set_bool(config, "Accessibility", "OverrideColors",
@@ -132,6 +135,7 @@ void OBSBasicSettings::SaveA11ySettings()
 		       mixerRedActive);
 
 	main->RefreshVolumeColors();
+	*/
 }
 
 #define SetStyle(label, colorVal)                                             \
@@ -151,6 +155,7 @@ void OBSBasicSettings::SaveA11ySettings()
 
 void OBSBasicSettings::UpdateA11yColors()
 {
+	/*
 	QPalette palette;
 	QColor color;
 
@@ -163,6 +168,7 @@ void OBSBasicSettings::UpdateA11yColors()
 	SetStyle(ui->color7, mixerGreenActive);
 	SetStyle(ui->color8, mixerYellowActive);
 	SetStyle(ui->color9, mixerRedActive);
+	*/
 }
 
 void OBSBasicSettings::SetDefaultColors()
@@ -203,9 +209,11 @@ void OBSBasicSettings::ResetDefaultColors()
 
 void OBSBasicSettings::on_colorPreset_currentIndexChanged(int idx)
 {
+	/*
 	preset = idx == ui->colorPreset->count() - 1 ? COLOR_PRESET_CUSTOM
 						     : idx;
 	LoadA11ySettings(true);
+	*/
 }
 
 void OBSBasicSettings::on_choose1_clicked()
@@ -220,9 +228,11 @@ void OBSBasicSettings::on_choose1_clicked()
 	selectRed = color_to_int(color);
 
 	preset = COLOR_PRESET_CUSTOM;
+	/*
 	bool block = ui->colorPreset->blockSignals(true);
 	ui->colorPreset->setCurrentIndex(ui->colorPreset->count() - 1);
 	ui->colorPreset->blockSignals(block);
+	*/
 
 	A11yChanged();
 
@@ -241,9 +251,11 @@ void OBSBasicSettings::on_choose2_clicked()
 	selectGreen = color_to_int(color);
 
 	preset = COLOR_PRESET_CUSTOM;
+	/*
 	bool block = ui->colorPreset->blockSignals(true);
 	ui->colorPreset->setCurrentIndex(ui->colorPreset->count() - 1);
 	ui->colorPreset->blockSignals(block);
+	*/
 
 	A11yChanged();
 
@@ -262,9 +274,11 @@ void OBSBasicSettings::on_choose3_clicked()
 	selectBlue = color_to_int(color);
 
 	preset = COLOR_PRESET_CUSTOM;
+	/*
 	bool block = ui->colorPreset->blockSignals(true);
 	ui->colorPreset->setCurrentIndex(ui->colorPreset->count() - 1);
 	ui->colorPreset->blockSignals(block);
+	*/
 
 	A11yChanged();
 
@@ -283,9 +297,11 @@ void OBSBasicSettings::on_choose4_clicked()
 	mixerGreen = color_to_int(color);
 
 	preset = COLOR_PRESET_CUSTOM;
+	/*
 	bool block = ui->colorPreset->blockSignals(true);
 	ui->colorPreset->setCurrentIndex(ui->colorPreset->count() - 1);
 	ui->colorPreset->blockSignals(block);
+	*/
 
 	A11yChanged();
 
@@ -304,9 +320,11 @@ void OBSBasicSettings::on_choose5_clicked()
 	mixerYellow = color_to_int(color);
 
 	preset = COLOR_PRESET_CUSTOM;
+	/*
 	bool block = ui->colorPreset->blockSignals(true);
 	ui->colorPreset->setCurrentIndex(ui->colorPreset->count() - 1);
 	ui->colorPreset->blockSignals(block);
+	*/
 
 	A11yChanged();
 
@@ -325,9 +343,11 @@ void OBSBasicSettings::on_choose6_clicked()
 	mixerRed = color_to_int(color);
 
 	preset = COLOR_PRESET_CUSTOM;
+	/*
 	bool block = ui->colorPreset->blockSignals(true);
 	ui->colorPreset->setCurrentIndex(ui->colorPreset->count() - 1);
 	ui->colorPreset->blockSignals(block);
+	*/
 
 	A11yChanged();
 
@@ -346,9 +366,11 @@ void OBSBasicSettings::on_choose7_clicked()
 	mixerGreenActive = color_to_int(color);
 
 	preset = COLOR_PRESET_CUSTOM;
+	/*
 	bool block = ui->colorPreset->blockSignals(true);
 	ui->colorPreset->setCurrentIndex(ui->colorPreset->count() - 1);
 	ui->colorPreset->blockSignals(block);
+	*/
 
 	A11yChanged();
 
@@ -367,9 +389,11 @@ void OBSBasicSettings::on_choose8_clicked()
 	mixerYellowActive = color_to_int(color);
 
 	preset = COLOR_PRESET_CUSTOM;
+	/*
 	bool block = ui->colorPreset->blockSignals(true);
 	ui->colorPreset->setCurrentIndex(ui->colorPreset->count() - 1);
 	ui->colorPreset->blockSignals(block);
+	*/
 
 	A11yChanged();
 
@@ -388,9 +412,11 @@ void OBSBasicSettings::on_choose9_clicked()
 	mixerRedActive = color_to_int(color);
 
 	preset = COLOR_PRESET_CUSTOM;
+	/*
 	bool block = ui->colorPreset->blockSignals(true);
 	ui->colorPreset->setCurrentIndex(ui->colorPreset->count() - 1);
 	ui->colorPreset->blockSignals(block);
+	*/
 
 	A11yChanged();
 
