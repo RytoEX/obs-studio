@@ -43,12 +43,6 @@ mfxStatus Initialize(mfxVersion ver, mfxSession *pSession,
 		MFXSetConfigFilterProperty(
 			cfg, (const mfxU8 *)"mfxImplDescription.Impl", impl);
 
-		impl.Type = MFX_VARIANT_TYPE_PTR;
-		impl.Data.Ptr = (mfxHDL) "mfx-gen";
-		MFXSetConfigFilterProperty(
-			cfg, (const mfxU8 *)"mfxImplDescription.ImplName",
-			impl);
-
 		impl.Type = MFX_VARIANT_TYPE_U32;
 		impl.Data.U32 = INTEL_VENDOR_ID;
 		MFXSetConfigFilterProperty(
@@ -102,12 +96,6 @@ mfxStatus Initialize(mfxVersion ver, mfxSession *pSession,
 		MFXSetConfigFilterProperty(
 			cfg, (const mfxU8 *)"mfxImplDescription.Impl", impl);
 
-		impl.Type = MFX_VARIANT_TYPE_PTR;
-		impl.Data.Ptr = (mfxHDL) "mfx-gen";
-		MFXSetConfigFilterProperty(
-			cfg, (const mfxU8 *)"mfxImplDescription.ImplName",
-			impl);
-
 		impl.Type = MFX_VARIANT_TYPE_U32;
 		impl.Data.U32 = INTEL_VENDOR_ID;
 		MFXSetConfigFilterProperty(
@@ -159,12 +147,6 @@ mfxStatus Initialize(mfxVersion ver, mfxSession *pSession,
 		impl.Data.U32 = MFX_IMPL_TYPE_HARDWARE;
 		MFXSetConfigFilterProperty(
 			cfg, (const mfxU8 *)"mfxImplDescription.Impl", impl);
-
-		impl.Type = MFX_VARIANT_TYPE_PTR;
-		impl.Data.Ptr = (mfxHDL) "mfx-gen";
-		MFXSetConfigFilterProperty(
-			cfg, (const mfxU8 *)"mfxImplDescription.ImplName",
-			impl);
 
 		impl.Type = MFX_VARIANT_TYPE_U32;
 		impl.Data.U32 = INTEL_VENDOR_ID;

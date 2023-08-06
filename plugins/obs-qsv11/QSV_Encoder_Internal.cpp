@@ -94,11 +94,6 @@ QSV_Encoder_Internal::QSV_Encoder_Internal(mfxVersion &version, bool isDGPU)
 	MFXSetConfigFilterProperty(
 		cfg, (const mfxU8 *)"mfxImplDescription.Impl", tempImpl);
 
-	tempImpl.Type = MFX_VARIANT_TYPE_PTR;
-	tempImpl.Data.Ptr = (mfxHDL) "mfx-gen";
-	MFXSetConfigFilterProperty(
-		cfg, (const mfxU8 *)"mfxImplDescription.ImplName", tempImpl);
-
 	tempImpl.Type = MFX_VARIANT_TYPE_U32;
 	tempImpl.Data.U32 = INTEL_VENDOR_ID;
 	MFXSetConfigFilterProperty(
@@ -144,11 +139,6 @@ QSV_Encoder_Internal::QSV_Encoder_Internal(mfxVersion &version, bool isDGPU)
 	tempImpl.Data.U32 = MFX_IMPL_TYPE_HARDWARE;
 	MFXSetConfigFilterProperty(
 		cfg, (const mfxU8 *)"mfxImplDescription.Impl", tempImpl);
-
-	tempImpl.Type = MFX_VARIANT_TYPE_PTR;
-	tempImpl.Data.Ptr = (mfxHDL) "mfx-gen";
-	MFXSetConfigFilterProperty(
-		cfg, (const mfxU8 *)"mfxImplDescription.ImplName", tempImpl);
 
 	tempImpl.Type = MFX_VARIANT_TYPE_U32;
 	tempImpl.Data.U32 = INTEL_VENDOR_ID;
