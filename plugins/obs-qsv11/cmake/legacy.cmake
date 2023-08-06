@@ -47,6 +47,7 @@ if(OS_WINDOWS)
             device_directx9.h)
 
   target_link_libraries(obs-qsv11 PRIVATE d3d9 d3d11 dxva2 dxgi dxguid)
+  target_link_options(obs-qsv11 PRIVATE /IGNORE:4099)
 
   target_compile_definitions(obs-qsv11 PRIVATE UNICODE _UNICODE _CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_WARNINGS)
 elseif(OS_LINUX)

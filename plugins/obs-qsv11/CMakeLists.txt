@@ -52,6 +52,7 @@ if(OS_WINDOWS)
             device_directx9.h)
 
   target_link_libraries(obs-qsv11 PRIVATE d3d9 d3d11 dxva2 dxgi dxguid)
+  target_link_options(obs-qsv11 PRIVATE /IGNORE:4099)
 elseif(OS_LINUX)
   find_package(Libva REQUIRED)
 
