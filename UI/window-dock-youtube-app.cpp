@@ -31,7 +31,7 @@ static constexpr const char *BROADCAST_SELECTED = "BROADCAST_SELECTED";
 static constexpr const char *INGESTION_STARTED = "INGESTION_STARTED";
 static constexpr const char *INGESTION_STOPPED = "INGESTION_STOPPED";
 
-YouTubeAppDock::YouTubeAppDock(QString title)
+YouTubeAppDock::YouTubeAppDock(const QString &title)
 	: BrowserDock(title),
 	  dockBrowser(nullptr),
 	  cookieManager(nullptr)

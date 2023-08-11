@@ -21,7 +21,7 @@ private:
 	QHBoxLayout *chatLayout;
 
 public:
-	inline YoutubeChatDock(QString title) : BrowserDock(title) {}
+	inline YoutubeChatDock(const QString &title) : BrowserDock(title) {}
 	void SetWidget(QCefWidget *widget_);
 	void SetApiChatId(const std::string &id);
 

@@ -7,7 +7,7 @@ class OBSDock : public QDockWidget {
 
 public:
 	inline OBSDock(QWidget *parent = nullptr) : QDockWidget(parent) {}
-	inline OBSDock(const QString title, QWidget *parent = nullptr)
+	inline OBSDock(const QString &title, QWidget *parent = nullptr)
 		: QDockWidget(title, parent)
 	{
 	}

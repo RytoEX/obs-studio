@@ -10,7 +10,7 @@ extern QCefCookieManager *panel_cookies;
 class BrowserDock : public OBSDock {
 public:
 	inline BrowserDock() : OBSDock() { setAttribute(Qt::WA_NativeWindow); }
-	inline BrowserDock(QString title) : OBSDock(title)
+	inline BrowserDock(const QString &title) : OBSDock(title)
 	{
 		setAttribute(Qt::WA_NativeWindow);
 	}

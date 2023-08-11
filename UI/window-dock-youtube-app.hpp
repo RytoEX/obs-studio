@@ -10,7 +10,7 @@ class YouTubeAppDock : public BrowserDock {
 	Q_OBJECT
 
 public:
-	YouTubeAppDock(QString title);
+	YouTubeAppDock(const QString &title);
 	~YouTubeAppDock();
 
 	enum streaming_mode_t { YTSM_ACCOUNT, YTSM_STREAM_KEY };
