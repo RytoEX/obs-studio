@@ -6,6 +6,7 @@ on:
     branches:
       - master
       - 'release/**'
+      - capture-wav*
     tags: ['*']
   pull_request:
     paths-ignore: ['**.md']
