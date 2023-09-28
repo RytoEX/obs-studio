@@ -5477,6 +5477,24 @@ void OBSBasic::on_scenes_customContextMenuRequested(const QPoint &pos)
 		connect(pasteFilters, &QAction::triggered, this,
 			&OBSBasic::ScenePasteFilters);
 
+		QAction *renameScene = new QAction(QTStr("Rename"), this);
+		renameScene->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+		connect(renameScene, &QAction::triggered, this,
+			&OBSBasic::EditSceneName);
+
+		QAction *removeScene = new QAction(QTStr("Remove"), this);
+		removeScene->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+		connect(removeScene, &QAction::triggered, this,
+			&OBSBasic::RemoveSelectedScene);
+
+#ifdef __APPLE__
+		renameScene->setShortcut({Qt::Key_Return});
+		removeScene->setShortcuts({Qt::Key_Backspace});
+#else
+		renameScene->setShortcut({Qt::Key_F2});
+		removeScene->setShortcut({Qt::Key_Delete});
+#endif
+
 		popup.addSeparator();
 		popup.addAction(QTStr("Duplicate"), this,
 				&OBSBasic::DuplicateSelectedScene);
@@ -5484,7 +5502,7 @@ void OBSBasic::on_scenes_customContextMenuRequested(const QPoint &pos)
 		popup.addAction(pasteFilters);
 		popup.addSeparator();
 		popup.addAction(renameScene);
-		popup.addAction(ui->actionRemoveScene);
+		popup.addAction(removeScene);
 		popup.addSeparator();
 
 		order.addAction(QTStr("Basic.MainMenu.Edit.Order.MoveUp"), this,
