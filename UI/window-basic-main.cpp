@@ -5953,6 +5953,10 @@ void OBSBasic::CreateSourcePopupMenu(int idx, bool preview)
 	delete colorSelect;
 	delete deinterlaceMenu;
 
+	// copied from OBSBasic::on_scenes_customContextMenuRequested
+	QMenu order(QTStr("Basic.MainMenu.Edit.Order"), this);
+	QMenu transform(QTStr("Basic.MainMenu.Edit.Transform"), this);
+
 	if (preview) {
 		QAction *action = popup.addAction(
 			QTStr("Basic.Main.PreviewConextMenu.Enable"), this,
@@ -5999,15 +6003,57 @@ void OBSBasic::CreateSourcePopupMenu(int idx, bool preview)
 				&SourceTree::UngroupSelectedGroups);
 	}
 
-	popup.addSeparator();
-	popup.addAction(ui->actionCopySource);
-	popup.addAction(ui->actionPasteRef);
-	popup.addAction(ui->actionPasteDup);
-	popup.addSeparator();
+	// copied from OBSBasic::UpdateEditMenu
+	// if this approach is valid, we might need to centralize this
+	bool allowPastingDuplicate = !!clipboard.size();
+	for (size_t i = clipboard.size(); i > 0; i--) {
+		const size_t idx = i - 1;
+		OBSWeakSource &weak = clipboard[idx].weak_source;
+		if (obs_weak_source_expired(weak)) {
+			clipboard.erase(clipboard.begin() + idx);
+			continue;
+		}
+		OBSSourceAutoRelease strong =
+			obs_weak_source_get_source(weak.Get());
+		if (allowPastingDuplicate &&
+		    obs_source_get_output_flags(strong) &
+			    OBS_SOURCE_DO_NOT_DUPLICATE)
+			allowPastingDuplicate = false;
+	}
+
+	QAction *copySource = new QAction(QTStr("Copy"), this);
+	copySource->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	connect(copySource, &QAction::triggered, this,
+		&OBSBasic::on_actionCopySource_triggered);
+	QAction *pasteRef = new QAction(QTStr("PasteReference"), this);
+	pasteRef->setEnabled(!!clipboard.size());
+	pasteRef->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	connect(pasteRef, &QAction::triggered, this,
+		&OBSBasic::on_actionPasteRef_triggered);
+	QAction *pasteDup = new QAction(QTStr("PasteDuplicate"), this);
+	pasteDup->setEnabled(allowPastingDuplicate);
+	pasteDup->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	connect(pasteDup, &QAction::triggered, this,
+		&OBSBasic::on_actionPasteDup_triggered);
 
 	popup.addSeparator();
-	popup.addAction(ui->actionCopyFilters);
-	popup.addAction(ui->actionPasteFilters);
+	popup.addAction(copySource);
+	popup.addAction(pasteRef);
+	popup.addAction(pasteDup);
+	popup.addSeparator();
+
+	QAction *copyFilters = new QAction(QTStr("Copy.Filters"), this);
+	copyFilters->setEnabled(false);
+	connect(copyFilters, &QAction::triggered, this,
+		&OBSBasic::on_actionCopyFilters_triggered);
+	QAction *pasteFilters = new QAction(QTStr("Paste.Filters"), this);
+	pasteFilters->setEnabled(!obs_weak_source_expired(copyFiltersSource));
+	connect(pasteFilters, &QAction::triggered, this,
+		&OBSBasic::on_actionPasteFilters_triggered);
+
+	popup.addSeparator();
+	popup.addAction(copyFilters);
+	popup.addAction(pasteFilters);
 	popup.addSeparator();
 
 	if (idx != -1) {
@@ -6027,11 +6073,49 @@ void OBSBasic::CreateSourcePopupMenu(int idx, bool preview)
 		colorSelect = new ColorSelect(colorMenu);
 		popup.addMenu(AddBackgroundColorMenu(
 			colorMenu, colorWidgetAction, colorSelect, sceneItem));
+
+		QAction *renameSource = new QAction(QTStr("Rename"), this);
+		renameSource->setShortcutContext(
+			Qt::WidgetWithChildrenShortcut);
+		connect(renameSource, &QAction::triggered, this,
+			&OBSBasic::EditSceneItemName);
+		ui->sourcesDock->addAction(renameSource);
+
+		QAction *removeSource = new QAction(QTStr("Remove"), this);
+		removeSource->setShortcutContext(
+			Qt::WidgetWithChildrenShortcut);
+		connect(removeSource, &QAction::triggered, this,
+			&OBSBasic::on_actionRemoveSource_triggered);
+
+#ifdef __APPLE__
+		renameSource->setShortcut({Qt::Key_Return});
+		removeSource->setShortcuts({Qt::Key_Backspace});
+#else
+		renameSource->setShortcut({Qt::Key_F2});
+		removeSource->setShortcut({Qt::Key_Delete});
+#endif
+
 		popup.addAction(renameSource);
-		popup.addAction(ui->actionRemoveSource);
+		popup.addAction(removeSource);
 		popup.addSeparator();
 
-		popup.addMenu(ui->orderMenu);
+		// copied from OBSBasic::on_scenes_customContextMenuRequested
+		order.addAction(QTStr("Basic.MainMenu.Edit.Order.MoveUp"),
+				    this,
+				    &OBSBasic::on_actionSourceUp_triggered);
+		order.addAction(QTStr("Basic.MainMenu.Edit.Order.MoveDown"),
+				    this,
+				    &OBSBasic::on_actionSourceDown_triggered);
+		order.addSeparator();
+		order.addAction(
+			QTStr("Basic.MainMenu.Edit.Order.MoveToTop"), this,
+			&OBSBasic::on_actionMoveToTop_triggered);
+		order.addAction(
+			QTStr("Basic.MainMenu.Edit.Order.MoveToBottom"), this,
+			&OBSBasic::on_actionMoveToBottom_triggered);
+		popup.addMenu(&order);
+
+		QAction *orderAction = popup.addMenu(&order);
 
 		if (hasVideo)
 			popup.addMenu(ui->transformMenu);
