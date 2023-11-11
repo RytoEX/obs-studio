@@ -7,6 +7,10 @@
 #include <functional>
 #include <mutex>
 
+#include <TraceLoggingProvider.h>
+
+TRACELOGGING_DECLARE_PROVIDER(g_hOBSWASAPIProvider);
+
 typedef std::function<void(EDataFlow, ERole, LPCWSTR)>
 	WASAPINotifyDefaultDeviceChangedCallback;
 

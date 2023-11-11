@@ -4,6 +4,13 @@
 
 #include <util/windows/win-version.h>
 
+TRACELOGGING_DEFINE_PROVIDER(    // defines g_hOBSWASAPIProvider
+	g_hOBSWASAPIProvider,    // Name of the provider handle
+	"com.obsproject.Studio", // Human-readable name of the provider
+	// ETW Control GUID: {f3c6d1a1-9615-47a8-a366-761d7600663b}
+	(0xf3c6d1a1, 0x9615, 0x47a8, 0xa3, 0x66, 0x76, 0x1d, 0x76, 0x00, 0x66,
+	 0x3b));
+
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE("win-wasapi", "en-US")
 
@@ -58,6 +65,8 @@ bool obs_module_load(void)
 	notify->AddDefaultDeviceChangedCallback(
 		obs_current_module(), default_device_changed_callback);
 
+	TraceLoggingRegister(g_hOBSWASAPIProvider);
+
 	return true;
 }
 
@@ -67,6 +76,8 @@ void obs_module_unload(void)
 		delete notify;
 		notify = nullptr;
 	}
+
+	TraceLoggingUnregister(g_hOBSWASAPIProvider);
 }
 
 WASAPINotify *GetNotify()

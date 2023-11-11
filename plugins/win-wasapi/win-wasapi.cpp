@@ -14,6 +14,7 @@
 #include <util/threading.h>
 #include <util/util_uint64.h>
 
+#include <algorithm>
 #include <atomic>
 #include <cinttypes>
 
@@ -21,6 +22,7 @@
 #include <avrt.h>
 #include <RTWorkQ.h>
 #include <wrl/implements.h>
+#include <winmeta.h>
 
 using namespace std;
 
@@ -1090,6 +1092,14 @@ bool WASAPISource::ProcessCaptureData()
 				     " failed: %lX",
 				     res);
 			return false;
+		}
+		if (std::all_of(buffer, buffer + frames,
+				[](BYTE const byte) { return byte == 0; })) {
+			blog(LOG_ERROR, "[WASAPISource::ProcessCaptureData]"
+					" Silence detected!");
+			TraceLoggingWrite(
+				g_hOBSWASAPIProvider, "FoundSilentPacket",
+				TraceLoggingLevel(WINEVENT_LEVEL_WARNING));
 		}
 
 		if (flags & AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR) {
