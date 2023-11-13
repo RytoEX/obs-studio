@@ -1093,7 +1093,8 @@ bool WASAPISource::ProcessCaptureData()
 				     res);
 			return false;
 		}
-		if (std::all_of(buffer, buffer + frames,
+		uint32_t BufSize = get_audio_channels(speakers) * frames * 4;
+		if (std::all_of(buffer, buffer + BufSize,
 				[](BYTE const byte) { return byte == 0; })) {
 			blog(LOG_ERROR, "[WASAPISource::ProcessCaptureData]"
 					" Silence detected!");
