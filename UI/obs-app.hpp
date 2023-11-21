@@ -224,6 +224,7 @@ public:
 public slots:
 	void Exec(VoidFunc func);
 	void ProcessSigInt();
+	void aboutToQuit();
 
 signals:
 	void StyleChanged();

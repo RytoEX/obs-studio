@@ -1751,6 +1751,9 @@ bool OBSApp::OBSInit()
 	mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
 	connect(mainWindow, &OBSBasic::destroyed, this, &OBSApp::quit);
 
+	connect(this, &QCoreApplication::aboutToQuit, this,
+		&OBSApp::aboutToQuit);
+
 	mainWindow->OBSInit();
 
 	connect(this, &QGuiApplication::applicationStateChanged,
@@ -3270,6 +3273,12 @@ void OBSApp::ProcessSigInt(void)
 #endif
 }
 
+void OBSApp::aboutToQuit()
+{
+	blog(LOG_INFO, "OBSApp::aboutToQuit");
+	delete_safe_mode_sentinel();
+}
+
 int main(int argc, char *argv[])
 {
 #ifndef _WIN32
@@ -3476,7 +3485,6 @@ int main(int argc, char *argv[])
 	log_blocked_dlls();
 #endif
 
-	delete_safe_mode_sentinel();
 	blog(LOG_INFO, "Number of memory leaks: %ld", bnum_allocs());
 	base_set_log_handler(nullptr, nullptr);
 
