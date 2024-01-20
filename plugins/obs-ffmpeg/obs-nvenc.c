@@ -10,6 +10,8 @@
 #include <d3d11_1.h>
 #include <obs-hevc.h>
 
+#include <inttypes.h>
+
 /* ========================================================================= */
 /* a hack of the ages: nvenc backward compatibility                          */
 
@@ -378,6 +380,20 @@ static bool init_session(struct nvenc_data *enc)
 	params.deviceType = NV_ENC_DEVICE_TYPE_DIRECTX;
 	params.apiVersion = enc->needs_compat_ver ? NVENC_COMPAT_VER
 						  : NVENCAPI_VERSION;
+
+	const uint32_t nvenc_compat_ver = NVENC_COMPAT_VER;
+	const uint32_t nvencapi_ver = NVENCAPI_VERSION;
+
+	do_log(LOG_INFO,
+	       "enc->needs_compat_ver: %s\n"
+	       "NVENC_COMPAT_VER: %" PRIu32 "\n"
+	       "NVENCAPI_VERSION: %" PRIu32,
+	       enc->needs_compat_ver ? "true" : "false", nvenc_compat_ver,
+	       nvencapi_ver);
+	info("params:\n"
+	     "\tversion:    %" PRIu32 "\n"
+	     "\tapiVersion: %" PRIu32,
+	     params.version, params.apiVersion);
 
 	if (NV_FAILED(nv.nvEncOpenEncodeSessionEx(&params, &enc->session))) {
 		return false;
@@ -1114,6 +1130,17 @@ static void *nvenc_create_internal(enum codec_type codec, obs_data_t *settings,
 	enc->encoder = encoder;
 	enc->codec = codec;
 	enc->first_packet = true;
+
+	const uint32_t compat_ver = COMPATIBILITY_VERSION;
+	const uint32_t nvenc_compat_ver = NVENC_COMPAT_VER;
+	const uint32_t configured_nvenc_ver = CONFIGURED_NVENC_VERSION;
+	do_log(LOG_INFO,
+	       "get_nvenc_ver(): %" PRIu32 "\n"
+	       "COMPATIBILITY_VERSION: %" PRIu32 "\n"
+	       "NVENC_COMPAT_VER: %" PRIu32 "\n"
+	       "CONFIGURED_NVENC_VERSION: %" PRIu32,
+	       get_nvenc_ver(), compat_ver, nvenc_compat_ver,
+	       configured_nvenc_ver);
 
 	if (codec != CODEC_AV1 && get_nvenc_ver() < CONFIGURED_NVENC_VERSION) {
 		enc->needs_compat_ver = true;
