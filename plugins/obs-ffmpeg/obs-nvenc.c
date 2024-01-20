@@ -31,13 +31,19 @@
 					  : NVENCAPI_VERSION) | \
 	 ((ver) << 16) | (0x7 << 28))
 
+#define NV_ENCODE_API_FUNCTION_LIST_COMPAT_VER NVENCAPI_STRUCT_VERSION(2)
 #define NV_ENC_CONFIG_COMPAT_VER (NVENCAPI_STRUCT_VERSION(7) | (1 << 31))
+#define NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_COMPAT_VER NVENCAPI_STRUCT_VERSION(1)
+#define NV_ENC_INITIALIZE_PARAMS_COMPAT_VER \
+	(NVENCAPI_STRUCT_VERSION(5) | (1 << 31))
 #define NV_ENC_PIC_PARAMS_COMPAT_VER (NVENCAPI_STRUCT_VERSION(4) | (1 << 31))
 #define NV_ENC_LOCK_BITSTREAM_COMPAT_VER NVENCAPI_STRUCT_VERSION(1)
 #define NV_ENC_REGISTER_RESOURCE_COMPAT_VER NVENCAPI_STRUCT_VERSION(3)
 
 #define COMPATIBILITY_VERSION \
 	(NVENC_COMPAT_MAJOR_VER << 4 | NVENC_COMPAT_MINOR_VER)
+#define CONFIGURED_NVENC_VERSION \
+	(CONFIGURED_NVENC_MAJOR << 4 | CONFIGURED_NVENC_MINOR)
 
 /* ========================================================================= */
 
@@ -364,8 +370,10 @@ static bool init_d3d11(struct nvenc_data *enc, obs_data_t *settings)
 
 static bool init_session(struct nvenc_data *enc)
 {
-	NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS params = {
-		NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_VER};
+	uint32_t struct_ver = enc->needs_compat_ver
+			? NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_COMPAT_VER
+			: NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_VER;
+	NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS params = {struct_ver};
 	params.device = enc->device;
 	params.deviceType = NV_ENC_DEVICE_TYPE_DIRECTX;
 	params.apiVersion = enc->needs_compat_ver ? NVENC_COMPAT_VER
@@ -387,7 +395,9 @@ static void initialize_params(struct nvenc_data *enc, const GUID *nv_preset,
 
 	NV_ENC_INITIALIZE_PARAMS *params = &enc->params;
 	memset(params, 0, sizeof(*params));
-	params->version = NV_ENC_INITIALIZE_PARAMS_VER;
+	params->version = enc->needs_compat_ver
+				  ? NV_ENC_INITIALIZE_PARAMS_COMPAT_VER
+				  : NV_ENC_INITIALIZE_PARAMS_VER;
 	params->encodeGUID = enc->codec_guid;
 	params->presetGUID = *nv_preset;
 	params->encodeWidth = width;
@@ -1105,7 +1115,14 @@ static void *nvenc_create_internal(enum codec_type codec, obs_data_t *settings,
 	enc->codec = codec;
 	enc->first_packet = true;
 
-	NV_ENCODE_API_FUNCTION_LIST init = {NV_ENCODE_API_FUNCTION_LIST_VER};
+	if (codec != CODEC_AV1 && get_nvenc_ver() < CONFIGURED_NVENC_VERSION) {
+		enc->needs_compat_ver = true;
+	}
+
+	uint32_t struct_ver = enc->needs_compat_ver
+				      ? NV_ENCODE_API_FUNCTION_LIST_COMPAT_VER
+				      : NV_ENCODE_API_FUNCTION_LIST_VER;
+	NV_ENCODE_API_FUNCTION_LIST init = {struct_ver};
 
 	switch (enc->codec) {
 	case CODEC_H264:
@@ -1127,9 +1144,6 @@ static void *nvenc_create_internal(enum codec_type codec, obs_data_t *settings,
 	}
 	if (!init_d3d11(enc, settings)) {
 		goto fail;
-	}
-	if (get_nvenc_ver() == COMPATIBILITY_VERSION) {
-		enc->needs_compat_ver = true;
 	}
 	if (!init_session(enc)) {
 		goto fail;
