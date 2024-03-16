@@ -28,10 +28,10 @@ class PhysicalCamera : public IMFSourceReaderCallback {
 private:
 	long m_cRef = 1;
 	winrt::slim_mutex m_Lock;
-	wil::com_ptr_nothrow<IMFMediaSource> m_spDevSource = nullptr;
-	wil::com_ptr_nothrow<IMFSourceReader> m_spSourceReader = nullptr;
-	wil::com_ptr_nothrow<IMFDXGIDeviceManager> m_spDxgiDevManager = nullptr;
-	wil::com_ptr_nothrow<IMFExtendedCameraController> m_spExtController =
+	ComPtr<IMFMediaSource> m_spDevSource = nullptr;
+	ComPtr<IMFSourceReader> m_spSourceReader = nullptr;
+	ComPtr<IMFDXGIDeviceManager> m_spDxgiDevManager = nullptr;
+	ComPtr<IMFExtendedCameraController> m_spExtController =
 		nullptr;
 
 	MF_VideoDataCallback m_cbVideoData = nullptr;
@@ -51,9 +51,9 @@ private:
 	BYTE *m_pBufferArgbOut = nullptr;
 #endif
 
-	std::wstring m_wsSymbolicName
+	std::wstring m_wsSymbolicName;
 
-		DeviceControlChangeListener *m_pDevCtrlNotify = nullptr;
+	DeviceControlChangeListener *m_pDevCtrlNotify = nullptr;
 
 private:
 	HRESULT CreateSourceReader(IMFMediaSource *pSource,

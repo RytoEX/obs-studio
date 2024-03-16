@@ -50,7 +50,7 @@ DeviceControlChangeListener::HandleControlSet_ExtendedCameraControl(UINT32 id)
 	}
 
 	DWORD dwStreamIndex = KSCAMERA_EXTENDEDPROP_FILTERSCOPE;
-	wil::com_ptr<IMFExtendedCameraControl> spExtControl = nullptr;
+	ComPtr<IMFExtendedCameraControl> spExtControl = nullptr;
 	RETURN_IF_FAILED(m_spExtCamController->GetExtendedCameraControl(
 		dwStreamIndex, id, &spExtControl));
 
@@ -142,7 +142,7 @@ HRESULT DeviceControlChangeListener::Start(
 		}
 	}
 
-	wil::com_ptr_nothrow<IMFCameraControlMonitor> spMonitor;
+	ComPtr<IMFCameraControlMonitor> spMonitor;
 	RETURN_IF_FAILED(MFCreateCameraControlMonitor(devId, this, &spMonitor));
 	RETURN_IF_FAILED(spMonitor->AddControlSubscription(
 		KSPROPERTYSETID_ANYCAMERACONTROL, 0));

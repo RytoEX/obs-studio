@@ -7,10 +7,6 @@
 #include "winrt\Windows.Foundation.h"
 #include "winrt\Windows.ApplicationModel.h"
 
-#include <wil\cppwinrt.h> // must be before the first C++ WinRT header, ref:https://github.com/Microsoft/wil/wiki/Error-handling-helpers
-#include <wil\result.h>
-#include <wil\com.h>
-
 #include <Ks.h>
 #include <ksproxy.h>
 #include <ksmedia.h>

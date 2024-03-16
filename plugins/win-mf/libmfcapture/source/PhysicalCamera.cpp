@@ -70,8 +70,8 @@ public:
 	}
 
 private:
-	wil::com_ptr_nothrow<IMFMediaBuffer> m_spBuffer;
-	wil::com_ptr_nothrow<IMF2DBuffer> m_sp2DBuffer;
+	ComPtr<IMFMediaBuffer> m_spBuffer;
+	ComPtr<IMF2DBuffer> m_sp2DBuffer;
 
 	BOOL m_bLocked = FALSE;
 };
@@ -133,7 +133,7 @@ PhysicalCamera::CreateSourceReader(IMFMediaSource *pSource,
 	// Create attributes for source reader creation
 	UINT32 cInitialSize = 5;
 
-	wil::com_ptr_nothrow<IMFAttributes> spAttributes;
+	ComPtr<IMFAttributes> spAttributes;
 	RETURN_IF_FAILED(MFCreateAttributes(&spAttributes, cInitialSize));
 
 	if (pDxgiDevIManager) {
@@ -152,7 +152,7 @@ PhysicalCamera::CreateSourceReader(IMFMediaSource *pSource,
 
 	// Create source reader
 	RETURN_IF_FAILED(MFCreateSourceReaderFromMediaSource(
-		pSource, spAttributes.get(), ppSourceReader));
+		pSource, spAttributes.Get(), ppSourceReader));
 
 	printf("%s, End\n", __FUNCSIG__);
 	return hr;
@@ -167,7 +167,7 @@ HRESULT PhysicalCamera::Initialize(LPCWSTR pwszSymLink)
 	winrt::slim_lock_guard lock(m_Lock);
 
 	//  Create physical camera source
-	wil::com_ptr_nothrow<IMFAttributes> spDeviceAttributes;
+	ComPtr<IMFAttributes> spDeviceAttributes;
 	RETURN_IF_FAILED(MFCreateAttributes(&spDeviceAttributes, 3));
 	RETURN_IF_FAILED(spDeviceAttributes->SetGUID(
 		MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
@@ -177,9 +177,9 @@ HRESULT PhysicalCamera::Initialize(LPCWSTR pwszSymLink)
 		pwszSymLink));
 
 	RETURN_IF_FAILED(
-		MFCreateDeviceSource(spDeviceAttributes.get(), &m_spDevSource));
+		MFCreateDeviceSource(spDeviceAttributes.Get(), &m_spDevSource));
 
-	wil::com_ptr_nothrow<IMFGetService> spGetService = nullptr;
+	ComPtr<IMFGetService> spGetService = nullptr;
 	RETURN_IF_FAILED(m_spDevSource->QueryInterface(&spGetService));
 	RETURN_IF_FAILED(spGetService->GetService(
 		GUID_NULL, IID_PPV_ARGS(&m_spExtController)));
@@ -191,7 +191,7 @@ HRESULT PhysicalCamera::Initialize(LPCWSTR pwszSymLink)
 
 	/*hr = m_pDevCtrlNotify->Start(pwszSymLink, m_spExtController.get(),
 				 ControlNotification, &m_ctlDlg);*/
-	hr = m_pDevCtrlNotify->Start(pwszSymLink, m_spExtController.get());
+	hr = m_pDevCtrlNotify->Start(pwszSymLink, m_spExtController.Get());
 	if (FAILED(hr)) {
 		delete m_pDevCtrlNotify;
 		return hr;
@@ -219,7 +219,7 @@ HRESULT PhysicalCamera::Uninitialize()
 			m_pDevCtrlNotify = nullptr;
 		}
 		m_spSourceReader = nullptr;
-		if (m_spDevSource.get() != nullptr) {
+		if (m_spDevSource.Get() != nullptr) {
 			m_spDevSource->Shutdown();
 		}
 		m_spDevSource = nullptr;
@@ -252,8 +252,8 @@ HRESULT PhysicalCamera::Prepapre()
 
 	winrt::slim_lock_guard lock(m_Lock);
 	m_spSourceReader = nullptr;
-	RETURN_IF_FAILED(CreateSourceReader(m_spDevSource.get(),
-					    m_spDxgiDevManager.get(),
+	RETURN_IF_FAILED(CreateSourceReader(m_spDevSource.Get(),
+					    m_spDxgiDevManager.Get(),
 					    &m_spSourceReader));
 
 	printf("%s, End\n", __FUNCSIG__);
@@ -391,7 +391,7 @@ HRESULT PhysicalCamera::FillSegMask(IMFSample *pSample)
 		return E_POINTER;
 	}
 
-	wil::com_ptr_nothrow<IMFAttributes> spMetadataAttri = nullptr;
+	ComPtr<IMFAttributes> spMetadataAttri = nullptr;
 	RETURN_IF_FAILED(pSample->GetUnknown(MFSampleExtension_CaptureMetadata,
 					     IID_PPV_ARGS(&spMetadataAttri)));
 
@@ -548,11 +548,11 @@ HRESULT PhysicalCamera::OnReadSample(HRESULT hrStatus, DWORD dwPhyStrmIndex,
 
 		if (pSample && m_cbVideoData && m_uiWidth && m_uiHeight) {
 
-			wil::com_ptr_nothrow<IMFMediaBuffer> spBuffer = nullptr;
+			ComPtr<IMFMediaBuffer> spBuffer = nullptr;
 			RETURN_IF_FAILED(
 				pSample->GetBufferByIndex(0, &spBuffer));
 
-			VideoBufferLock buffer(spBuffer.get());
+			VideoBufferLock buffer(spBuffer.Get());
 
 			LONG lStride = 0;
 			BYTE *pbScanline0 = NULL;
@@ -617,13 +617,13 @@ PhysicalCamera::GetPhysicalCameras(std::vector<CameraInformation> &cameras)
 	wchar_t *wszSymbolicLink = NULL;
 	wchar_t *wszFriendlyName = NULL;
 
-	wil::com_ptr_nothrow<IMFAttributes> spAttributes = nullptr;
+	ComPtr<IMFAttributes> spAttributes = nullptr;
 	RETURN_IF_FAILED(MFCreateAttributes(&spAttributes, 1));
 	RETURN_IF_FAILED(spAttributes->SetGUID(
 		MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
 		MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID));
 
-	RETURN_IF_FAILED(MFEnumDeviceSources(spAttributes.get(), &ppDevices,
+	RETURN_IF_FAILED(MFEnumDeviceSources(spAttributes.Get(), &ppDevices,
 					     &uiDeviceCount));
 	if (!uiDeviceCount) {
 		hr = E_FAIL;
@@ -692,11 +692,11 @@ HRESULT FindMatchingMediaType(IMFMediaType *pType,
 	UINT32 cx = 0, cy = 0, xc = 0, yc = 0, fpsN = 0, fpsD = 0;
 
 	GUID majorType, subType;
-	wil::com_ptr_nothrow<IMFMediaType> spMatchingPhyType;
+	ComPtr<IMFMediaType> spMatchingPhyType;
 
 	long _area = _cx * _cy;
 	long _delta = LONG_MAX;
-	wil::com_ptr_nothrow<IMFMediaType> spPhyType;
+	ComPtr<IMFMediaType> spPhyType;
 	for (DWORD i = 0; i < cTypes; i++) {
 		RETURN_IF_FAILED(
 			pPhyHandler->GetMediaTypeByIndex(i, &spPhyType));
@@ -716,7 +716,7 @@ HRESULT FindMatchingMediaType(IMFMediaType *pType,
 		}
 
 		RETURN_IF_FAILED(MFGetAttributeRatio(
-			spPhyType.get(), MF_MT_FRAME_RATE, &fpsN, &fpsD));
+			spPhyType.Get(), MF_MT_FRAME_RATE, &fpsN, &fpsD));
 
 		if (fpsN != _fpsN && fpsD != _fpsD) {
 			spPhyType.reset();
@@ -724,7 +724,7 @@ HRESULT FindMatchingMediaType(IMFMediaType *pType,
 		}
 
 		RETURN_IF_FAILED(MFGetAttributeSize(
-			spPhyType.get(), MF_MT_FRAME_SIZE, &cx, &cy));
+			spPhyType.Get(), MF_MT_FRAME_SIZE, &cx, &cy));
 
 		double aspect_ratio = (double)cx / (double)cy;
 		double _aspect_ratio = (double)_cx / (double)_cy;
@@ -754,11 +754,11 @@ HRESULT FindMatchingMediaType(IMFMediaType *pType,
 	printf("%d x %d : %d x %d - %d / %d : %d / %d", xc, yc, _cx, _cy, fpsN,
 	       fpsD, _fpsN, _fpsD);
 
-	wil::com_ptr_nothrow<IMFMediaType> spMatchingPhyTypeClone;
+	ComPtr<IMFMediaType> spMatchingPhyTypeClone;
 	RETURN_IF_FAILED(MFCreateMediaType(&spMatchingPhyTypeClone));
 	RETURN_IF_FAILED(
-		spMatchingPhyType->CopyAllItems(spMatchingPhyTypeClone.get()));
-	*ppMatchingType = spMatchingPhyTypeClone.detach();
+		spMatchingPhyType->CopyAllItems(spMatchingPhyTypeClone.Get()));
+	*ppMatchingType = spMatchingPhyTypeClone.Detach();
 
 	return S_OK;
 }
@@ -772,7 +772,7 @@ HRESULT CheckCompressedMediaType(IMFMediaTypeHandler *pPhyHandler,
 	DWORD cTypes = 0;
 	RETURN_IF_FAILED(pPhyHandler->GetMediaTypeCount(&cTypes));
 
-	wil::com_ptr_nothrow<IMFMediaType> spPhyType;
+	ComPtr<IMFMediaType> spPhyType;
 	GUID majorType, subType;
 	for (DWORD i = 0; i < cTypes; i++) {
 		RETURN_IF_FAILED(
@@ -813,7 +813,7 @@ HRESULT PhysicalCamera::FindMatchingNativeMediaType(
 	HRESULT hr = S_OK;
 
 	GUID majorType;
-	wil::com_ptr_nothrow<IMFPresentationDescriptor> spPhyPresDesc = nullptr;
+	ComPtr<IMFPresentationDescriptor> spPhyPresDesc = nullptr;
 	RETURN_IF_FAILED(
 		m_spDevSource->CreatePresentationDescriptor(&spPhyPresDesc));
 
@@ -822,8 +822,8 @@ HRESULT PhysicalCamera::FindMatchingNativeMediaType(
 		spPhyPresDesc->GetStreamDescriptorCount(&dwPhyStrmDescCount));
 
 	*ppMatchingType = nullptr;
-	wil::com_ptr_nothrow<IMFStreamDescriptor> spPhyStrmDesc;
-	wil::com_ptr_nothrow<IMFMediaTypeHandler> spPhyHandler;
+	ComPtr<IMFStreamDescriptor> spPhyStrmDesc;
+	ComPtr<IMFMediaTypeHandler> spPhyHandler;
 
 	printf("%s, To get stream descriptor\n", __FUNCSIG__);
 	BOOL fSelected;
@@ -834,8 +834,8 @@ HRESULT PhysicalCamera::FindMatchingNativeMediaType(
 	DWORD cTypes = 0;
 	RETURN_IF_FAILED(spPhyHandler->GetMediaTypeCount(&cTypes));
 
-	wil::com_ptr_nothrow<IMFMediaType> spMatchingPhyType = nullptr;
-	wil::com_ptr_nothrow<IMFMediaType> spPhyType = nullptr;
+	ComPtr<IMFMediaType> spMatchingPhyType = nullptr;
+	ComPtr<IMFMediaType> spPhyType = nullptr;
 
 	double _maxfps = -1.0;
 	UINT32 fpsN = 0, fpsD = 0, cx = 0, cy = 0;
@@ -850,9 +850,9 @@ HRESULT PhysicalCamera::FindMatchingNativeMediaType(
 		}
 
 		RETURN_IF_FAILED(MFGetAttributeRatio(
-			spPhyType.get(), MF_MT_FRAME_RATE, &fpsN, &fpsD));
+			spPhyType.Get(), MF_MT_FRAME_RATE, &fpsN, &fpsD));
 		RETURN_IF_FAILED(MFGetAttributeSize(
-			spPhyType.get(), MF_MT_FRAME_SIZE, &cx, &cy));
+			spPhyType.Get(), MF_MT_FRAME_SIZE, &cx, &cy));
 
 		if (cx == uiWidth && cy == uiHeight) {
 			if (llInterval == 0) {
@@ -881,11 +881,11 @@ HRESULT PhysicalCamera::FindMatchingNativeMediaType(
 		return E_UNEXPECTED;
 	}
 
-	wil::com_ptr_nothrow<IMFMediaType> spMatchingPhyTypeClone;
+	ComPtr<IMFMediaType> spMatchingPhyTypeClone;
 	RETURN_IF_FAILED(MFCreateMediaType(&spMatchingPhyTypeClone));
 	RETURN_IF_FAILED(
-		spMatchingPhyType->CopyAllItems(spMatchingPhyTypeClone.get()));
-	*ppMatchingType = spMatchingPhyTypeClone.detach();
+		spMatchingPhyType->CopyAllItems(spMatchingPhyTypeClone.Get()));
+	*ppMatchingType = spMatchingPhyTypeClone.Detach();
 
 	printf("%s, End\n", __FUNCSIG__);
 	return hr;
@@ -899,7 +899,7 @@ PhysicalCamera::GetStreamCapabilities(DWORD dwPhyStrmIndex,
 		return E_POINTER;
 	}
 
-	wil::com_ptr_nothrow<IMFPresentationDescriptor> spPhyPresDesc = nullptr;
+	ComPtr<IMFPresentationDescriptor> spPhyPresDesc = nullptr;
 	RETURN_IF_FAILED(
 		m_spDevSource->CreatePresentationDescriptor(&spPhyPresDesc));
 
@@ -907,8 +907,8 @@ PhysicalCamera::GetStreamCapabilities(DWORD dwPhyStrmIndex,
 	RETURN_IF_FAILED(
 		spPhyPresDesc->GetStreamDescriptorCount(&dwPhyStrmDescCount));
 
-	wil::com_ptr_nothrow<IMFStreamDescriptor> spPhyStrmDesc;
-	wil::com_ptr_nothrow<IMFMediaTypeHandler> spPhyHandler;
+	ComPtr<IMFStreamDescriptor> spPhyStrmDesc;
+	ComPtr<IMFMediaTypeHandler> spPhyHandler;
 
 	BOOL fSelected;
 	RETURN_IF_FAILED(spPhyPresDesc->GetStreamDescriptorByIndex(
@@ -918,7 +918,7 @@ PhysicalCamera::GetStreamCapabilities(DWORD dwPhyStrmIndex,
 	DWORD cTypes = 0;
 	RETURN_IF_FAILED(spPhyHandler->GetMediaTypeCount(&cTypes));
 
-	wil::com_ptr_nothrow<IMFMediaType> spPhyType;
+	ComPtr<IMFMediaType> spPhyType;
 	GUID majorType, subType;
 	for (DWORD i = 0; i < cTypes; i++) {
 		RETURN_IF_FAILED(
@@ -938,9 +938,9 @@ PhysicalCamera::GetStreamCapabilities(DWORD dwPhyStrmIndex,
 
 		UINT32 _cx, _cy, _fpsN, _fpsD;
 		RETURN_IF_FAILED(MFGetAttributeSize(
-			spPhyType.get(), MF_MT_FRAME_SIZE, &_cx, &_cy));
+			spPhyType.Get(), MF_MT_FRAME_SIZE, &_cx, &_cy));
 		RETURN_IF_FAILED(MFGetAttributeRatio(
-			spPhyType.get(), MF_MT_FRAME_RATE, &_fpsN, &_fpsD));
+			spPhyType.Get(), MF_MT_FRAME_RATE, &_fpsN, &_fpsD));
 
 		StreamInformation cap;
 		cap.guidSubtype = subType;
@@ -959,17 +959,17 @@ PhysicalCamera::GetStreamCapabilities(DWORD dwPhyStrmIndex,
 HRESULT CreateMediaTypeFrom(IMFMediaType *pType, MF_COLOR_FORMAT fmt,
 			    IMFMediaType **ppType)
 {
-	wil::com_ptr_nothrow<IMFMediaType> spTypeClone;
+	ComPtr<IMFMediaType> spTypeClone;
 	RETURN_IF_FAILED(MFCreateMediaType(&spTypeClone));
-	RETURN_IF_FAILED(pType->CopyAllItems(spTypeClone.get()));
+	RETURN_IF_FAILED(pType->CopyAllItems(spTypeClone.Get()));
 
 	UINT32 uiWidth, uiHeight;
-	RETURN_IF_FAILED(MFGetAttributeSize(spTypeClone.get(), MF_MT_FRAME_SIZE,
+	RETURN_IF_FAILED(MFGetAttributeSize(spTypeClone.Get(), MF_MT_FRAME_SIZE,
 					    &uiWidth, &uiHeight));
 
 	UINT32 uiFpsN, uiFpsD;
 	RETURN_IF_FAILED(MFGetAttributeRatio(
-		spTypeClone.get(), MF_MT_FRAME_RATE, &uiFpsN, &uiFpsD));
+		spTypeClone.Get(), MF_MT_FRAME_RATE, &uiFpsN, &uiFpsD));
 
 	uint32_t bitrate;
 	GUID mffmt = GUID_NULL;
@@ -1000,12 +1000,12 @@ HRESULT CreateMediaTypeFrom(IMFMediaType *pType, MF_COLOR_FORMAT fmt,
 						MFVideoInterlace_Progressive));
 	RETURN_IF_FAILED(
 		spTypeClone->SetUINT32(MF_MT_ALL_SAMPLES_INDEPENDENT, TRUE));
-	RETURN_IF_FAILED(MFSetAttributeRatio(spTypeClone.get(),
+	RETURN_IF_FAILED(MFSetAttributeRatio(spTypeClone.Get(),
 					     MF_MT_PIXEL_ASPECT_RATIO, 1, 1));
 
 	RETURN_IF_FAILED(spTypeClone->SetUINT32(MF_MT_AVG_BITRATE, bitrate));
 
-	*ppType = spTypeClone.detach();
+	*ppType = spTypeClone.Detach();
 
 	return S_OK;
 }
@@ -1039,27 +1039,27 @@ HRESULT PhysicalCamera::SetOutputResolution(DWORD dwPhyStrmIndex,
 		return E_POINTER;
 	}
 
-	wil::com_ptr_nothrow<IMFMediaType> spMatchingType = nullptr;
+	ComPtr<IMFMediaType> spMatchingType = nullptr;
 
 	RETURN_IF_FAILED(FindMatchingNativeMediaType(dwPhyStrmIndex, uiWidth,
 						     uiHeight, llInterval,
 						     &spMatchingType));
 
-	wil::com_ptr_nothrow<IMFMediaType> spOutputType = nullptr;
+	ComPtr<IMFMediaType> spOutputType = nullptr;
 	RETURN_IF_FAILED(
-		CreateMediaTypeFrom(spMatchingType.get(), fmt, &spOutputType));
+		CreateMediaTypeFrom(spMatchingType.Get(), fmt, &spOutputType));
 
 	DWORD dwStreamFlags;
-	wil::com_ptr_nothrow<IMFSourceReaderEx> spSourceReaderEx;
+	ComPtr<IMFSourceReaderEx> spSourceReaderEx;
 	RETURN_IF_FAILED(m_spSourceReader->QueryInterface(&spSourceReaderEx));
 	RETURN_IF_FAILED(spSourceReaderEx->SetNativeMediaType(
-		dwPhyStrmIndex, spMatchingType.get(), &dwStreamFlags));
+		dwPhyStrmIndex, spMatchingType.Get(), &dwStreamFlags));
 	RETURN_IF_FAILED(m_spSourceReader->SetCurrentMediaType(
-		dwPhyStrmIndex, NULL, spOutputType.get()));
+		dwPhyStrmIndex, NULL, spOutputType.Get()));
 	RETURN_IF_FAILED(
 		m_spSourceReader->SetStreamSelection(dwPhyStrmIndex, TRUE));
 	RETURN_IF_FAILED(
-		GetDefaultStride(spOutputType.get(), &m_lDefaultStride));
+		GetDefaultStride(spOutputType.Get(), &m_lDefaultStride));
 
 	m_uiWidth = uiWidth;
 	m_uiHeight = uiHeight;
@@ -1091,7 +1091,7 @@ HRESULT PhysicalCamera::GetCurrentStreamInformation(DWORD dwPhyStrmIndex,
 		return E_POINTER;
 	}
 
-	wil::com_ptr_nothrow<IMFMediaType> spType;
+	ComPtr<IMFMediaType> spType;
 	RETURN_IF_FAILED(
 		m_spSourceReader->GetCurrentMediaType(dwPhyStrmIndex, &spType));
 
@@ -1106,8 +1106,8 @@ HRESULT PhysicalCamera::GetCurrentStreamInformation(DWORD dwPhyStrmIndex,
 
 	UINT32 _cx, _cy, _fpsN, _fpsD;
 	RETURN_IF_FAILED(
-		MFGetAttributeSize(spType.get(), MF_MT_FRAME_SIZE, &_cx, &_cy));
-	RETURN_IF_FAILED(MFGetAttributeRatio(spType.get(), MF_MT_FRAME_RATE,
+		MFGetAttributeSize(spType.Get(), MF_MT_FRAME_SIZE, &_cx, &_cy));
+	RETURN_IF_FAILED(MFGetAttributeRatio(spType.Get(), MF_MT_FRAME_RATE,
 					     &_fpsN, &_fpsD));
 
 	strmInfo.guidSubtype = subType;
@@ -1128,7 +1128,7 @@ HRESULT PhysicalCamera::SetBlur(bool blur, bool shallowFocus, bool mask)
 
 	ULONG ulPropertyId =
 		KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION;
-	wil::com_ptr<IMFExtendedCameraControl> spExtControl = nullptr;
+	ComPtr<IMFExtendedCameraControl> spExtControl = nullptr;
 
 	ULONGLONG ulFlags = KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_OFF;
 
@@ -1185,7 +1185,7 @@ HRESULT PhysicalCamera::GetBlur(bool &blur, bool &shallowFocus, bool &mask)
 
 	ULONG ulPropertyId =
 		KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION;
-	wil::com_ptr<IMFExtendedCameraControl> spExtControl = nullptr;
+	ComPtr<IMFExtendedCameraControl> spExtControl = nullptr;
 
 	ULONGLONG ulFlags = KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_OFF;
 
@@ -1214,7 +1214,7 @@ HRESULT PhysicalCamera::SetAutoFraming(bool enable)
 	winrt::slim_lock_guard lock(m_Lock);
 
 	ULONG ulPropertyId = KSPROPERTY_CAMERACONTROL_EXTENDED_DIGITALWINDOW;
-	wil::com_ptr<IMFExtendedCameraControl> spExtControl = nullptr;
+	ComPtr<IMFExtendedCameraControl> spExtControl = nullptr;
 
 	ULONGLONG ulFlags = KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_MANUAL;
 
@@ -1266,7 +1266,7 @@ HRESULT PhysicalCamera::GetAutoFraming(bool &enable)
 	winrt::slim_lock_guard lock(m_Lock);
 
 	ULONG ulPropertyId = KSPROPERTY_CAMERACONTROL_EXTENDED_DIGITALWINDOW;
-	wil::com_ptr<IMFExtendedCameraControl> spExtControl = nullptr;
+	ComPtr<IMFExtendedCameraControl> spExtControl = nullptr;
 
 	ULONGLONG ulFlags = KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_MANUAL;
 
@@ -1294,7 +1294,7 @@ HRESULT PhysicalCamera::SetEyeGazeCorrection(bool enable)
 
 	ULONG ulPropertyId =
 		KSPROPERTY_CAMERACONTROL_EXTENDED_EYEGAZECORRECTION;
-	wil::com_ptr<IMFExtendedCameraControl> spExtControl = nullptr;
+	ComPtr<IMFExtendedCameraControl> spExtControl = nullptr;
 
 	ULONGLONG ulFlags = KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_OFF;
 
@@ -1341,7 +1341,7 @@ HRESULT PhysicalCamera::GetEyeGazeCorrection(bool &enable)
 
 	ULONG ulPropertyId =
 		KSPROPERTY_CAMERACONTROL_EXTENDED_EYEGAZECORRECTION;
-	wil::com_ptr<IMFExtendedCameraControl> spExtControl = nullptr;
+	ComPtr<IMFExtendedCameraControl> spExtControl = nullptr;
 
 	ULONGLONG ulFlags = KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_OFF;
 

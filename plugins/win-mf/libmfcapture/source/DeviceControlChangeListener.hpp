@@ -2,9 +2,7 @@
 
 #include "framework.hpp"
 
-#include <wil\cppwinrt.h> // must be before the first C++ WinRT header, ref:https://github.com/Microsoft/wil/wiki/Error-handling-helpers
-#include <wil\result.h>
-#include <wil\com.h>
+#include <util/windows/ComPtr.hpp>
 
 #include <mfidl.h>
 #include <string>
@@ -26,12 +24,12 @@ typedef enum _WS_CONTROL_VALUE {
 
 class DeviceControlChangeListener : public IMFCameraControlNotify {
 	long m_cRef = 1;
-	wil::critical_section m_lock;
+	CRITICAL_SECTION m_lock;
 
 	std::wstring m_wsDevId;
-	wil::com_ptr_nothrow<IMFCameraControlMonitor> m_spMonitor = nullptr;
-	wil::com_ptr_nothrow<IKsControl> m_spKsControl = nullptr;
-	wil::com_ptr_nothrow<IMFExtendedCameraController> m_spExtCamController =
+	ComPtr<IMFCameraControlMonitor> m_spMonitor = nullptr;
+	ComPtr<IKsControl> m_spKsControl = nullptr;
+	ComPtr<IMFExtendedCameraController> m_spExtCamController =
 		nullptr;
 	void *m_cbdata = nullptr;
 

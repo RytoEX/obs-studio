@@ -20,7 +20,7 @@ MFCAPTURE_EXPORTS HRESULT MF_EnumerateCameras(MF_EnumerateCameraCallback cb,
 
 MFCAPTURE_EXPORTS CAPTURE_DEVICE_HANDLE MF_Create(const wchar_t *DevId)
 {
-	wil::com_ptr_nothrow<PhysicalCamera> spCapture = nullptr;
+	ComPtr<PhysicalCamera> spCapture = nullptr;
 	HRESULT hr = PhysicalCamera::CreateInstance(&spCapture);
 	if (FAILED(hr)) {
 		return NULL;
@@ -31,7 +31,7 @@ MFCAPTURE_EXPORTS CAPTURE_DEVICE_HANDLE MF_Create(const wchar_t *DevId)
 		return NULL;
 	}
 
-	return spCapture.detach();
+	return spCapture.Detach();
 }
 
 MFCAPTURE_EXPORTS void MF_Destroy(CAPTURE_DEVICE_HANDLE h)
