@@ -132,6 +132,7 @@ private:
 #else
 private slots:
 	void commitData(QSessionManager &manager);
+	void handleColorSchemeChanged(Qt::ColorScheme colorScheme);
 #endif
 
 private slots:
