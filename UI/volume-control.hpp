@@ -180,6 +180,11 @@ private:
 	bool clipping = false;
 	bool vertical;
 	bool muted = false;
+	bool ticksNeedRepainted = false;
+
+public slots:
+	void handleColorSchemeChanged(Qt::ColorScheme colorScheme);
+	void handleStyleChanged();
 
 public:
 	explicit VolumeMeter(QWidget *parent = nullptr,

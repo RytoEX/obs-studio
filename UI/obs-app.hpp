@@ -132,11 +132,11 @@ private:
 #else
 private slots:
 	void commitData(QSessionManager &manager);
-	void handleColorSchemeChanged(Qt::ColorScheme colorScheme);
 #endif
 
 private slots:
 	void themeFileChanged(const QString &);
+	void handleColorSchemeChanged(Qt::ColorScheme colorScheme);
 
 public:
 	OBSApp(int &argc, char **argv, profiler_name_store_t *store);
