@@ -37,6 +37,7 @@
 #include <QScreen>
 #include <QProcess>
 #include <QAccessible>
+#include <QStyleHints>
 
 #include "qt-wrappers.hpp"
 #include "obs-app.hpp"
@@ -1301,6 +1302,17 @@ static void ui_task_handler(obs_task_t task, void *param, bool wait)
 				  Q_ARG(VoidFunc, doTask));
 }
 
+void OBSApp::handleColorSchemeChanged(Qt::ColorScheme colorScheme)
+{
+	if (colorScheme == Qt::ColorScheme::Light) {
+		SetTheme("System");
+	} else if (colorScheme == Qt::ColorScheme::Dark) {
+		SetTheme("Dark");
+	} else {
+		SetTheme("System");
+	}
+}
+
 bool OBSApp::OBSInit()
 {
 	ProfileScope("OBSApp::OBSInit");
@@ -1372,6 +1384,9 @@ bool OBSApp::OBSInit()
 	setQuitOnLastWindowClosed(false);
 
 	mainWindow = new OBSBasic();
+
+	connect(App()->styleHints(), &QStyleHints::colorSchemeChanged,
+		this, &OBSApp::handleColorSchemeChanged);
 
 	mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
 	connect(mainWindow, &OBSBasic::destroyed, this, &OBSApp::quit);
