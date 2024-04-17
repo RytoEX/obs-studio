@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QPainter>
+#include <QStyleHints>
 
 using namespace std;
 
@@ -824,6 +825,30 @@ void VolumeMeter::wheelEvent(QWheelEvent *event)
 	QApplication::sendEvent(focusProxy(), event);
 }
 
+void VolumeMeter::handleColorSchemeChanged(Qt::ColorScheme colorScheme)
+{
+	ticksNeedRepainted = true;
+	QColor textColor = palette().text().color();
+	blog(LOG_INFO,
+	     "VolumeMeter::handleColorSchemeChanged\n"
+	     "text: rgb(%d, %d, %d)",
+	     textColor.red(), textColor.green(), textColor.blue());
+	setMajorTickColor(textColor);
+	setMinorTickColor(textColor);
+}
+
+void VolumeMeter::handleStyleChanged()
+{
+	ticksNeedRepainted = true;
+	QColor textColor = palette().text().color();
+	blog(LOG_INFO,
+	     "VolumeMeter::handleColorSchemeChanged\n"
+	     "text: rgb(%d, %d, %d)",
+	     textColor.red(), textColor.green(), textColor.blue());
+	setMajorTickColor(textColor);
+	setMinorTickColor(textColor);
+}
+
 VolumeMeter::VolumeMeter(QWidget *parent, obs_volmeter_t *obs_volmeter,
 			 bool vertical)
 	: QWidget(parent),
@@ -850,8 +875,8 @@ VolumeMeter::VolumeMeter(QWidget *parent, obs_volmeter_t *obs_volmeter,
 
 	clipColor.setRgb(0xff, 0xff, 0xff);      // Bright white
 	magnitudeColor.setRgb(0x00, 0x00, 0x00); // Black
-	majorTickColor.setRgb(0x00, 0x00, 0x00); // Black
-	minorTickColor.setRgb(0x32, 0x32, 0x32); // Dark gray
+	//majorTickColor.setRgb(0x00, 0x00, 0x00); // Black
+	//minorTickColor.setRgb(0x32, 0x32, 0x32); // Dark gray
 	minimumLevel = -60.0;                    // -60 dB
 	warningLevel = -20.0;                    // -20 dB
 	errorLevel = -9.0;                       //  -9 dB
@@ -876,6 +901,13 @@ VolumeMeter::VolumeMeter(QWidget *parent, obs_volmeter_t *obs_volmeter,
 	}
 
 	updateTimerRef->AddVolControl(this);
+
+	/*
+	connect(App()->styleHints(), &QStyleHints::colorSchemeChanged, this,
+		&VolumeMeter::handleColorSchemeChanged);
+	*/
+	connect(App(), &OBSApp::StyleChanged, this,
+		&VolumeMeter::handleStyleChanged);
 }
 
 VolumeMeter::~VolumeMeter()
@@ -1411,7 +1443,9 @@ void VolumeMeter::paintEvent(QPaintEvent *event)
 
 	// timerEvent requests update of the bar(s) only, so we can avoid the
 	// overhead of repainting the scale and labels.
-	if (event->region().boundingRect() != getBarRect()) {
+	if (event->region().boundingRect() != getBarRect() ||
+	    ticksNeedRepainted) {
+		blog(LOG_INFO, "repainting ticks");
 		if (needLayoutChange())
 			doLayout();
 
@@ -1428,6 +1462,7 @@ void VolumeMeter::paintEvent(QPaintEvent *event)
 					    1,
 				    width - (INDICATOR_THICKNESS + 3));
 		}
+		ticksNeedRepainted = false;
 	}
 
 	if (vertical) {
