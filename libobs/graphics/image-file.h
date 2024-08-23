@@ -17,8 +17,9 @@
 
 #pragma once
 
+#include <nsgif.h>
+
 #include "graphics.h"
-#include "libnsgif/nsgif.h"
 
 #ifdef __cplusplus
 extern "C" {
