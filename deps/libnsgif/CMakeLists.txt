@@ -12,7 +12,15 @@ target_sources(
 )
 
 target_include_directories(
-  libnsgif INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/src"
-                     "${CMAKE_CURRENT_SOURCE_DIR}/include")
+  libnsgif
+  INTERFACE
+    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+)
 
-target_compile_options(libnsgif INTERFACE /wd4244 /wd4267)
+target_compile_options(
+  libnsgif
+  INTERFACE
+  $<$<PLATFORM_ID:Windows>:/wd4244>
+  $<$<PLATFORM_ID:Windows>:/wd4267>
+)
