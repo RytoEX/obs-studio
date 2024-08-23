@@ -339,7 +339,7 @@ if(OS_WINDOWS)
   if(MSVC)
     target_link_libraries(libobs PUBLIC OBS::w32-pthreads)
 
-    target_compile_options(libobs PRIVATE "$<$<COMPILE_LANGUAGE:C>:/EHc->" "$<$<COMPILE_LANGUAGE:CXX>:/EHc->" /wd4244 /wd4267)
+    target_compile_options(libobs PRIVATE "$<$<COMPILE_LANGUAGE:C>:/EHc->" "$<$<COMPILE_LANGUAGE:CXX>:/EHc->")
 
     target_link_options(libobs PRIVATE "LINKER:/IGNORE:4098" "LINKER:/SAFESEH:NO")
 

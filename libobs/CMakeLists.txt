@@ -20,6 +20,10 @@ if(NOT TARGET OBS::caption)
   add_subdirectory("${CMAKE_SOURCE_DIR}/deps/libcaption" "${CMAKE_BINARY_DIR}/deps/libcaption")
 endif()
 
+if(NOT TARGET OBS::libnsgif)
+  add_subdirectory("${CMAKE_SOURCE_DIR}/deps/libnsgif" "${CMAKE_BINARY_DIR}/deps/libnsgif")
+endif()
+
 add_library(libobs SHARED)
 add_library(OBS::libobs ALIAS libobs)
 
@@ -209,10 +213,6 @@ target_sources(
     graphics/image-file.c
     graphics/image-file.h
     graphics/input.h
-    graphics/libnsgif/gif.c
-    graphics/libnsgif/lzw.c
-    graphics/libnsgif/lzw.h
-    graphics/libnsgif/nsgif.h
     graphics/math-defs.h
     graphics/math-extra.c
     graphics/math-extra.h
@@ -250,6 +250,7 @@ target_link_libraries(
   libobs
   PRIVATE
     OBS::caption
+    OBS::libnsgif
     OBS::libobs-version
     FFmpeg::avcodec
     FFmpeg::avformat
@@ -294,7 +295,6 @@ set(
   graphics/graphics.h
   graphics/image-file.h
   graphics/input.h
-  graphics/libnsgif/nsgif.h
   graphics/math-defs.h
   graphics/math-extra.h
   graphics/matrix3.h
