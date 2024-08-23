@@ -24,6 +24,6 @@ target_include_directories(
 target_compile_options(
   libnsgif
   PRIVATE
-  $<$<PLATFORM_ID:Windows>:/wd4244>
-  $<$<PLATFORM_ID:Windows>:/wd4267>
+    $<$<PLATFORM_ID:Windows>:/wd4244>
+    $<$<PLATFORM_ID:Windows>:/wd4267>
 )
