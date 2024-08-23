@@ -250,6 +250,7 @@ target_link_libraries(
   libobs
   PRIVATE
     OBS::caption
+    OBS::libnsgif
     OBS::libobs-version
     FFmpeg::avcodec
     FFmpeg::avformat
@@ -259,9 +260,7 @@ target_link_libraries(
     jansson::jansson
     Uthash::Uthash
     ZLIB::ZLIB
-  PUBLIC
-    OBS::libnsgif
-    Threads::Threads
+  PUBLIC Threads::Threads
 )
 
 if(OS_WINDOWS)
