@@ -1,6 +1,7 @@
 #include <QMessageBox>
 #include <QAction>
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <obs-frontend-api.h>
 #include "captions.hpp"

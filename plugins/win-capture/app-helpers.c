@@ -1,3 +1,9 @@
+/* Do not try to define WIN32_LEAN_AND_MEAN here. Code in app-helpers.c requires it for malloc.
+ * Alternatively, we could include <stdlib.h> and <malloc.h> instead.
+ *
+ * Additionally, app-helpers.c requires it for ConvertSidToStringSidW.
+ * Alternatively, we could include <sddl.h> instead.
+ */
 #include <windows.h>
 #include <stdio.h>
 #include "app-helpers.h"

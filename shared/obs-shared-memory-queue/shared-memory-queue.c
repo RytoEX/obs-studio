@@ -1,3 +1,6 @@
+/* Do not try to define WIN32_LEAN_AND_MEAN here. Code in shared-memory-queue.c requires it for malloc.
+ * Alternatively, we could include <stdlib.h> and <malloc.h> instead.
+ */
 #include <windows.h>
 #include "shared-memory-queue.h"
 #include "tiny-nv12-scale.h"

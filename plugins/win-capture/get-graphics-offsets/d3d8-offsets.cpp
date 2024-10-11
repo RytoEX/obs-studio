@@ -1,4 +1,5 @@
 #include <stdio.h>
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #ifdef OBS_LEGACY
 #include "../d3d8-api/d3d8.h"

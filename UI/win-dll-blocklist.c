@@ -15,6 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
+/* Do not try to define WIN32_LEAN_AND_MEAN here. Later code requires it for NTSTATUS, which comes from bcrypt.h via
+ * wincrypt.h.
+ */
 #include <Windows.h>
 #include <psapi.h>
 #include <stdint.h>

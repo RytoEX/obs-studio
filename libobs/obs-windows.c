@@ -22,6 +22,7 @@
 #include "obs.h"
 #include "obs-internal.h"
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <wscapi.h>
 #include <iwscapi.h>

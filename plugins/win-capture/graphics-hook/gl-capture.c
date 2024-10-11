@@ -3,6 +3,7 @@
 #pragma warning(disable : 4054) /* function pointer to data pointer */
 #endif
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 #define COBJMACROS

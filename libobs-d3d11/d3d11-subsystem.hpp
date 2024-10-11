@@ -23,6 +23,7 @@
 #include <string>
 #include <memory>
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <dxgi1_6.h>
 #include <d3d11_1.h>

@@ -5,6 +5,7 @@
 #include <util/config-file.h>
 #include <util/pipe.h>
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include "graphics-hook-info.h"
 

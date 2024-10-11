@@ -5,6 +5,7 @@
 #include <util/platform.h>
 #include <util/threading.h>
 #include <util/windows/window-helpers.h>
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <dxgi.h>
 #include <util/sse-intrin.h>

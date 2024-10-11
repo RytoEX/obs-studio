@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #if defined(_WIN32)
 #define NOMINMAX
 #include <QWindow>
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #elif defined(__linux__)
 #include <QWindow>

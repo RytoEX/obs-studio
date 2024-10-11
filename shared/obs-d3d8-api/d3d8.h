@@ -32,6 +32,7 @@
 #define COM_NO_WINDOWS_H
 #include <objbase.h>
 
+/* Do not try to define WIN32_LEAN_AND_MEAN here. Code in d3d8.h requires it for Direct3DCreate8. */
 #include <windows.h>
 
 #if !defined(HMONITOR_DECLARED) && (WINVER < 0x0500)

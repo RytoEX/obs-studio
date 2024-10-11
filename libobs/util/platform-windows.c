@@ -14,6 +14,9 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+/* Do not try to define WIN32_LEAN_AND_MEAN here. Later code requires it for NTSTATUS, which comes from bcrypt.h via
+ * wincrypt.h.
+ */
 #include <windows.h>
 #include <mmsystem.h>
 #include <shellapi.h>

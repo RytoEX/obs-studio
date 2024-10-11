@@ -1,3 +1,6 @@
+/* Do not try to define WIN32_LEAN_AND_MEAN here, not even define and then undefine. The gdiplus headers end up with a
+ * ton of build errors if you do.
+ */
 #include <windows.h>
 #include <strsafe.h>
 #include <gdiplus.h>

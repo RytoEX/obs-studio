@@ -3,6 +3,9 @@
 #include <obs-properties.h>
 #include <util/c99defs.h>
 #include <util/dstr.h>
+/* Do not try to define WIN32_LEAN_AND_MEAN here. Code in window-helpers.c requires it for malloc.
+ * Alternatively, we could include <stdlib.h> and <malloc.h> instead.
+ */
 #include <Windows.h>
 
 #ifdef __cplusplus

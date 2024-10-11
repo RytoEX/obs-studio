@@ -1,6 +1,9 @@
 #pragma once
 
 #include "../c99defs.h"
+/* Do not try to define WIN32_LEAN_AND_MEAN here. Code in window-helpers.c requires it for malloc.
+ * Alternatively, we could include <stdlib.h> and <malloc.h> instead.
+ */
 #include <Windows.h>
 
 #ifdef __cplusplus

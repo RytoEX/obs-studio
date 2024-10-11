@@ -5,6 +5,11 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
+/* Some other definition of WIN32_LEAN_AND_MEAN _somewhere_ affects this file.
+ * The call to the macro _countof near the bottom requires either no WIN32_LEAN_AND_MEAN wherever it was that affects
+ * this or requires including <stdlib.h>.
+ */
+#include <stdlib.h>
 
 #include "hook-helpers.h"
 
