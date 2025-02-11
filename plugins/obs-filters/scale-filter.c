@@ -8,9 +8,9 @@
 
 /* clang-format off */
 
-#define S_RESOLUTION                    "resolution"
-#define S_SAMPLING                      "sampling"
-#define S_UNDISTORT                     "undistort"
+#define SETTING_RESOLUTION                    "resolution"
+#define SETTING_SAMPLING                      "sampling"
+#define SETTING_UNDISTORT                     "undistort"
 
 #define T_RESOLUTION                    obs_module_text("Resolution")
 #define T_NONE                          obs_module_text("None")
@@ -23,11 +23,11 @@
 #define T_UNDISTORT                     obs_module_text("UndistortCenter")
 #define T_BASE                          obs_module_text("Base.Canvas")
 
-#define S_SAMPLING_POINT                "point"
-#define S_SAMPLING_BILINEAR             "bilinear"
-#define S_SAMPLING_BICUBIC              "bicubic"
-#define S_SAMPLING_LANCZOS              "lanczos"
-#define S_SAMPLING_AREA                 "area"
+#define SETTING_SAMPLING_POINT                "point"
+#define SETTING_SAMPLING_BILINEAR             "bilinear"
+#define SETTING_SAMPLING_BICUBIC              "bicubic"
+#define SETTING_SAMPLING_LANCZOS              "lanczos"
+#define SETTING_SAMPLING_AREA                 "area"
 
 /* clang-format on */
 
@@ -68,8 +68,8 @@ static void scale_filter_update(void *data, obs_data_t *settings)
 	struct scale_filter_data *filter = data;
 	int ret;
 
-	const char *res_str = obs_data_get_string(settings, S_RESOLUTION);
-	const char *sampling = obs_data_get_string(settings, S_SAMPLING);
+	const char *res_str = obs_data_get_string(settings, SETTING_RESOLUTION);
+	const char *sampling = obs_data_get_string(settings, SETTING_SAMPLING);
 
 	filter->valid = true;
 	filter->base_canvas_resolution = false;
@@ -96,23 +96,23 @@ static void scale_filter_update(void *data, obs_data_t *settings)
 		}
 	}
 
-	if (astrcmpi(sampling, S_SAMPLING_POINT) == 0) {
+	if (astrcmpi(sampling, SETTING_SAMPLING_POINT) == 0) {
 		filter->sampling = OBS_SCALE_POINT;
 
-	} else if (astrcmpi(sampling, S_SAMPLING_BILINEAR) == 0) {
+	} else if (astrcmpi(sampling, SETTING_SAMPLING_BILINEAR) == 0) {
 		filter->sampling = OBS_SCALE_BILINEAR;
 
-	} else if (astrcmpi(sampling, S_SAMPLING_LANCZOS) == 0) {
+	} else if (astrcmpi(sampling, SETTING_SAMPLING_LANCZOS) == 0) {
 		filter->sampling = OBS_SCALE_LANCZOS;
 
-	} else if (astrcmpi(sampling, S_SAMPLING_AREA) == 0) {
+	} else if (astrcmpi(sampling, SETTING_SAMPLING_AREA) == 0) {
 		filter->sampling = OBS_SCALE_AREA;
 
-	} else { /* S_SAMPLING_BICUBIC */
+	} else { /* SETTING_SAMPLING_BICUBIC */
 		filter->sampling = OBS_SCALE_BICUBIC;
 	}
 
-	filter->can_undistort = obs_data_get_bool(settings, S_UNDISTORT);
+	filter->can_undistort = obs_data_get_bool(settings, SETTING_UNDISTORT);
 }
 
 static void scale_filter_destroy(void *data)
@@ -453,22 +453,22 @@ static const char *aspects[] = {"16:9", "16:10", "4:3", "1:1"};
 
 static bool sampling_modified(obs_properties_t *props, obs_property_t *p, obs_data_t *settings)
 {
-	const char *sampling = obs_data_get_string(settings, S_SAMPLING);
+	const char *sampling = obs_data_get_string(settings, SETTING_SAMPLING);
 
 	bool has_undistort;
-	if (astrcmpi(sampling, S_SAMPLING_POINT) == 0) {
+	if (astrcmpi(sampling, SETTING_SAMPLING_POINT) == 0) {
 		has_undistort = false;
-	} else if (astrcmpi(sampling, S_SAMPLING_BILINEAR) == 0) {
+	} else if (astrcmpi(sampling, SETTING_SAMPLING_BILINEAR) == 0) {
 		has_undistort = false;
-	} else if (astrcmpi(sampling, S_SAMPLING_LANCZOS) == 0) {
+	} else if (astrcmpi(sampling, SETTING_SAMPLING_LANCZOS) == 0) {
 		has_undistort = true;
-	} else if (astrcmpi(sampling, S_SAMPLING_AREA) == 0) {
+	} else if (astrcmpi(sampling, SETTING_SAMPLING_AREA) == 0) {
 		has_undistort = false;
-	} else { /* S_SAMPLING_BICUBIC */
+	} else { /* SETTING_SAMPLING_BICUBIC */
 		has_undistort = true;
 	}
 
-	obs_property_set_visible(obs_properties_get(props, S_UNDISTORT), has_undistort);
+	obs_property_set_visible(obs_properties_get(props, SETTING_UNDISTORT), has_undistort);
 
 	UNUSED_PARAMETER(p);
 	return true;
@@ -498,17 +498,17 @@ static obs_properties_t *scale_filter_properties(void *data)
 		downscales[i].cy = (int)((double)cy / downscale_vals[i]);
 	}
 
-	p = obs_properties_add_list(props, S_SAMPLING, T_SAMPLING, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
+	p = obs_properties_add_list(props, SETTING_SAMPLING, T_SAMPLING, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
 	obs_property_set_modified_callback(p, sampling_modified);
-	obs_property_list_add_string(p, T_SAMPLING_POINT, S_SAMPLING_POINT);
-	obs_property_list_add_string(p, T_SAMPLING_BILINEAR, S_SAMPLING_BILINEAR);
-	obs_property_list_add_string(p, T_SAMPLING_BICUBIC, S_SAMPLING_BICUBIC);
-	obs_property_list_add_string(p, T_SAMPLING_LANCZOS, S_SAMPLING_LANCZOS);
-	obs_property_list_add_string(p, T_SAMPLING_AREA, S_SAMPLING_AREA);
+	obs_property_list_add_string(p, T_SAMPLING_POINT, SETTING_SAMPLING_POINT);
+	obs_property_list_add_string(p, T_SAMPLING_BILINEAR, SETTING_SAMPLING_BILINEAR);
+	obs_property_list_add_string(p, T_SAMPLING_BICUBIC, SETTING_SAMPLING_BICUBIC);
+	obs_property_list_add_string(p, T_SAMPLING_LANCZOS, SETTING_SAMPLING_LANCZOS);
+	obs_property_list_add_string(p, T_SAMPLING_AREA, SETTING_SAMPLING_AREA);
 
 	/* ----------------- */
 
-	p = obs_properties_add_list(props, S_RESOLUTION, T_RESOLUTION, OBS_COMBO_TYPE_EDITABLE,
+	p = obs_properties_add_list(props, SETTING_RESOLUTION, T_RESOLUTION, OBS_COMBO_TYPE_EDITABLE,
 				    OBS_COMBO_FORMAT_STRING);
 
 	obs_property_list_add_string(p, T_NONE, T_NONE);
@@ -523,7 +523,7 @@ static obs_properties_t *scale_filter_properties(void *data)
 		obs_property_list_add_string(p, str, str);
 	}
 
-	obs_properties_add_bool(props, S_UNDISTORT, T_UNDISTORT);
+	obs_properties_add_bool(props, SETTING_UNDISTORT, T_UNDISTORT);
 
 	/* ----------------- */
 
@@ -533,9 +533,9 @@ static obs_properties_t *scale_filter_properties(void *data)
 
 static void scale_filter_defaults(obs_data_t *settings)
 {
-	obs_data_set_default_string(settings, S_SAMPLING, S_SAMPLING_BICUBIC);
-	obs_data_set_default_string(settings, S_RESOLUTION, T_NONE);
-	obs_data_set_default_bool(settings, S_UNDISTORT, 0);
+	obs_data_set_default_string(settings, SETTING_SAMPLING, SETTING_SAMPLING_BICUBIC);
+	obs_data_set_default_string(settings, SETTING_RESOLUTION, T_NONE);
+	obs_data_set_default_bool(settings, SETTING_UNDISTORT, 0);
 }
 
 static uint32_t scale_filter_width(void *data)

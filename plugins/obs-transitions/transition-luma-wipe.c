@@ -4,9 +4,9 @@
 
 /* clang-format off */
 
-#define S_LUMA_IMG              "luma_image"
-#define S_LUMA_INV              "luma_invert"
-#define S_LUMA_SOFT             "luma_softness"
+#define SETTING_LUMA_IMG              "luma_image"
+#define SETTING_LUMA_INV              "luma_invert"
+#define SETTING_LUMA_SOFT             "luma_softness"
 
 #define T_LUMA_IMG              obs_module_text("LumaWipe.Image")
 #define T_LUMA_INV              obs_module_text("LumaWipe.Invert")
@@ -41,9 +41,9 @@ static void luma_wipe_update(void *data, obs_data_t *settings)
 {
 	struct luma_wipe_info *lwipe = data;
 
-	const char *name = obs_data_get_string(settings, S_LUMA_IMG);
-	lwipe->invert_luma = obs_data_get_bool(settings, S_LUMA_INV);
-	lwipe->softness = (float)obs_data_get_double(settings, S_LUMA_SOFT);
+	const char *name = obs_data_get_string(settings, SETTING_LUMA_IMG);
+	lwipe->invert_luma = obs_data_get_bool(settings, SETTING_LUMA_INV);
+	lwipe->softness = (float)obs_data_get_double(settings, SETTING_LUMA_SOFT);
 
 	struct dstr path = {0};
 
@@ -131,7 +131,7 @@ static obs_properties_t *luma_wipe_properties(void *data)
 
 	obs_property_t *p;
 
-	p = obs_properties_add_list(props, S_LUMA_IMG, T_LUMA_IMG, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
+	p = obs_properties_add_list(props, SETTING_LUMA_IMG, T_LUMA_IMG, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
 
 	if (data) {
 		struct luma_wipe_info *lwipe = data;
@@ -145,17 +145,17 @@ static obs_properties_t *luma_wipe_properties(void *data)
 		}
 	}
 
-	obs_properties_add_float(props, S_LUMA_SOFT, T_LUMA_SOFT, 0.0, 1.0, 0.05);
-	obs_properties_add_bool(props, S_LUMA_INV, T_LUMA_INV);
+	obs_properties_add_float(props, SETTING_LUMA_SOFT, T_LUMA_SOFT, 0.0, 1.0, 0.05);
+	obs_properties_add_bool(props, SETTING_LUMA_INV, T_LUMA_INV);
 
 	return props;
 }
 
 static void luma_wipe_defaults(obs_data_t *settings)
 {
-	obs_data_set_default_string(settings, S_LUMA_IMG, "linear-h.png");
-	obs_data_set_default_double(settings, S_LUMA_SOFT, 0.03);
-	obs_data_set_default_bool(settings, S_LUMA_INV, false);
+	obs_data_set_default_string(settings, SETTING_LUMA_IMG, "linear-h.png");
+	obs_data_set_default_double(settings, SETTING_LUMA_SOFT, 0.03);
+	obs_data_set_default_bool(settings, SETTING_LUMA_INV, false);
 }
 
 static void luma_wipe_callback(void *data, gs_texture_t *a, gs_texture_t *b, float t, uint32_t cx, uint32_t cy)

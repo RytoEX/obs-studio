@@ -1,10 +1,10 @@
 #include <obs-module.h>
 
-#define S_COLOR "color"
-#define S_SWITCH_POINT "switch_point"
+#define SETTING_COLOR "color"
+#define SETTING_SWITCH_POINT "switch_point"
 
-#define S_COLOR_TEXT obs_module_text("Color")
-#define S_SWITCH_POINT_TEXT obs_module_text("SwitchPoint")
+#define SETTING_COLOR_TEXT obs_module_text("Color")
+#define SETTING_SWITCH_POINT_TEXT obs_module_text("SwitchPoint")
 
 struct fade_to_color_info {
 	obs_source_t *source;
@@ -48,8 +48,8 @@ static const char *fade_to_color_get_name(void *type_data)
 static void fade_to_color_update(void *data, obs_data_t *settings)
 {
 	struct fade_to_color_info *fade_to_color = data;
-	uint32_t color = (uint32_t)obs_data_get_int(settings, S_COLOR);
-	uint32_t swp = (uint32_t)obs_data_get_int(settings, S_SWITCH_POINT);
+	uint32_t color = (uint32_t)obs_data_get_int(settings, SETTING_COLOR);
+	uint32_t swp = (uint32_t)obs_data_get_int(settings, SETTING_SWITCH_POINT);
 
 	color |= 0xFF000000;
 
@@ -168,8 +168,8 @@ static obs_properties_t *fade_to_color_properties(void *data)
 {
 	obs_properties_t *props = obs_properties_create();
 
-	obs_properties_add_color(props, S_COLOR, S_COLOR_TEXT);
-	obs_property_t *p = obs_properties_add_int_slider(props, S_SWITCH_POINT, S_SWITCH_POINT_TEXT, 0, 100, 1);
+	obs_properties_add_color(props, SETTING_COLOR, SETTING_COLOR_TEXT);
+	obs_property_t *p = obs_properties_add_int_slider(props, SETTING_SWITCH_POINT, SETTING_SWITCH_POINT_TEXT, 0, 100, 1);
 	obs_property_int_set_suffix(p, "%");
 
 	UNUSED_PARAMETER(data);
@@ -178,8 +178,8 @@ static obs_properties_t *fade_to_color_properties(void *data)
 
 static void fade_to_color_defaults(obs_data_t *settings)
 {
-	obs_data_set_default_int(settings, S_COLOR, 0xFF000000);
-	obs_data_set_default_int(settings, S_SWITCH_POINT, 50);
+	obs_data_set_default_int(settings, SETTING_COLOR, 0xFF000000);
+	obs_data_set_default_int(settings, SETTING_SWITCH_POINT, 50);
 }
 
 static enum gs_color_space fade_to_color_video_get_color_space(void *data, size_t count,

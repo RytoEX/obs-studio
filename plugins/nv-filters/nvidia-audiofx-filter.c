@@ -21,11 +21,11 @@
 #endif
 /* -------------------------------------------------------- */
 
-#define S_NVAFX_INTENSITY "intensity"
-#define S_METHOD "method"
-#define S_METHOD_NVAFX_DENOISER NVAFX_EFFECT_DENOISER
-#define S_METHOD_NVAFX_DEREVERB NVAFX_EFFECT_DEREVERB
-#define S_METHOD_NVAFX_DEREVERB_DENOISER NVAFX_EFFECT_DEREVERB_DENOISER
+#define SETTING_NVAFX_INTENSITY "intensity"
+#define SETTING_METHOD "method"
+#define SETTING_METHOD_NVAFX_DENOISER NVAFX_EFFECT_DENOISER
+#define SETTING_METHOD_NVAFX_DEREVERB NVAFX_EFFECT_DEREVERB
+#define SETTING_METHOD_NVAFX_DEREVERB_DENOISER NVAFX_EFFECT_DEREVERB_DENOISER
 
 #define MT_ obs_module_text
 #define TEXT_NVAFX_INTENSITY MT_("Nvafx.Intensity")
@@ -97,7 +97,7 @@ struct nvidia_audio_data {
 	audio_resampler_t *nvafx_resampler;
 	audio_resampler_t *nvafx_resampler_back;
 
-	/* We load the DLL in a separate thread because its loading is very 
+	/* We load the DLL in a separate thread because its loading is very
 	 * long and unnecessarily blocks OBS initial loading.
 	 * This bool is true once the thread which side loads the FX DLL is started */
 	bool nvafx_loading;
@@ -493,10 +493,10 @@ static void nvidia_audio_update(void *data, obs_data_t *s)
 	if (!ng->use_nvafx)
 		return;
 
-	const char *method = obs_data_get_string(s, S_METHOD);
+	const char *method = obs_data_get_string(s, SETTING_METHOD);
 	ng->latency = 1000000000LL / (1000 / BUFFER_SIZE_MSEC);
 
-	float intensity = (float)obs_data_get_double(s, S_NVAFX_INTENSITY);
+	float intensity = (float)obs_data_get_double(s, SETTING_NVAFX_INTENSITY);
 	/*-------------------------------------------------------------------*/
 	/* STAGE 1 : the following is run only when the filter is created. */
 
@@ -577,7 +577,7 @@ static void *nvidia_audio_create(obs_data_t *settings, obs_source_t *filter)
 
 		info("NVAFX SDK redist path was found here %s", sdk_path);
 		// set FX
-		const char *method = obs_data_get_string(settings, S_METHOD);
+		const char *method = obs_data_get_string(settings, SETTING_METHOD);
 		set_nv_model(ng, method);
 		ng->fx = bstrdup(method);
 		ng->use_nvafx = true;
@@ -811,8 +811,8 @@ static struct obs_audio_data *nvidia_audio_filter_audio(void *data, struct obs_a
 
 static void nvidia_audio_defaults(obs_data_t *s)
 {
-	obs_data_set_default_double(s, S_NVAFX_INTENSITY, 1.0);
-	obs_data_set_default_string(s, S_METHOD, S_METHOD_NVAFX_DENOISER);
+	obs_data_set_default_double(s, SETTING_NVAFX_INTENSITY, 1.0);
+	obs_data_set_default_string(s, SETTING_METHOD, SETTING_METHOD_NVAFX_DENOISER);
 }
 
 static obs_properties_t *nvidia_audio_properties(void *data)
@@ -820,13 +820,13 @@ static obs_properties_t *nvidia_audio_properties(void *data)
 	obs_properties_t *ppts = obs_properties_create();
 	struct nvidia_audio_data *ng = (struct nvidia_audio_data *)data;
 	obs_property_t *method =
-		obs_properties_add_list(ppts, S_METHOD, TEXT_METHOD, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
+		obs_properties_add_list(ppts, SETTING_METHOD, TEXT_METHOD, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
 	if (ng->nvidia_sdk_dir_found) {
-		obs_property_list_add_string(method, TEXT_METHOD_NVAFX_DENOISER, S_METHOD_NVAFX_DENOISER);
-		obs_property_list_add_string(method, TEXT_METHOD_NVAFX_DEREVERB, S_METHOD_NVAFX_DEREVERB);
+		obs_property_list_add_string(method, TEXT_METHOD_NVAFX_DENOISER, SETTING_METHOD_NVAFX_DENOISER);
+		obs_property_list_add_string(method, TEXT_METHOD_NVAFX_DEREVERB, SETTING_METHOD_NVAFX_DEREVERB);
 		obs_property_list_add_string(method, TEXT_METHOD_NVAFX_DEREVERB_DENOISER,
-					     S_METHOD_NVAFX_DEREVERB_DENOISER);
-		obs_property_t *slider = obs_properties_add_float_slider(ppts, S_NVAFX_INTENSITY, TEXT_NVAFX_INTENSITY,
+					     SETTING_METHOD_NVAFX_DEREVERB_DENOISER);
+		obs_property_t *slider = obs_properties_add_float_slider(ppts, SETTING_NVAFX_INTENSITY, TEXT_NVAFX_INTENSITY,
 									 0.0f, 1.0f, 0.01f);
 
 		unsigned int version = get_lib_version();

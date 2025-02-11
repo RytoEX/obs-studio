@@ -2,7 +2,7 @@
 #include <graphics/vec2.h>
 #include "easings.h"
 
-#define S_DIRECTION "direction"
+#define SETTING_DIRECTION "direction"
 
 struct slide_info {
 	obs_source_t *source;
@@ -26,7 +26,7 @@ static const char *slide_get_name(void *type_data)
 static void slide_update(void *data, obs_data_t *settings)
 {
 	struct slide_info *slide = data;
-	const char *dir = obs_data_get_string(settings, S_DIRECTION);
+	const char *dir = obs_data_get_string(settings, SETTING_DIRECTION);
 
 	if (strcmp(dir, "right") == 0)
 		slide->dir = (struct vec2){-1.0f, 0.0f};
@@ -136,7 +136,7 @@ static obs_properties_t *slide_properties(void *data)
 	obs_properties_t *ppts = obs_properties_create();
 	obs_property_t *p;
 
-	p = obs_properties_add_list(ppts, S_DIRECTION, obs_module_text("Direction"), OBS_COMBO_TYPE_LIST,
+	p = obs_properties_add_list(ppts, SETTING_DIRECTION, obs_module_text("Direction"), OBS_COMBO_TYPE_LIST,
 				    OBS_COMBO_FORMAT_STRING);
 	obs_property_list_add_string(p, obs_module_text("Direction.Left"), "left");
 	obs_property_list_add_string(p, obs_module_text("Direction.Right"), "right");

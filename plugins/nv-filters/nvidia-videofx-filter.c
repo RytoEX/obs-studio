@@ -20,12 +20,12 @@
 #endif
 
 /* -------------------------------------------------------- */
-#define S_MODE "mode"
-#define S_MODE_QUALITY 0
-#define S_MODE_PERF 1
-#define S_THRESHOLDFX "threshold"
-#define S_THRESHOLDFX_DEFAULT 1.0
-#define S_PROCESSING "processing_interval"
+#define SETTING_MODE "mode"
+#define SETTING_MODE_QUALITY 0
+#define SETTING_MODE_PERF 1
+#define SETTING_THRESHOLDFX "threshold"
+#define SETTING_THRESHOLDFX_DEFAULT 1.0
+#define SETTING_PROCESSING "processing_interval"
 
 #define MT_ obs_module_text
 #define TEXT_MODE MT_("Nvvfx.Method.Greenscreen.Mode")
@@ -37,11 +37,11 @@
 #define TEXT_PROCESSING_HINT MT_("Nvvfx.Method.Greenscreen.Processing.Hint")
 
 /* Blur & background blur FX */
-#define S_STRENGTH "intensity"
-#define S_STRENGTH_DEFAULT 0.5
+#define SETTING_STRENGTH "intensity"
+#define SETTING_STRENGTH_DEFAULT 0.5
 #define TEXT_MODE_BLUR_STRENGTH MT_("Nvvfx.Method.Blur.Strength")
 
-enum nvvfx_filter_id { S_FX_AIGS, S_FX_BLUR, S_FX_BG_BLUR };
+enum nvvfx_filter_id { SETTING_FX_AIGS, SETTING_FX_BLUR, SETTING_FX_BG_BLUR };
 
 bool nvvfx_loaded = false;
 bool nvvfx_new_sdk = false;
@@ -128,11 +128,11 @@ static void nvvfx_filter_update(void *data, obs_data_t *settings)
 	NvCV_Status vfxErr;
 	enum nvvfx_fx_id id = filter->filter_id;
 
-	filter->threshold = (float)obs_data_get_double(settings, S_THRESHOLDFX);
-	filter->processing_interval = (int)obs_data_get_int(settings, S_PROCESSING);
-	float strength = (float)obs_data_get_double(settings, S_STRENGTH);
-	if (id == S_FX_AIGS || id == S_FX_BG_BLUR) {
-		int mode = id == S_FX_BG_BLUR ? (int)S_MODE_QUALITY : (int)obs_data_get_int(settings, S_MODE);
+	filter->threshold = (float)obs_data_get_double(settings, SETTING_THRESHOLDFX);
+	filter->processing_interval = (int)obs_data_get_int(settings, SETTING_PROCESSING);
+	float strength = (float)obs_data_get_double(settings, SETTING_STRENGTH);
+	if (id == SETTING_FX_AIGS || id == SETTING_FX_BG_BLUR) {
+		int mode = id == SETTING_FX_BG_BLUR ? (int)SETTING_MODE_QUALITY : (int)obs_data_get_int(settings, SETTING_MODE);
 		if (filter->mode != mode) {
 			filter->mode = mode;
 			vfxErr = NvVFX_SetU32(filter->handle, NVVFX_MODE, mode);
@@ -141,7 +141,7 @@ static void nvvfx_filter_update(void *data, obs_data_t *settings)
 				error("Error loading AI Greenscreen FX %i", vfxErr);
 		}
 	}
-	if (id == S_FX_BLUR || id == S_FX_BG_BLUR) {
+	if (id == SETTING_FX_BLUR || id == SETTING_FX_BG_BLUR) {
 		if (filter->strength != strength) {
 			filter->strength = strength;
 			vfxErr = NvVFX_SetF32(filter->handle_blur, NVVFX_STRENGTH, filter->strength);
@@ -164,7 +164,7 @@ static void nvvfx_filter_actual_destroy(void *data)
 
 	if (filter->images_allocated) {
 		obs_enter_graphics();
-		if (filter->filter_id == S_FX_AIGS)
+		if (filter->filter_id == SETTING_FX_AIGS)
 			gs_texture_destroy(filter->alpha_texture);
 		else
 			gs_texture_destroy(filter->blur_texture);
@@ -177,7 +177,7 @@ static void nvvfx_filter_actual_destroy(void *data)
 		NvCVImage_Destroy(filter->A_dst_img);
 		NvCVImage_Destroy(filter->dst_img);
 		NvCVImage_Destroy(filter->stage);
-		if (filter->filter_id != S_FX_AIGS) {
+		if (filter->filter_id != SETTING_FX_AIGS) {
 			NvCVImage_Destroy(filter->blur_BGR_dst_img);
 			NvCVImage_Destroy(filter->RGBA_dst_img);
 			NvCVImage_Destroy(filter->blur_dst_img);
@@ -229,13 +229,13 @@ static bool nvvfx_filter_create_internal(struct nvvfx_data *filter)
 	enum nvvfx_fx_id id = filter->filter_id;
 	/* 1. Create FX */
 	switch (id) {
-	case S_FX_AIGS:
+	case SETTING_FX_AIGS:
 		vfxErr = NvVFX_CreateEffect(NVVFX_FX_GREEN_SCREEN, &filter->handle);
 		break;
-	case S_FX_BLUR:
+	case SETTING_FX_BLUR:
 		vfxErr = NvVFX_CreateEffect(NVVFX_FX_BGBLUR, &filter->handle_blur);
 		break;
-	case S_FX_BG_BLUR:
+	case SETTING_FX_BG_BLUR:
 		vfxErr = NvVFX_CreateEffect(NVVFX_FX_GREEN_SCREEN, &filter->handle);
 		if (NVCV_SUCCESS != vfxErr)
 			log_nverror_destroy(filter, vfxErr);
@@ -253,7 +253,7 @@ static bool nvvfx_filter_create_internal(struct nvvfx_data *filter)
 	blog(LOG_DEBUG, "blur fx settings /n/%s", info);
 #endif
 	/* 2. Set models path & initialize CudaStream */
-	if (id == S_FX_AIGS || id == S_FX_BG_BLUR) {
+	if (id == SETTING_FX_AIGS || id == SETTING_FX_BG_BLUR) {
 		char buffer[MAX_PATH];
 		char modelDir[MAX_PATH];
 		nvvfx_get_sdk_path(buffer, MAX_PATH);
@@ -267,7 +267,7 @@ static bool nvvfx_filter_create_internal(struct nvvfx_data *filter)
 		if (NVCV_SUCCESS != vfxErr)
 			log_nverror_destroy(filter, vfxErr);
 	}
-	if (id == S_FX_BLUR || id == S_FX_BG_BLUR) {
+	if (id == SETTING_FX_BLUR || id == SETTING_FX_BG_BLUR) {
 		vfxErr = NvVFX_CudaStreamCreate(&filter->stream_blur);
 		if (NVCV_SUCCESS != vfxErr)
 			log_nverror_destroy(filter, vfxErr);
@@ -319,12 +319,12 @@ static void *nvvfx_filter_create(obs_data_t *settings, obs_source_t *context, en
 		return NULL;
 
 	/* 3. Load effect. */
-	char *effect_path = obs_module_file(id != S_FX_AIGS ? "rtx_blur.effect" : "rtx_greenscreen.effect");
+	char *effect_path = obs_module_file(id != SETTING_FX_AIGS ? "rtx_blur.effect" : "rtx_greenscreen.effect");
 	obs_enter_graphics();
 	filter->effect = gs_effect_create_from_file(effect_path, NULL);
 	bfree(effect_path);
 	if (filter->effect) {
-		if (id == S_FX_AIGS) {
+		if (id == SETTING_FX_AIGS) {
 			filter->mask_param = gs_effect_get_param_by_name(filter->effect, "mask");
 			filter->threshold_param = gs_effect_get_param_by_name(filter->effect, "threshold");
 		} else {
@@ -337,7 +337,7 @@ static void *nvvfx_filter_create(obs_data_t *settings, obs_source_t *context, en
 	obs_leave_graphics();
 
 	/* 4. Allocate state for the AIGS & background blur */
-	if (nvvfx_new_sdk && id != S_FX_BLUR) {
+	if (nvvfx_new_sdk && id != SETTING_FX_BLUR) {
 		vfxErr = NvVFX_AllocateState(filter->handle, &filter->stateObjectHandle);
 		if (NVCV_SUCCESS != vfxErr)
 			return log_nverror_destroy(filter, vfxErr);
@@ -358,17 +358,17 @@ static void *nvvfx_filter_create(obs_data_t *settings, obs_source_t *context, en
 
 static void *nv_greenscreen_filter_create(obs_data_t *settings, obs_source_t *context)
 {
-	return nvvfx_filter_create(settings, context, S_FX_AIGS);
+	return nvvfx_filter_create(settings, context, SETTING_FX_AIGS);
 }
 
 static void *nv_blur_filter_create(obs_data_t *settings, obs_source_t *context)
 {
-	return nvvfx_filter_create(settings, context, S_FX_BLUR);
+	return nvvfx_filter_create(settings, context, SETTING_FX_BLUR);
 }
 
 static void *nv_background_blur_filter_create(obs_data_t *settings, obs_source_t *context)
 {
-	return nvvfx_filter_create(settings, context, S_FX_BG_BLUR);
+	return nvvfx_filter_create(settings, context, SETTING_FX_BG_BLUR);
 }
 
 static void nvvfx_filter_reset(void *data, calldata_t *calldata)
@@ -400,7 +400,7 @@ static void nvvfx_filter_reset(void *data, calldata_t *calldata)
 		return;
 
 	/* 3. load FX */
-	if (filter->filter_id != S_FX_BLUR) {
+	if (filter->filter_id != SETTING_FX_BLUR) {
 		vfxErr = NvVFX_SetU32(filter->handle, NVVFX_MODE, filter->mode);
 		if (NVCV_SUCCESS != vfxErr)
 			error("Error loading NVIDIA Video FX %i", vfxErr);
@@ -409,7 +409,7 @@ static void nvvfx_filter_reset(void *data, calldata_t *calldata)
 			error("Error loading NVIDIA Video FX %i", vfxErr);
 		vfxErr = NvVFX_ResetState(filter->handle, filter->stateObjectHandle);
 	}
-	if (filter->filter_id != S_FX_AIGS) {
+	if (filter->filter_id != SETTING_FX_AIGS) {
 		vfxErr = NvVFX_SetF32(filter->handle_blur, NVVFX_STRENGTH, filter->strength);
 		if (NVCV_SUCCESS != vfxErr)
 			error("Error loading NVIDIA Video FX %i", vfxErr);
@@ -542,12 +542,12 @@ static void init_images(struct nvvfx_data *filter)
 	uint32_t height = filter->height;
 
 	/* 1. Create alpha texture & associated NvCVImage */
-	if (filter->filter_id == S_FX_BG_BLUR || filter->filter_id == S_FX_AIGS) {
+	if (filter->filter_id == SETTING_FX_BG_BLUR || filter->filter_id == SETTING_FX_AIGS) {
 		if (!create_alpha_texture(filter))
 			goto fail;
 	}
 	/* 2. Create blur texture & associated NvCVImage */
-	if (filter->filter_id == S_FX_BG_BLUR || filter->filter_id == S_FX_BLUR) {
+	if (filter->filter_id == SETTING_FX_BG_BLUR || filter->filter_id == SETTING_FX_BLUR) {
 		if (!create_blur_texture(filter))
 			goto fail;
 	}
@@ -579,13 +579,13 @@ static void init_images(struct nvvfx_data *filter)
 	}
 
 	/* 7. Init blur images */
-	if (filter->filter_id == S_FX_BLUR || filter->filter_id == S_FX_BG_BLUR) {
+	if (filter->filter_id == SETTING_FX_BLUR || filter->filter_id == SETTING_FX_BG_BLUR) {
 		if (!init_blur_images(filter))
 			goto fail;
 	}
 
 	/* 8. Pass settings for AIGS (AI Greenscreen) FX */
-	if (filter->filter_id == S_FX_BG_BLUR || filter->filter_id == S_FX_AIGS) {
+	if (filter->filter_id == SETTING_FX_BG_BLUR || filter->filter_id == SETTING_FX_AIGS) {
 		NvVFX_SetImage(filter->handle, NVVFX_INPUT_IMAGE, filter->BGR_src_img);
 		NvVFX_SetImage(filter->handle, NVVFX_OUTPUT_IMAGE, filter->A_dst_img);
 		if (filter->width)
@@ -614,11 +614,11 @@ static bool process_texture(struct nvvfx_data *filter)
 
 	/* 1. Map src img holding texture. */
 	switch (id) {
-	case S_FX_AIGS:
-	case S_FX_BG_BLUR:
+	case SETTING_FX_AIGS:
+	case SETTING_FX_BG_BLUR:
 		process_stream = filter->stream;
 		break;
-	case S_FX_BLUR:
+	case SETTING_FX_BLUR:
 		process_stream = filter->stream_blur;
 		break;
 	default:
@@ -646,7 +646,7 @@ static bool process_texture(struct nvvfx_data *filter)
 	}
 
 	/* 3. Run AIGS (AI Greenscreen) fx */
-	if (id != S_FX_BLUR) {
+	if (id != SETTING_FX_BLUR) {
 		vfxErr = NvVFX_Run(filter->handle, 1);
 		if (vfxErr != NVCV_SUCCESS) {
 			const char *errString = NvCV_GetErrorStringFromCode(vfxErr);
@@ -656,7 +656,7 @@ static bool process_texture(struct nvvfx_data *filter)
 		}
 	}
 
-	if (id != S_FX_AIGS) {
+	if (id != SETTING_FX_AIGS) {
 		/* 4. BLUR FX */
 		/* 4a. Run BLUR FX except for AIGS */
 		vfxErr = NvVFX_Run(filter->handle_blur, 1);
@@ -758,7 +758,7 @@ static void nvvfx_filter_tick(void *data, float t)
 	}
 
 	/* minimum size supported by SDK is (512,288) */
-	if (filter->filter_id != S_FX_BLUR) {
+	if (filter->filter_id != SETTING_FX_BLUR) {
 		filter->target_valid = cx >= 512 && cy >= 288;
 		if (!filter->target_valid) {
 			error("Size must be larger than (512,288)");
@@ -1063,17 +1063,17 @@ static obs_properties_t *nvvfx_filter_properties(void *data)
 {
 	struct nvvfx_data *filter = (struct nvvfx_data *)data;
 	obs_properties_t *props = obs_properties_create();
-	if (filter->filter_id != S_FX_AIGS) {
+	if (filter->filter_id != SETTING_FX_AIGS) {
 		obs_property_t *strength =
-			obs_properties_add_float_slider(props, S_STRENGTH, TEXT_MODE_BLUR_STRENGTH, 0, 1, 0.05);
+			obs_properties_add_float_slider(props, SETTING_STRENGTH, TEXT_MODE_BLUR_STRENGTH, 0, 1, 0.05);
 	} else {
 		obs_property_t *mode =
-			obs_properties_add_list(props, S_MODE, TEXT_MODE, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_INT);
-		obs_property_list_add_int(mode, TEXT_MODE_QUALITY, S_MODE_QUALITY);
-		obs_property_list_add_int(mode, TEXT_MODE_PERF, S_MODE_PERF);
+			obs_properties_add_list(props, SETTING_MODE, TEXT_MODE, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_INT);
+		obs_property_list_add_int(mode, TEXT_MODE_QUALITY, SETTING_MODE_QUALITY);
+		obs_property_list_add_int(mode, TEXT_MODE_PERF, SETTING_MODE_PERF);
 		obs_property_t *threshold =
-			obs_properties_add_float_slider(props, S_THRESHOLDFX, TEXT_MODE_THRESHOLD, 0, 1, 0.05);
-		obs_property_t *partial = obs_properties_add_int_slider(props, S_PROCESSING, TEXT_PROCESSING, 1, 4, 1);
+			obs_properties_add_float_slider(props, SETTING_THRESHOLDFX, TEXT_MODE_THRESHOLD, 0, 1, 0.05);
+		obs_property_t *partial = obs_properties_add_int_slider(props, SETTING_PROCESSING, TEXT_PROCESSING, 1, 4, 1);
 		obs_property_set_long_description(partial, TEXT_PROCESSING_HINT);
 	}
 	unsigned int version = get_lib_version();
@@ -1088,10 +1088,10 @@ static obs_properties_t *nvvfx_filter_properties(void *data)
 
 static void nvvfx_filter_defaults(obs_data_t *settings)
 {
-	obs_data_set_default_int(settings, S_MODE, S_MODE_QUALITY);
-	obs_data_set_default_double(settings, S_THRESHOLDFX, S_THRESHOLDFX_DEFAULT);
-	obs_data_set_default_int(settings, S_PROCESSING, 1);
-	obs_data_set_default_double(settings, S_STRENGTH, S_STRENGTH_DEFAULT);
+	obs_data_set_default_int(settings, SETTING_MODE, SETTING_MODE_QUALITY);
+	obs_data_set_default_double(settings, SETTING_THRESHOLDFX, SETTING_THRESHOLDFX_DEFAULT);
+	obs_data_set_default_int(settings, SETTING_PROCESSING, 1);
+	obs_data_set_default_double(settings, SETTING_STRENGTH, SETTING_STRENGTH_DEFAULT);
 }
 
 bool load_nvidia_vfx(void)

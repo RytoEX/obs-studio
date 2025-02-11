@@ -8,7 +8,7 @@
 #define warn(format, ...) do_log(LOG_WARNING, format, ##__VA_ARGS__)
 #define info(format, ...) do_log(LOG_INFO, format, ##__VA_ARGS__)
 
-#define S_GAIN_DB "db"
+#define SETTING_GAIN_DB "db"
 
 #define MT_ obs_module_text
 #define TEXT_GAIN_DB MT_("Gain.GainDB")
@@ -34,7 +34,7 @@ static void gain_destroy(void *data)
 static void gain_update(void *data, obs_data_t *s)
 {
 	struct gain_data *gf = data;
-	double val = obs_data_get_double(s, S_GAIN_DB);
+	double val = obs_data_get_double(s, SETTING_GAIN_DB);
 	gf->channels = audio_output_get_channels(obs_get_audio());
 	gf->multiple = db_to_mul((float)val);
 }
@@ -67,14 +67,14 @@ static struct obs_audio_data *gain_filter_audio(void *data, struct obs_audio_dat
 
 static void gain_defaults(obs_data_t *s)
 {
-	obs_data_set_default_double(s, S_GAIN_DB, 0.0f);
+	obs_data_set_default_double(s, SETTING_GAIN_DB, 0.0f);
 }
 
 static obs_properties_t *gain_properties(void *data)
 {
 	obs_properties_t *ppts = obs_properties_create();
 
-	obs_property_t *p = obs_properties_add_float_slider(ppts, S_GAIN_DB, TEXT_GAIN_DB, -30.0, 30.0, 0.1);
+	obs_property_t *p = obs_properties_add_float_slider(ppts, SETTING_GAIN_DB, TEXT_GAIN_DB, -30.0, 30.0, 0.1);
 	obs_property_float_set_suffix(p, " dB");
 
 	UNUSED_PARAMETER(data);

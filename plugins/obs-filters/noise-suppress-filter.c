@@ -39,14 +39,14 @@ bool nvafx_loaded = false;
 
 /* -------------------------------------------------------- */
 
-#define S_SUPPRESS_LEVEL "suppress_level"
-#define S_NVAFX_INTENSITY "intensity"
-#define S_METHOD "method"
-#define S_METHOD_SPEEX "speex"
-#define S_METHOD_RNN "rnnoise"
-#define S_METHOD_NVAFX_DENOISER "denoiser"
-#define S_METHOD_NVAFX_DEREVERB "dereverb"
-#define S_METHOD_NVAFX_DEREVERB_DENOISER "dereverb_denoiser"
+#define SETTING_SUPPRESS_LEVEL "suppress_level"
+#define SETTING_NVAFX_INTENSITY "intensity"
+#define SETTING_METHOD "method"
+#define SETTING_METHOD_SPEEX "speex"
+#define SETTING_METHOD_RNN "rnnoise"
+#define SETTING_METHOD_NVAFX_DENOISER "denoiser"
+#define SETTING_METHOD_NVAFX_DEREVERB "dereverb"
+#define SETTING_METHOD_NVAFX_DEREVERB_DENOISER "dereverb_denoiser"
 
 #define MT_ obs_module_text
 #define TEXT_SUPPRESS_LEVEL MT_("NoiseSuppress.SuppressLevel")
@@ -218,11 +218,11 @@ static void noise_suppress_update(void *data, obs_data_t *s)
 	uint32_t sample_rate = audio_output_get_sample_rate(obs_get_audio());
 	size_t channels = audio_output_get_channels(obs_get_audio());
 	size_t frames = (size_t)sample_rate / (1000 / BUFFER_SIZE_MSEC);
-	const char *method = obs_data_get_string(s, S_METHOD);
+	const char *method = obs_data_get_string(s, SETTING_METHOD);
 
-	ng->suppress_level = (int)obs_data_get_int(s, S_SUPPRESS_LEVEL);
+	ng->suppress_level = (int)obs_data_get_int(s, SETTING_SUPPRESS_LEVEL);
 	ng->latency = 1000000000LL / (1000 / BUFFER_SIZE_MSEC);
-	ng->use_rnnoise = strcmp(method, S_METHOD_RNN) == 0;
+	ng->use_rnnoise = strcmp(method, SETTING_METHOD_RNN) == 0;
 
 	/* Process 10 millisecond segments to keep latency low. */
 	/* Also RNNoise only supports buffers of this exact size. */
@@ -288,10 +288,10 @@ static void *noise_suppress_create(obs_data_t *settings, obs_source_t *filter)
 #ifdef LIBNVAFX_ENABLED
 	ng->migrated_filter = NULL;
 	// If a NVAFX entry is detected, create a new instance of NVAFX filter.
-	const char *method = obs_data_get_string(settings, S_METHOD);
-	ng->nvafx_enabled = strcmp(method, S_METHOD_NVAFX_DENOISER) == 0 ||
-			    strcmp(method, S_METHOD_NVAFX_DEREVERB) == 0 ||
-			    strcmp(method, S_METHOD_NVAFX_DEREVERB_DENOISER) == 0;
+	const char *method = obs_data_get_string(settings, SETTING_METHOD);
+	ng->nvafx_enabled = strcmp(method, SETTING_METHOD_NVAFX_DENOISER) == 0 ||
+			    strcmp(method, SETTING_METHOD_NVAFX_DEREVERB) == 0 ||
+			    strcmp(method, SETTING_METHOD_NVAFX_DEREVERB_DENOISER) == 0;
 	if (ng->nvafx_enabled) {
 		const char *str1 = obs_source_get_name(filter);
 		char *str2 = "_ported";
@@ -299,9 +299,9 @@ static void *noise_suppress_create(obs_data_t *settings, obs_source_t *filter)
 		strcpy(new_name, str1);
 		strcat(new_name, str2);
 		obs_data_t *new_settings = obs_data_create();
-		obs_data_set_string(new_settings, S_METHOD, method);
-		double intensity = obs_data_get_double(settings, S_NVAFX_INTENSITY);
-		obs_data_set_double(new_settings, S_NVAFX_INTENSITY, intensity);
+		obs_data_set_string(new_settings, SETTING_METHOD, method);
+		double intensity = obs_data_get_double(settings, SETTING_NVAFX_INTENSITY);
+		obs_data_set_double(new_settings, SETTING_NVAFX_INTENSITY, intensity);
 		ng->migrated_filter = obs_source_create("nvidia_audiofx_filter", new_name, new_settings, NULL);
 		obs_data_release(new_settings);
 		bfree(new_name);
@@ -543,14 +543,14 @@ static struct obs_audio_data *noise_suppress_filter_audio(void *data, struct obs
 
 static bool noise_suppress_method_modified(obs_properties_t *props, obs_property_t *property, obs_data_t *settings)
 {
-	obs_property_t *p_suppress_level = obs_properties_get(props, S_SUPPRESS_LEVEL);
-	obs_property_t *p_navfx_intensity = obs_properties_get(props, S_NVAFX_INTENSITY);
+	obs_property_t *p_suppress_level = obs_properties_get(props, SETTING_SUPPRESS_LEVEL);
+	obs_property_t *p_navfx_intensity = obs_properties_get(props, SETTING_NVAFX_INTENSITY);
 
-	const char *method = obs_data_get_string(settings, S_METHOD);
-	bool enable_level = strcmp(method, S_METHOD_SPEEX) == 0;
-	bool enable_intensity = strcmp(method, S_METHOD_NVAFX_DENOISER) == 0 ||
-				strcmp(method, S_METHOD_NVAFX_DEREVERB) == 0 ||
-				strcmp(method, S_METHOD_NVAFX_DEREVERB_DENOISER) == 0;
+	const char *method = obs_data_get_string(settings, SETTING_METHOD);
+	bool enable_level = strcmp(method, SETTING_METHOD_SPEEX) == 0;
+	bool enable_intensity = strcmp(method, SETTING_METHOD_NVAFX_DENOISER) == 0 ||
+				strcmp(method, SETTING_METHOD_NVAFX_DEREVERB) == 0 ||
+				strcmp(method, SETTING_METHOD_NVAFX_DEREVERB_DENOISER) == 0;
 	obs_property_set_visible(p_suppress_level, enable_level);
 	obs_property_set_visible(p_navfx_intensity, enable_intensity);
 
@@ -560,27 +560,27 @@ static bool noise_suppress_method_modified(obs_properties_t *props, obs_property
 
 static void noise_suppress_defaults_v1(obs_data_t *s)
 {
-	obs_data_set_default_int(s, S_SUPPRESS_LEVEL, -30);
+	obs_data_set_default_int(s, SETTING_SUPPRESS_LEVEL, -30);
 #if defined(LIBRNNOISE_ENABLED) && !defined(LIBSPEEXDSP_ENABLED)
-	obs_data_set_default_string(s, S_METHOD, S_METHOD_RNN);
+	obs_data_set_default_string(s, SETTING_METHOD, SETTING_METHOD_RNN);
 #else
-	obs_data_set_default_string(s, S_METHOD, S_METHOD_SPEEX);
+	obs_data_set_default_string(s, SETTING_METHOD, SETTING_METHOD_SPEEX);
 #endif
 #if defined(LIBNVAFX_ENABLED)
-	obs_data_set_default_double(s, S_NVAFX_INTENSITY, 1.0);
+	obs_data_set_default_double(s, SETTING_NVAFX_INTENSITY, 1.0);
 #endif
 }
 
 static void noise_suppress_defaults_v2(obs_data_t *s)
 {
-	obs_data_set_default_int(s, S_SUPPRESS_LEVEL, -30);
+	obs_data_set_default_int(s, SETTING_SUPPRESS_LEVEL, -30);
 #if defined(LIBRNNOISE_ENABLED)
-	obs_data_set_default_string(s, S_METHOD, S_METHOD_RNN);
+	obs_data_set_default_string(s, SETTING_METHOD, SETTING_METHOD_RNN);
 #else
-	obs_data_set_default_string(s, S_METHOD, S_METHOD_SPEEX);
+	obs_data_set_default_string(s, SETTING_METHOD, SETTING_METHOD_SPEEX);
 #endif
 #if defined(LIBNVAFX_ENABLED)
-	obs_data_set_default_double(s, S_NVAFX_INTENSITY, 1.0);
+	obs_data_set_default_double(s, SETTING_NVAFX_INTENSITY, 1.0);
 #endif
 }
 
@@ -595,15 +595,15 @@ static obs_properties_t *noise_suppress_properties(void *data)
 
 #if defined(LIBRNNOISE_ENABLED) && defined(LIBSPEEXDSP_ENABLED)
 	obs_property_t *method =
-		obs_properties_add_list(ppts, S_METHOD, TEXT_METHOD, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
-	obs_property_list_add_string(method, TEXT_METHOD_SPEEX, S_METHOD_SPEEX);
-	obs_property_list_add_string(method, TEXT_METHOD_RNN, S_METHOD_RNN);
+		obs_properties_add_list(ppts, SETTING_METHOD, TEXT_METHOD, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
+	obs_property_list_add_string(method, TEXT_METHOD_SPEEX, SETTING_METHOD_SPEEX);
+	obs_property_list_add_string(method, TEXT_METHOD_RNN, SETTING_METHOD_RNN);
 #ifdef LIBNVAFX_ENABLED
 	if (ng->nvafx_enabled) {
-		obs_property_list_add_string(method, TEXT_METHOD_NVAFX_DENOISER, S_METHOD_NVAFX_DENOISER);
-		obs_property_list_add_string(method, TEXT_METHOD_NVAFX_DEREVERB, S_METHOD_NVAFX_DEREVERB);
+		obs_property_list_add_string(method, TEXT_METHOD_NVAFX_DENOISER, SETTING_METHOD_NVAFX_DENOISER);
+		obs_property_list_add_string(method, TEXT_METHOD_NVAFX_DEREVERB, SETTING_METHOD_NVAFX_DEREVERB);
 		obs_property_list_add_string(method, TEXT_METHOD_NVAFX_DEREVERB_DENOISER,
-					     S_METHOD_NVAFX_DEREVERB_DENOISER);
+					     SETTING_METHOD_NVAFX_DEREVERB_DENOISER);
 		obs_property_list_item_disable(method, 2, true);
 		obs_property_list_item_disable(method, 3, true);
 		obs_property_list_item_disable(method, 4, true);
@@ -615,13 +615,13 @@ static obs_properties_t *noise_suppress_properties(void *data)
 
 #ifdef LIBSPEEXDSP_ENABLED
 	obs_property_t *speex_slider =
-		obs_properties_add_int_slider(ppts, S_SUPPRESS_LEVEL, TEXT_SUPPRESS_LEVEL, SUP_MIN, SUP_MAX, 1);
+		obs_properties_add_int_slider(ppts, SETTING_SUPPRESS_LEVEL, TEXT_SUPPRESS_LEVEL, SUP_MIN, SUP_MAX, 1);
 	obs_property_int_set_suffix(speex_slider, " dB");
 #endif
 
 #ifdef LIBNVAFX_ENABLED
 	if (ng->nvafx_enabled) {
-		obs_properties_add_float_slider(ppts, S_NVAFX_INTENSITY, TEXT_NVAFX_INTENSITY, 0.0f, 1.0f, 0.01f);
+		obs_properties_add_float_slider(ppts, SETTING_NVAFX_INTENSITY, TEXT_NVAFX_INTENSITY, 0.0f, 1.0f, 0.01f);
 		obs_property_t *warning2 = obs_properties_add_text(ppts, "deprecation2", NULL, OBS_TEXT_INFO);
 		obs_property_text_set_info_type(warning2, OBS_TEXT_INFO_WARNING);
 		obs_property_set_long_description(warning2, TEXT_METHOD_NVAFX_DEPRECATION2);

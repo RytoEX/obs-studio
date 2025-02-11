@@ -10,11 +10,11 @@
 
 /* clang-format off */
 
-#define S_OPEN_THRESHOLD               "open_threshold"
-#define S_CLOSE_THRESHOLD              "close_threshold"
-#define S_ATTACK_TIME                  "attack_time"
-#define S_HOLD_TIME                    "hold_time"
-#define S_RELEASE_TIME                 "release_time"
+#define SETTING_OPEN_THRESHOLD               "open_threshold"
+#define SETTING_CLOSE_THRESHOLD              "close_threshold"
+#define SETTING_ATTACK_TIME                  "attack_time"
+#define SETTING_HOLD_TIME                    "hold_time"
+#define SETTING_RELEASE_TIME                 "release_time"
 
 #define MT_ obs_module_text
 #define TEXT_OPEN_THRESHOLD            MT_("NoiseGate.OpenThreshold")
@@ -74,11 +74,11 @@ static void noise_gate_update(void *data, obs_data_t *s)
 	int hold_time_ms;
 	int release_time_ms;
 
-	open_threshold_db = (float)obs_data_get_double(s, S_OPEN_THRESHOLD);
-	close_threshold_db = (float)obs_data_get_double(s, S_CLOSE_THRESHOLD);
-	attack_time_ms = (int)obs_data_get_int(s, S_ATTACK_TIME);
-	hold_time_ms = (int)obs_data_get_int(s, S_HOLD_TIME);
-	release_time_ms = (int)obs_data_get_int(s, S_RELEASE_TIME);
+	open_threshold_db = (float)obs_data_get_double(s, SETTING_OPEN_THRESHOLD);
+	close_threshold_db = (float)obs_data_get_double(s, SETTING_CLOSE_THRESHOLD);
+	attack_time_ms = (int)obs_data_get_int(s, SETTING_ATTACK_TIME);
+	hold_time_ms = (int)obs_data_get_int(s, SETTING_HOLD_TIME);
+	release_time_ms = (int)obs_data_get_int(s, SETTING_RELEASE_TIME);
 	sample_rate = (float)audio_output_get_sample_rate(obs_get_audio());
 
 	ng->sample_rate_i = 1.0f / sample_rate;
@@ -155,11 +155,11 @@ static struct obs_audio_data *noise_gate_filter_audio(void *data, struct obs_aud
 
 static void noise_gate_defaults(obs_data_t *s)
 {
-	obs_data_set_default_double(s, S_OPEN_THRESHOLD, -26.0);
-	obs_data_set_default_double(s, S_CLOSE_THRESHOLD, -32.0);
-	obs_data_set_default_int(s, S_ATTACK_TIME, 25);
-	obs_data_set_default_int(s, S_HOLD_TIME, 200);
-	obs_data_set_default_int(s, S_RELEASE_TIME, 150);
+	obs_data_set_default_double(s, SETTING_OPEN_THRESHOLD, -26.0);
+	obs_data_set_default_double(s, SETTING_CLOSE_THRESHOLD, -32.0);
+	obs_data_set_default_int(s, SETTING_ATTACK_TIME, 25);
+	obs_data_set_default_int(s, SETTING_HOLD_TIME, 200);
+	obs_data_set_default_int(s, SETTING_RELEASE_TIME, 150);
 }
 
 static obs_properties_t *noise_gate_properties(void *data)
@@ -167,15 +167,15 @@ static obs_properties_t *noise_gate_properties(void *data)
 	obs_properties_t *ppts = obs_properties_create();
 	obs_property_t *p;
 
-	p = obs_properties_add_float_slider(ppts, S_CLOSE_THRESHOLD, TEXT_CLOSE_THRESHOLD, VOL_MIN, VOL_MAX, 1.0);
+	p = obs_properties_add_float_slider(ppts, SETTING_CLOSE_THRESHOLD, TEXT_CLOSE_THRESHOLD, VOL_MIN, VOL_MAX, 1.0);
 	obs_property_float_set_suffix(p, " dB");
-	p = obs_properties_add_float_slider(ppts, S_OPEN_THRESHOLD, TEXT_OPEN_THRESHOLD, VOL_MIN, VOL_MAX, 1.0);
+	p = obs_properties_add_float_slider(ppts, SETTING_OPEN_THRESHOLD, TEXT_OPEN_THRESHOLD, VOL_MIN, VOL_MAX, 1.0);
 	obs_property_float_set_suffix(p, " dB");
-	p = obs_properties_add_int(ppts, S_ATTACK_TIME, TEXT_ATTACK_TIME, 0, 10000, 1);
+	p = obs_properties_add_int(ppts, SETTING_ATTACK_TIME, TEXT_ATTACK_TIME, 0, 10000, 1);
 	obs_property_int_set_suffix(p, " ms");
-	p = obs_properties_add_int(ppts, S_HOLD_TIME, TEXT_HOLD_TIME, 0, 10000, 1);
+	p = obs_properties_add_int(ppts, SETTING_HOLD_TIME, TEXT_HOLD_TIME, 0, 10000, 1);
 	obs_property_int_set_suffix(p, " ms");
-	p = obs_properties_add_int(ppts, S_RELEASE_TIME, TEXT_RELEASE_TIME, 0, 10000, 1);
+	p = obs_properties_add_int(ppts, SETTING_RELEASE_TIME, TEXT_RELEASE_TIME, 0, 10000, 1);
 	obs_property_int_set_suffix(p, " ms");
 
 	UNUSED_PARAMETER(data);

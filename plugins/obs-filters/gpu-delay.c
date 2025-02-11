@@ -2,7 +2,7 @@
 #include <util/deque.h>
 #include <util/util_uint64.h>
 
-#define S_DELAY_MS "delay_ms"
+#define SETTING_DELAY_MS "delay_ms"
 #define T_DELAY_MS obs_module_text("DelayMs")
 
 struct frame {
@@ -133,7 +133,7 @@ static void gpu_delay_filter_update(void *data, obs_data_t *s)
 {
 	struct gpu_delay_filter_data *f = data;
 
-	f->delay_ns = (uint64_t)obs_data_get_int(s, S_DELAY_MS) * 1000000ULL;
+	f->delay_ns = (uint64_t)obs_data_get_int(s, SETTING_DELAY_MS) * 1000000ULL;
 
 	/* full reset */
 	f->cx = 0;
@@ -146,7 +146,7 @@ static obs_properties_t *gpu_delay_filter_properties(void *data)
 {
 	obs_properties_t *props = obs_properties_create();
 
-	obs_property_t *p = obs_properties_add_int(props, S_DELAY_MS, T_DELAY_MS, 0, 500, 1);
+	obs_property_t *p = obs_properties_add_int(props, SETTING_DELAY_MS, T_DELAY_MS, 0, 500, 1);
 	obs_property_int_set_suffix(p, " ms");
 
 	UNUSED_PARAMETER(data);

@@ -11,21 +11,21 @@
 
 /* clang-format off */
 
-#define S_TR_SPEED                     "transition_speed"
-#define S_CUSTOM_SIZE                  "use_custom_size"
-#define S_SLIDE_TIME                   "slide_time"
-#define S_TRANSITION                   "transition"
-#define S_RANDOMIZE                    "randomize"
-#define S_LOOP                         "loop"
-#define S_HIDE                         "hide"
-#define S_FILES                        "files"
-#define S_BEHAVIOR                     "playback_behavior"
-#define S_BEHAVIOR_STOP_RESTART        "stop_restart"
-#define S_BEHAVIOR_PAUSE_UNPAUSE       "pause_unpause"
-#define S_BEHAVIOR_ALWAYS_PLAY         "always_play"
-#define S_MODE                         "slide_mode"
-#define S_MODE_AUTO                    "mode_auto"
-#define S_MODE_MANUAL                  "mode_manual"
+#define SETTING_TR_SPEED                     "transition_speed"
+#define SETTING_CUSTOM_SIZE                  "use_custom_size"
+#define SETTING_SLIDE_TIME                   "slide_time"
+#define SETTING_TRANSITION                   "transition"
+#define SETTING_RANDOMIZE                    "randomize"
+#define SETTING_LOOP                         "loop"
+#define SETTING_HIDE                         "hide"
+#define SETTING_FILES                        "files"
+#define SETTING_BEHAVIOR                     "playback_behavior"
+#define SETTING_BEHAVIOR_STOP_RESTART        "stop_restart"
+#define SETTING_BEHAVIOR_PAUSE_UNPAUSE       "pause_unpause"
+#define SETTING_BEHAVIOR_ALWAYS_PLAY         "always_play"
+#define SETTING_MODE                         "slide_mode"
+#define SETTING_MODE_AUTO                    "mode_auto"
+#define SETTING_MODE_MANUAL                  "mode_manual"
 
 #define TR_CUT                         "cut"
 #define TR_FADE                        "fade"
@@ -298,20 +298,20 @@ static void ss_update(void *data, obs_data_t *settings)
 
 	da_init(new_files);
 
-	behavior = obs_data_get_string(settings, S_BEHAVIOR);
+	behavior = obs_data_get_string(settings, SETTING_BEHAVIOR);
 
-	if (astrcmpi(behavior, S_BEHAVIOR_PAUSE_UNPAUSE) == 0)
+	if (astrcmpi(behavior, SETTING_BEHAVIOR_PAUSE_UNPAUSE) == 0)
 		ss->behavior = BEHAVIOR_PAUSE_UNPAUSE;
-	else if (astrcmpi(behavior, S_BEHAVIOR_ALWAYS_PLAY) == 0)
+	else if (astrcmpi(behavior, SETTING_BEHAVIOR_ALWAYS_PLAY) == 0)
 		ss->behavior = BEHAVIOR_ALWAYS_PLAY;
-	else /* S_BEHAVIOR_STOP_RESTART */
+	else /* SETTING_BEHAVIOR_STOP_RESTART */
 		ss->behavior = BEHAVIOR_STOP_RESTART;
 
-	mode = obs_data_get_string(settings, S_MODE);
+	mode = obs_data_get_string(settings, SETTING_MODE);
 
-	ss->manual = (astrcmpi(mode, S_MODE_MANUAL) == 0);
+	ss->manual = (astrcmpi(mode, SETTING_MODE_MANUAL) == 0);
 
-	tr_name = obs_data_get_string(settings, S_TRANSITION);
+	tr_name = obs_data_get_string(settings, SETTING_TRANSITION);
 	if (astrcmpi(tr_name, TR_CUT) == 0)
 		tr_name = "cut_transition";
 	else if (astrcmpi(tr_name, TR_SWIPE) == 0)
@@ -321,17 +321,17 @@ static void ss_update(void *data, obs_data_t *settings)
 	else
 		tr_name = "fade_transition";
 
-	ss->randomize = obs_data_get_bool(settings, S_RANDOMIZE);
-	ss->loop = obs_data_get_bool(settings, S_LOOP);
-	ss->hide = obs_data_get_bool(settings, S_HIDE);
+	ss->randomize = obs_data_get_bool(settings, SETTING_RANDOMIZE);
+	ss->loop = obs_data_get_bool(settings, SETTING_LOOP);
+	ss->hide = obs_data_get_bool(settings, SETTING_HIDE);
 
 	if (!ss->tr_name || strcmp(tr_name, ss->tr_name) != 0)
 		new_tr = obs_source_create_private(tr_name, NULL, NULL);
 
-	new_duration = (uint32_t)obs_data_get_int(settings, S_SLIDE_TIME);
-	new_speed = (uint32_t)obs_data_get_int(settings, S_TR_SPEED);
+	new_duration = (uint32_t)obs_data_get_int(settings, SETTING_SLIDE_TIME);
+	new_speed = (uint32_t)obs_data_get_int(settings, SETTING_TR_SPEED);
 
-	array = obs_data_get_array(settings, S_FILES);
+	array = obs_data_get_array(settings, SETTING_FILES);
 	count = obs_data_array_count(array);
 
 	/* ------------------------------------- */
@@ -424,7 +424,7 @@ static void ss_update(void *data, obs_data_t *settings)
 
 	/* ------------------------- */
 
-	const char *res_str = obs_data_get_string(settings, S_CUSTOM_SIZE);
+	const char *res_str = obs_data_get_string(settings, SETTING_CUSTOM_SIZE);
 	bool aspect_only = false, use_auto = true;
 	int cx_in = 0, cy_in = 0;
 
@@ -841,13 +841,13 @@ static uint32_t ss_height(void *data)
 
 static void ss_defaults(obs_data_t *settings)
 {
-	obs_data_set_default_string(settings, S_TRANSITION, "fade");
-	obs_data_set_default_int(settings, S_SLIDE_TIME, 8000);
-	obs_data_set_default_int(settings, S_TR_SPEED, 700);
-	obs_data_set_default_string(settings, S_CUSTOM_SIZE, T_CUSTOM_SIZE_AUTO);
-	obs_data_set_default_string(settings, S_BEHAVIOR, S_BEHAVIOR_ALWAYS_PLAY);
-	obs_data_set_default_string(settings, S_MODE, S_MODE_AUTO);
-	obs_data_set_default_bool(settings, S_LOOP, true);
+	obs_data_set_default_string(settings, SETTING_TRANSITION, "fade");
+	obs_data_set_default_int(settings, SETTING_SLIDE_TIME, 8000);
+	obs_data_set_default_int(settings, SETTING_TR_SPEED, 700);
+	obs_data_set_default_string(settings, SETTING_CUSTOM_SIZE, T_CUSTOM_SIZE_AUTO);
+	obs_data_set_default_string(settings, SETTING_BEHAVIOR, SETTING_BEHAVIOR_ALWAYS_PLAY);
+	obs_data_set_default_string(settings, SETTING_MODE, SETTING_MODE_AUTO);
+	obs_data_set_default_bool(settings, SETTING_LOOP, true);
 }
 
 static const char *file_filter = "Image files (*.bmp *.tga *.png *.jpeg *.jpg"
@@ -878,32 +878,32 @@ static obs_properties_t *ss_properties(void *data)
 
 	/* ----------------- */
 
-	p = obs_properties_add_list(ppts, S_BEHAVIOR, T_BEHAVIOR, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
-	obs_property_list_add_string(p, T_BEHAVIOR_ALWAYS_PLAY, S_BEHAVIOR_ALWAYS_PLAY);
-	obs_property_list_add_string(p, T_BEHAVIOR_STOP_RESTART, S_BEHAVIOR_STOP_RESTART);
-	obs_property_list_add_string(p, T_BEHAVIOR_PAUSE_UNPAUSE, S_BEHAVIOR_PAUSE_UNPAUSE);
+	p = obs_properties_add_list(ppts, SETTING_BEHAVIOR, T_BEHAVIOR, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
+	obs_property_list_add_string(p, T_BEHAVIOR_ALWAYS_PLAY, SETTING_BEHAVIOR_ALWAYS_PLAY);
+	obs_property_list_add_string(p, T_BEHAVIOR_STOP_RESTART, SETTING_BEHAVIOR_STOP_RESTART);
+	obs_property_list_add_string(p, T_BEHAVIOR_PAUSE_UNPAUSE, SETTING_BEHAVIOR_PAUSE_UNPAUSE);
 
-	p = obs_properties_add_list(ppts, S_MODE, T_MODE, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
-	obs_property_list_add_string(p, T_MODE_AUTO, S_MODE_AUTO);
-	obs_property_list_add_string(p, T_MODE_MANUAL, S_MODE_MANUAL);
+	p = obs_properties_add_list(ppts, SETTING_MODE, T_MODE, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
+	obs_property_list_add_string(p, T_MODE_AUTO, SETTING_MODE_AUTO);
+	obs_property_list_add_string(p, T_MODE_MANUAL, SETTING_MODE_MANUAL);
 
-	p = obs_properties_add_list(ppts, S_TRANSITION, T_TRANSITION, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
+	p = obs_properties_add_list(ppts, SETTING_TRANSITION, T_TRANSITION, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
 	obs_property_list_add_string(p, T_TR_CUT, TR_CUT);
 	obs_property_list_add_string(p, T_TR_FADE, TR_FADE);
 	obs_property_list_add_string(p, T_TR_SWIPE, TR_SWIPE);
 	obs_property_list_add_string(p, T_TR_SLIDE, TR_SLIDE);
 
-	p = obs_properties_add_int(ppts, S_SLIDE_TIME, T_SLIDE_TIME, 50, 3600000, 50);
+	p = obs_properties_add_int(ppts, SETTING_SLIDE_TIME, T_SLIDE_TIME, 50, 3600000, 50);
 	obs_property_int_set_suffix(p, " ms");
 
-	p = obs_properties_add_int(ppts, S_TR_SPEED, T_TR_SPEED, 0, 3600000, 50);
+	p = obs_properties_add_int(ppts, SETTING_TR_SPEED, T_TR_SPEED, 0, 3600000, 50);
 	obs_property_int_set_suffix(p, " ms");
 
-	obs_properties_add_bool(ppts, S_LOOP, T_LOOP);
-	obs_properties_add_bool(ppts, S_HIDE, T_HIDE);
-	obs_properties_add_bool(ppts, S_RANDOMIZE, T_RANDOMIZE);
+	obs_properties_add_bool(ppts, SETTING_LOOP, T_LOOP);
+	obs_properties_add_bool(ppts, SETTING_HIDE, T_HIDE);
+	obs_properties_add_bool(ppts, SETTING_RANDOMIZE, T_RANDOMIZE);
 
-	p = obs_properties_add_list(ppts, S_CUSTOM_SIZE, T_CUSTOM_SIZE, OBS_COMBO_TYPE_EDITABLE,
+	p = obs_properties_add_list(ppts, SETTING_CUSTOM_SIZE, T_CUSTOM_SIZE, OBS_COMBO_TYPE_EDITABLE,
 				    OBS_COMBO_FORMAT_STRING);
 
 	obs_property_list_add_string(p, T_CUSTOM_SIZE_AUTO, T_CUSTOM_SIZE_AUTO);
@@ -930,7 +930,7 @@ static obs_properties_t *ss_properties(void *data)
 		pthread_mutex_unlock(&ss->mutex);
 	}
 
-	obs_properties_add_editable_list(ppts, S_FILES, T_FILES, OBS_EDITABLE_LIST_TYPE_FILES, file_filter, path.array);
+	obs_properties_add_editable_list(ppts, SETTING_FILES, T_FILES, OBS_EDITABLE_LIST_TYPE_FILES, file_filter, path.array);
 	dstr_free(&path);
 
 	return ppts;
@@ -967,7 +967,7 @@ static void missing_file_callback(void *src, const char *new_path, void *data)
 
 	obs_source_t *source = s->source;
 	obs_data_t *settings = obs_source_get_settings(source);
-	obs_data_array_t *files = obs_data_get_array(settings, S_FILES);
+	obs_data_array_t *files = obs_data_get_array(settings, SETTING_FILES);
 
 	size_t l = obs_data_array_count(files);
 	for (size_t i = 0; i < l; i++) {
@@ -1000,7 +1000,7 @@ static obs_missing_files_t *ss_missingfiles(void *data)
 
 	obs_source_t *source = s->source;
 	obs_data_t *settings = obs_source_get_settings(source);
-	obs_data_array_t *files = obs_data_get_array(settings, S_FILES);
+	obs_data_array_t *files = obs_data_get_array(settings, SETTING_FILES);
 
 	size_t l = obs_data_array_count(files);
 	for (size_t i = 0; i < l; i++) {

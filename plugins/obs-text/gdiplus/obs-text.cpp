@@ -40,46 +40,46 @@ using namespace Gdiplus;
 
 /* clang-format off */
 
-#define S_FONT                          "font"
-#define S_USE_FILE                      "read_from_file"
-#define S_FILE                          "file"
-#define S_TEXT                          "text"
-#define S_COLOR                         "color"
-#define S_GRADIENT                      "gradient"
-#define S_GRADIENT_COLOR                "gradient_color"
-#define S_GRADIENT_DIR                  "gradient_dir"
-#define S_GRADIENT_OPACITY              "gradient_opacity"
-#define S_ALIGN                         "align"
-#define S_VALIGN                        "valign"
-#define S_OPACITY                       "opacity"
-#define S_BKCOLOR                       "bk_color"
-#define S_BKOPACITY                     "bk_opacity"
-#define S_VERTICAL                      "vertical"
-#define S_OUTLINE                       "outline"
-#define S_OUTLINE_SIZE                  "outline_size"
-#define S_OUTLINE_COLOR                 "outline_color"
-#define S_OUTLINE_OPACITY               "outline_opacity"
-#define S_CHATLOG_MODE                  "chatlog"
-#define S_CHATLOG_LINES                 "chatlog_lines"
-#define S_EXTENTS                       "extents"
-#define S_EXTENTS_WRAP                  "extents_wrap"
-#define S_EXTENTS_CX                    "extents_cx"
-#define S_EXTENTS_CY                    "extents_cy"
-#define S_TRANSFORM                     "transform"
-#define S_ANTIALIASING                  "antialiasing"
+#define SETTING_FONT                          "font"
+#define SETTING_USE_FILE                      "read_from_file"
+#define SETTING_FILE                          "file"
+#define SETTING_TEXT                          "text"
+#define SETTING_COLOR                         "color"
+#define SETTING_GRADIENT                      "gradient"
+#define SETTING_GRADIENT_COLOR                "gradient_color"
+#define SETTING_GRADIENT_DIR                  "gradient_dir"
+#define SETTING_GRADIENT_OPACITY              "gradient_opacity"
+#define SETTING_ALIGN                         "align"
+#define SETTING_VALIGN                        "valign"
+#define SETTING_OPACITY                       "opacity"
+#define SETTING_BKCOLOR                       "bk_color"
+#define SETTING_BKOPACITY                     "bk_opacity"
+#define SETTING_VERTICAL                      "vertical"
+#define SETTING_OUTLINE                       "outline"
+#define SETTING_OUTLINE_SIZE                  "outline_size"
+#define SETTING_OUTLINE_COLOR                 "outline_color"
+#define SETTING_OUTLINE_OPACITY               "outline_opacity"
+#define SETTING_CHATLOG_MODE                  "chatlog"
+#define SETTING_CHATLOG_LINES                 "chatlog_lines"
+#define SETTING_EXTENTS                       "extents"
+#define SETTING_EXTENTS_WRAP                  "extents_wrap"
+#define SETTING_EXTENTS_CX                    "extents_cx"
+#define SETTING_EXTENTS_CY                    "extents_cy"
+#define SETTING_TRANSFORM                     "transform"
+#define SETTING_ANTIALIASING                  "antialiasing"
 
-#define S_ALIGN_LEFT                    "left"
-#define S_ALIGN_CENTER                  "center"
-#define S_ALIGN_RIGHT                   "right"
+#define SETTING_ALIGN_LEFT                    "left"
+#define SETTING_ALIGN_CENTER                  "center"
+#define SETTING_ALIGN_RIGHT                   "right"
 
-#define S_VALIGN_TOP                    "top"
-#define S_VALIGN_CENTER                 S_ALIGN_CENTER
-#define S_VALIGN_BOTTOM                 "bottom"
+#define SETTING_VALIGN_TOP                    "top"
+#define SETTING_VALIGN_CENTER                 SETTING_ALIGN_CENTER
+#define SETTING_VALIGN_BOTTOM                 "bottom"
 
-#define S_TRANSFORM_NONE                0
-#define S_TRANSFORM_UPPERCASE           1
-#define S_TRANSFORM_LOWERCASE           2
-#define S_TRANSFORM_STARTCASE           3
+#define SETTING_TRANSFORM_NONE                0
+#define SETTING_TRANSFORM_UPPERCASE           1
+#define SETTING_TRANSFORM_LOWERCASE           2
+#define SETTING_TRANSFORM_STARTCASE           3
 
 #define T_(v)                           obs_module_text(v)
 #define T_FONT                          T_("Font")
@@ -255,7 +255,7 @@ struct TextSource {
 	uint32_t extents_cx = 0;
 	uint32_t extents_cy = 0;
 
-	int text_transform = S_TRANSFORM_NONE;
+	int text_transform = SETTING_TRANSFORM_NONE;
 
 	bool chatlog_mode = false;
 	int chatlog_lines = 6;
@@ -663,11 +663,11 @@ void TextSource::TransformText()
 {
 	const locale loc = locale(obs_get_locale());
 	const ctype<wchar_t> &f = use_facet<ctype<wchar_t>>(loc);
-	if (text_transform == S_TRANSFORM_UPPERCASE)
+	if (text_transform == SETTING_TRANSFORM_UPPERCASE)
 		f.toupper(&text[0], &text[0] + text.size());
-	else if (text_transform == S_TRANSFORM_LOWERCASE)
+	else if (text_transform == SETTING_TRANSFORM_LOWERCASE)
 		f.tolower(&text[0], &text[0] + text.size());
-	else if (text_transform == S_TRANSFORM_STARTCASE) {
+	else if (text_transform == SETTING_TRANSFORM_STARTCASE) {
 		bool upper = true;
 		for (wstring::iterator it = text.begin(); it != text.end(); ++it) {
 			const wchar_t upper_char = f.toupper(*it);
@@ -700,31 +700,31 @@ void TextSource::SetAntiAliasing(Graphics &graphics_bitmap)
 
 inline void TextSource::Update(obs_data_t *s)
 {
-	const char *new_text = obs_data_get_string(s, S_TEXT);
-	obs_data_t *font_obj = obs_data_get_obj(s, S_FONT);
-	const char *align_str = obs_data_get_string(s, S_ALIGN);
-	const char *valign_str = obs_data_get_string(s, S_VALIGN);
-	uint32_t new_color = obs_data_get_uint32(s, S_COLOR);
-	uint32_t new_opacity = obs_data_get_uint32(s, S_OPACITY);
-	bool gradient = obs_data_get_bool(s, S_GRADIENT);
-	uint32_t new_color2 = obs_data_get_uint32(s, S_GRADIENT_COLOR);
-	uint32_t new_opacity2 = obs_data_get_uint32(s, S_GRADIENT_OPACITY);
-	float new_grad_dir = (float)obs_data_get_double(s, S_GRADIENT_DIR);
-	bool new_vertical = obs_data_get_bool(s, S_VERTICAL);
-	bool new_outline = obs_data_get_bool(s, S_OUTLINE);
-	uint32_t new_o_color = obs_data_get_uint32(s, S_OUTLINE_COLOR);
-	uint32_t new_o_opacity = obs_data_get_uint32(s, S_OUTLINE_OPACITY);
-	uint32_t new_o_size = obs_data_get_uint32(s, S_OUTLINE_SIZE);
-	bool new_use_file = obs_data_get_bool(s, S_USE_FILE);
-	const char *new_file = obs_data_get_string(s, S_FILE);
-	bool new_chat_mode = obs_data_get_bool(s, S_CHATLOG_MODE);
-	int new_chat_lines = (int)obs_data_get_int(s, S_CHATLOG_LINES);
-	bool new_extents = obs_data_get_bool(s, S_EXTENTS);
-	bool new_extents_wrap = obs_data_get_bool(s, S_EXTENTS_WRAP);
-	uint32_t n_extents_cx = obs_data_get_uint32(s, S_EXTENTS_CX);
-	uint32_t n_extents_cy = obs_data_get_uint32(s, S_EXTENTS_CY);
-	int new_text_transform = (int)obs_data_get_int(s, S_TRANSFORM);
-	bool new_antialiasing = obs_data_get_bool(s, S_ANTIALIASING);
+	const char *new_text = obs_data_get_string(s, SETTING_TEXT);
+	obs_data_t *font_obj = obs_data_get_obj(s, SETTING_FONT);
+	const char *align_str = obs_data_get_string(s, SETTING_ALIGN);
+	const char *valign_str = obs_data_get_string(s, SETTING_VALIGN);
+	uint32_t new_color = obs_data_get_uint32(s, SETTING_COLOR);
+	uint32_t new_opacity = obs_data_get_uint32(s, SETTING_OPACITY);
+	bool gradient = obs_data_get_bool(s, SETTING_GRADIENT);
+	uint32_t new_color2 = obs_data_get_uint32(s, SETTING_GRADIENT_COLOR);
+	uint32_t new_opacity2 = obs_data_get_uint32(s, SETTING_GRADIENT_OPACITY);
+	float new_grad_dir = (float)obs_data_get_double(s, SETTING_GRADIENT_DIR);
+	bool new_vertical = obs_data_get_bool(s, SETTING_VERTICAL);
+	bool new_outline = obs_data_get_bool(s, SETTING_OUTLINE);
+	uint32_t new_o_color = obs_data_get_uint32(s, SETTING_OUTLINE_COLOR);
+	uint32_t new_o_opacity = obs_data_get_uint32(s, SETTING_OUTLINE_OPACITY);
+	uint32_t new_o_size = obs_data_get_uint32(s, SETTING_OUTLINE_SIZE);
+	bool new_use_file = obs_data_get_bool(s, SETTING_USE_FILE);
+	const char *new_file = obs_data_get_string(s, SETTING_FILE);
+	bool new_chat_mode = obs_data_get_bool(s, SETTING_CHATLOG_MODE);
+	int new_chat_lines = (int)obs_data_get_int(s, SETTING_CHATLOG_LINES);
+	bool new_extents = obs_data_get_bool(s, SETTING_EXTENTS);
+	bool new_extents_wrap = obs_data_get_bool(s, SETTING_EXTENTS_WRAP);
+	uint32_t n_extents_cx = obs_data_get_uint32(s, SETTING_EXTENTS_CX);
+	uint32_t n_extents_cy = obs_data_get_uint32(s, SETTING_EXTENTS_CY);
+	int new_text_transform = (int)obs_data_get_int(s, SETTING_TRANSFORM);
+	bool new_antialiasing = obs_data_get_bool(s, SETTING_ANTIALIASING);
 
 	const char *font_face = obs_data_get_string(font_obj, "face");
 	int font_size = (int)obs_data_get_int(font_obj, "size");
@@ -734,8 +734,8 @@ inline void TextSource::Update(obs_data_t *s)
 	bool new_underline = (font_flags & OBS_FONT_UNDERLINE) != 0;
 	bool new_strikeout = (font_flags & OBS_FONT_STRIKEOUT) != 0;
 
-	uint32_t new_bk_color = obs_data_get_uint32(s, S_BKCOLOR);
-	uint32_t new_bk_opacity = obs_data_get_uint32(s, S_BKOPACITY);
+	uint32_t new_bk_color = obs_data_get_uint32(s, SETTING_BKCOLOR);
+	uint32_t new_bk_opacity = obs_data_get_uint32(s, SETTING_BKOPACITY);
 
 	/* ----------------------------- */
 
@@ -808,16 +808,16 @@ inline void TextSource::Update(obs_data_t *s)
 	outline_opacity = new_o_opacity;
 	outline_size = roundf(float(new_o_size));
 
-	if (strcmp(align_str, S_ALIGN_CENTER) == 0)
+	if (strcmp(align_str, SETTING_ALIGN_CENTER) == 0)
 		align = Align::Center;
-	else if (strcmp(align_str, S_ALIGN_RIGHT) == 0)
+	else if (strcmp(align_str, SETTING_ALIGN_RIGHT) == 0)
 		align = Align::Right;
 	else
 		align = Align::Left;
 
-	if (strcmp(valign_str, S_VALIGN_CENTER) == 0)
+	if (strcmp(valign_str, SETTING_VALIGN_CENTER) == 0)
 		valign = VAlign::Center;
-	else if (strcmp(valign_str, S_VALIGN_BOTTOM) == 0)
+	else if (strcmp(valign_str, SETTING_VALIGN_BOTTOM) == 0)
 		valign = VAlign::Bottom;
 	else
 		valign = VAlign::Top;
@@ -897,48 +897,48 @@ MODULE_EXPORT const char *obs_module_description(void)
 
 static bool use_file_changed(obs_properties_t *props, obs_property_t *p, obs_data_t *s)
 {
-	bool use_file = obs_data_get_bool(s, S_USE_FILE);
+	bool use_file = obs_data_get_bool(s, SETTING_USE_FILE);
 
-	set_vis(use_file, S_TEXT, false);
-	set_vis(use_file, S_FILE, true);
+	set_vis(use_file, SETTING_TEXT, false);
+	set_vis(use_file, SETTING_FILE, true);
 	return true;
 }
 
 static bool outline_changed(obs_properties_t *props, obs_property_t *p, obs_data_t *s)
 {
-	bool outline = obs_data_get_bool(s, S_OUTLINE);
+	bool outline = obs_data_get_bool(s, SETTING_OUTLINE);
 
-	set_vis(outline, S_OUTLINE_SIZE, true);
-	set_vis(outline, S_OUTLINE_COLOR, true);
-	set_vis(outline, S_OUTLINE_OPACITY, true);
+	set_vis(outline, SETTING_OUTLINE_SIZE, true);
+	set_vis(outline, SETTING_OUTLINE_COLOR, true);
+	set_vis(outline, SETTING_OUTLINE_OPACITY, true);
 	return true;
 }
 
 static bool chatlog_mode_changed(obs_properties_t *props, obs_property_t *p, obs_data_t *s)
 {
-	bool chatlog_mode = obs_data_get_bool(s, S_CHATLOG_MODE);
+	bool chatlog_mode = obs_data_get_bool(s, SETTING_CHATLOG_MODE);
 
-	set_vis(chatlog_mode, S_CHATLOG_LINES, true);
+	set_vis(chatlog_mode, SETTING_CHATLOG_LINES, true);
 	return true;
 }
 
 static bool gradient_changed(obs_properties_t *props, obs_property_t *p, obs_data_t *s)
 {
-	bool gradient = obs_data_get_bool(s, S_GRADIENT);
+	bool gradient = obs_data_get_bool(s, SETTING_GRADIENT);
 
-	set_vis(gradient, S_GRADIENT_COLOR, true);
-	set_vis(gradient, S_GRADIENT_OPACITY, true);
-	set_vis(gradient, S_GRADIENT_DIR, true);
+	set_vis(gradient, SETTING_GRADIENT_COLOR, true);
+	set_vis(gradient, SETTING_GRADIENT_OPACITY, true);
+	set_vis(gradient, SETTING_GRADIENT_DIR, true);
 	return true;
 }
 
 static bool extents_modified(obs_properties_t *props, obs_property_t *p, obs_data_t *s)
 {
-	bool use_extents = obs_data_get_bool(s, S_EXTENTS);
+	bool use_extents = obs_data_get_bool(s, SETTING_EXTENTS);
 
-	set_vis(use_extents, S_EXTENTS_WRAP, true);
-	set_vis(use_extents, S_EXTENTS_CX, true);
-	set_vis(use_extents, S_EXTENTS_CY, true);
+	set_vis(use_extents, SETTING_EXTENTS_WRAP, true);
+	set_vis(use_extents, SETTING_EXTENTS_CX, true);
+	set_vis(use_extents, SETTING_EXTENTS_CY, true);
 	return true;
 }
 
@@ -952,9 +952,9 @@ static obs_properties_t *get_properties(void *data)
 	obs_properties_t *props = obs_properties_create();
 	obs_property_t *p;
 
-	obs_properties_add_font(props, S_FONT, T_FONT);
+	obs_properties_add_font(props, SETTING_FONT, T_FONT);
 
-	p = obs_properties_add_bool(props, S_USE_FILE, T_USE_FILE);
+	p = obs_properties_add_bool(props, SETTING_USE_FILE, T_USE_FILE);
 	obs_property_set_modified_callback(p, use_file_changed);
 
 	string filter;
@@ -973,64 +973,64 @@ static obs_properties_t *get_properties(void *data)
 			path.resize(slash - path.c_str() + 1);
 	}
 
-	obs_properties_add_text(props, S_TEXT, T_TEXT, OBS_TEXT_MULTILINE);
-	obs_properties_add_path(props, S_FILE, T_FILE, OBS_PATH_FILE, filter.c_str(), path.c_str());
+	obs_properties_add_text(props, SETTING_TEXT, T_TEXT, OBS_TEXT_MULTILINE);
+	obs_properties_add_path(props, SETTING_FILE, T_FILE, OBS_PATH_FILE, filter.c_str(), path.c_str());
 
-	obs_properties_add_bool(props, S_ANTIALIASING, T_ANTIALIASING);
+	obs_properties_add_bool(props, SETTING_ANTIALIASING, T_ANTIALIASING);
 
-	p = obs_properties_add_list(props, S_TRANSFORM, T_TRANSFORM, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_INT);
-	obs_property_list_add_int(p, T_TRANSFORM_NONE, S_TRANSFORM_NONE);
-	obs_property_list_add_int(p, T_TRANSFORM_UPPERCASE, S_TRANSFORM_UPPERCASE);
-	obs_property_list_add_int(p, T_TRANSFORM_LOWERCASE, S_TRANSFORM_LOWERCASE);
-	obs_property_list_add_int(p, T_TRANSFORM_STARTCASE, S_TRANSFORM_STARTCASE);
+	p = obs_properties_add_list(props, SETTING_TRANSFORM, T_TRANSFORM, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_INT);
+	obs_property_list_add_int(p, T_TRANSFORM_NONE, SETTING_TRANSFORM_NONE);
+	obs_property_list_add_int(p, T_TRANSFORM_UPPERCASE, SETTING_TRANSFORM_UPPERCASE);
+	obs_property_list_add_int(p, T_TRANSFORM_LOWERCASE, SETTING_TRANSFORM_LOWERCASE);
+	obs_property_list_add_int(p, T_TRANSFORM_STARTCASE, SETTING_TRANSFORM_STARTCASE);
 
-	obs_properties_add_bool(props, S_VERTICAL, T_VERTICAL);
+	obs_properties_add_bool(props, SETTING_VERTICAL, T_VERTICAL);
 
-	obs_properties_add_color(props, S_COLOR, T_COLOR);
-	p = obs_properties_add_int_slider(props, S_OPACITY, T_OPACITY, 0, 100, 1);
+	obs_properties_add_color(props, SETTING_COLOR, T_COLOR);
+	p = obs_properties_add_int_slider(props, SETTING_OPACITY, T_OPACITY, 0, 100, 1);
 	obs_property_int_set_suffix(p, "%");
 
-	p = obs_properties_add_bool(props, S_GRADIENT, T_GRADIENT);
+	p = obs_properties_add_bool(props, SETTING_GRADIENT, T_GRADIENT);
 	obs_property_set_modified_callback(p, gradient_changed);
 
-	obs_properties_add_color(props, S_GRADIENT_COLOR, T_GRADIENT_COLOR);
-	p = obs_properties_add_int_slider(props, S_GRADIENT_OPACITY, T_GRADIENT_OPACITY, 0, 100, 1);
+	obs_properties_add_color(props, SETTING_GRADIENT_COLOR, T_GRADIENT_COLOR);
+	p = obs_properties_add_int_slider(props, SETTING_GRADIENT_OPACITY, T_GRADIENT_OPACITY, 0, 100, 1);
 	obs_property_int_set_suffix(p, "%");
-	obs_properties_add_float_slider(props, S_GRADIENT_DIR, T_GRADIENT_DIR, 0, 360, 0.1);
+	obs_properties_add_float_slider(props, SETTING_GRADIENT_DIR, T_GRADIENT_DIR, 0, 360, 0.1);
 
-	obs_properties_add_color(props, S_BKCOLOR, T_BKCOLOR);
-	p = obs_properties_add_int_slider(props, S_BKOPACITY, T_BKOPACITY, 0, 100, 1);
+	obs_properties_add_color(props, SETTING_BKCOLOR, T_BKCOLOR);
+	p = obs_properties_add_int_slider(props, SETTING_BKOPACITY, T_BKOPACITY, 0, 100, 1);
 	obs_property_int_set_suffix(p, "%");
 
-	p = obs_properties_add_list(props, S_ALIGN, T_ALIGN, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
-	obs_property_list_add_string(p, T_ALIGN_LEFT, S_ALIGN_LEFT);
-	obs_property_list_add_string(p, T_ALIGN_CENTER, S_ALIGN_CENTER);
-	obs_property_list_add_string(p, T_ALIGN_RIGHT, S_ALIGN_RIGHT);
+	p = obs_properties_add_list(props, SETTING_ALIGN, T_ALIGN, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
+	obs_property_list_add_string(p, T_ALIGN_LEFT, SETTING_ALIGN_LEFT);
+	obs_property_list_add_string(p, T_ALIGN_CENTER, SETTING_ALIGN_CENTER);
+	obs_property_list_add_string(p, T_ALIGN_RIGHT, SETTING_ALIGN_RIGHT);
 
-	p = obs_properties_add_list(props, S_VALIGN, T_VALIGN, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
-	obs_property_list_add_string(p, T_VALIGN_TOP, S_VALIGN_TOP);
-	obs_property_list_add_string(p, T_VALIGN_CENTER, S_VALIGN_CENTER);
-	obs_property_list_add_string(p, T_VALIGN_BOTTOM, S_VALIGN_BOTTOM);
+	p = obs_properties_add_list(props, SETTING_VALIGN, T_VALIGN, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
+	obs_property_list_add_string(p, T_VALIGN_TOP, SETTING_VALIGN_TOP);
+	obs_property_list_add_string(p, T_VALIGN_CENTER, SETTING_VALIGN_CENTER);
+	obs_property_list_add_string(p, T_VALIGN_BOTTOM, SETTING_VALIGN_BOTTOM);
 
-	p = obs_properties_add_bool(props, S_OUTLINE, T_OUTLINE);
+	p = obs_properties_add_bool(props, SETTING_OUTLINE, T_OUTLINE);
 	obs_property_set_modified_callback(p, outline_changed);
 
-	obs_properties_add_int(props, S_OUTLINE_SIZE, T_OUTLINE_SIZE, 1, 20, 1);
-	obs_properties_add_color(props, S_OUTLINE_COLOR, T_OUTLINE_COLOR);
-	p = obs_properties_add_int_slider(props, S_OUTLINE_OPACITY, T_OUTLINE_OPACITY, 0, 100, 1);
+	obs_properties_add_int(props, SETTING_OUTLINE_SIZE, T_OUTLINE_SIZE, 1, 20, 1);
+	obs_properties_add_color(props, SETTING_OUTLINE_COLOR, T_OUTLINE_COLOR);
+	p = obs_properties_add_int_slider(props, SETTING_OUTLINE_OPACITY, T_OUTLINE_OPACITY, 0, 100, 1);
 	obs_property_int_set_suffix(p, "%");
 
-	p = obs_properties_add_bool(props, S_CHATLOG_MODE, T_CHATLOG_MODE);
+	p = obs_properties_add_bool(props, SETTING_CHATLOG_MODE, T_CHATLOG_MODE);
 	obs_property_set_modified_callback(p, chatlog_mode_changed);
 
-	obs_properties_add_int(props, S_CHATLOG_LINES, T_CHATLOG_LINES, 1, 1000, 1);
+	obs_properties_add_int(props, SETTING_CHATLOG_LINES, T_CHATLOG_LINES, 1, 1000, 1);
 
-	p = obs_properties_add_bool(props, S_EXTENTS, T_EXTENTS);
+	p = obs_properties_add_bool(props, SETTING_EXTENTS, T_EXTENTS);
 	obs_property_set_modified_callback(p, extents_modified);
 
-	obs_properties_add_int(props, S_EXTENTS_CX, T_EXTENTS_CX, 32, 8000, 1);
-	obs_properties_add_int(props, S_EXTENTS_CY, T_EXTENTS_CY, 32, 8000, 1);
-	obs_properties_add_bool(props, S_EXTENTS_WRAP, T_EXTENTS_WRAP);
+	obs_properties_add_int(props, SETTING_EXTENTS_CX, T_EXTENTS_CX, 32, 8000, 1);
+	obs_properties_add_int(props, SETTING_EXTENTS_CY, T_EXTENTS_CY, 32, 8000, 1);
+	obs_properties_add_bool(props, SETTING_EXTENTS_WRAP, T_EXTENTS_WRAP);
 
 	return props;
 }
@@ -1041,25 +1041,25 @@ static void defaults(obs_data_t *settings, int ver)
 	obs_data_set_default_string(font_obj, "face", "Arial");
 	obs_data_set_default_int(font_obj, "size", ver == 1 ? 36 : 256);
 
-	obs_data_set_default_obj(settings, S_FONT, font_obj);
-	obs_data_set_default_string(settings, S_ALIGN, S_ALIGN_LEFT);
-	obs_data_set_default_string(settings, S_VALIGN, S_VALIGN_TOP);
-	obs_data_set_default_int(settings, S_COLOR, 0xFFFFFF);
-	obs_data_set_default_int(settings, S_OPACITY, 100);
-	obs_data_set_default_int(settings, S_GRADIENT_COLOR, 0xFFFFFF);
-	obs_data_set_default_int(settings, S_GRADIENT_OPACITY, 100);
-	obs_data_set_default_double(settings, S_GRADIENT_DIR, 90.0);
-	obs_data_set_default_int(settings, S_BKCOLOR, 0x000000);
-	obs_data_set_default_int(settings, S_BKOPACITY, 0);
-	obs_data_set_default_int(settings, S_OUTLINE_SIZE, 2);
-	obs_data_set_default_int(settings, S_OUTLINE_COLOR, 0xFFFFFF);
-	obs_data_set_default_int(settings, S_OUTLINE_OPACITY, 100);
-	obs_data_set_default_int(settings, S_CHATLOG_LINES, 6);
-	obs_data_set_default_bool(settings, S_EXTENTS_WRAP, true);
-	obs_data_set_default_int(settings, S_EXTENTS_CX, 100);
-	obs_data_set_default_int(settings, S_EXTENTS_CY, 100);
-	obs_data_set_default_int(settings, S_TRANSFORM, S_TRANSFORM_NONE);
-	obs_data_set_default_bool(settings, S_ANTIALIASING, true);
+	obs_data_set_default_obj(settings, SETTING_FONT, font_obj);
+	obs_data_set_default_string(settings, SETTING_ALIGN, SETTING_ALIGN_LEFT);
+	obs_data_set_default_string(settings, SETTING_VALIGN, SETTING_VALIGN_TOP);
+	obs_data_set_default_int(settings, SETTING_COLOR, 0xFFFFFF);
+	obs_data_set_default_int(settings, SETTING_OPACITY, 100);
+	obs_data_set_default_int(settings, SETTING_GRADIENT_COLOR, 0xFFFFFF);
+	obs_data_set_default_int(settings, SETTING_GRADIENT_OPACITY, 100);
+	obs_data_set_default_double(settings, SETTING_GRADIENT_DIR, 90.0);
+	obs_data_set_default_int(settings, SETTING_BKCOLOR, 0x000000);
+	obs_data_set_default_int(settings, SETTING_BKOPACITY, 0);
+	obs_data_set_default_int(settings, SETTING_OUTLINE_SIZE, 2);
+	obs_data_set_default_int(settings, SETTING_OUTLINE_COLOR, 0xFFFFFF);
+	obs_data_set_default_int(settings, SETTING_OUTLINE_OPACITY, 100);
+	obs_data_set_default_int(settings, SETTING_CHATLOG_LINES, 6);
+	obs_data_set_default_bool(settings, SETTING_EXTENTS_WRAP, true);
+	obs_data_set_default_int(settings, SETTING_EXTENTS_CX, 100);
+	obs_data_set_default_int(settings, SETTING_EXTENTS_CY, 100);
+	obs_data_set_default_int(settings, SETTING_TRANSFORM, SETTING_TRANSFORM_NONE);
+	obs_data_set_default_bool(settings, SETTING_ANTIALIASING, true);
 
 	obs_data_release(font_obj);
 };
@@ -1070,7 +1070,7 @@ static void missing_file_callback(void *src, const char *new_path, void *data)
 
 	obs_source_t *source = s->source;
 	obs_data_t *settings = obs_source_get_settings(source);
-	obs_data_set_string(settings, S_FILE, new_path);
+	obs_data_set_string(settings, SETTING_FILE, new_path);
 	obs_source_update(source, settings);
 	obs_data_release(settings);
 
@@ -1120,8 +1120,8 @@ bool obs_module_load(void)
 		obs_source_t *source = s->source;
 		obs_data_t *settings = obs_source_get_settings(source);
 
-		bool read = obs_data_get_bool(settings, S_USE_FILE);
-		const char *path = obs_data_get_string(settings, S_FILE);
+		bool read = obs_data_get_bool(settings, SETTING_USE_FILE);
+		const char *path = obs_data_get_string(settings, SETTING_FILE);
 
 		if (read && strcmp(path, "") != 0) {
 			if (!os_file_exists(path)) {
