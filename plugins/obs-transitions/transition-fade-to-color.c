@@ -169,7 +169,8 @@ static obs_properties_t *fade_to_color_properties(void *data)
 	obs_properties_t *props = obs_properties_create();
 
 	obs_properties_add_color(props, SETTING_COLOR, SETTING_COLOR_TEXT);
-	obs_property_t *p = obs_properties_add_int_slider(props, SETTING_SWITCH_POINT, SETTING_SWITCH_POINT_TEXT, 0, 100, 1);
+	obs_property_t *p =
+		obs_properties_add_int_slider(props, SETTING_SWITCH_POINT, SETTING_SWITCH_POINT_TEXT, 0, 100, 1);
 	obs_property_int_set_suffix(p, "%");
 
 	UNUSED_PARAMETER(data);

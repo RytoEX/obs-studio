@@ -435,29 +435,31 @@ static obs_properties_t *expander_properties(void *data)
 	obs_properties_t *props = obs_properties_create();
 	obs_property_t *p;
 	if (!cd->is_upwcomp) {
-		obs_property_t *presets = obs_properties_add_list(props, SETTING_PRESETS, TEXT_PRESETS, OBS_COMBO_TYPE_LIST,
-								  OBS_COMBO_FORMAT_STRING);
+		obs_property_t *presets = obs_properties_add_list(props, SETTING_PRESETS, TEXT_PRESETS,
+								  OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
 		obs_property_list_add_string(presets, TEXT_PRESETS_EXP, "expander");
 		obs_property_list_add_string(presets, TEXT_PRESETS_GATE, "gate");
 		obs_property_set_modified_callback(presets, presets_changed);
 	}
 
-	p = obs_properties_add_float_slider(props, SETTING_RATIO, TEXT_RATIO, !cd->is_upwcomp ? MIN_RATIO : MIN_RATIO_UPW,
+	p = obs_properties_add_float_slider(props, SETTING_RATIO, TEXT_RATIO,
+					    !cd->is_upwcomp ? MIN_RATIO : MIN_RATIO_UPW,
 					    !cd->is_upwcomp ? MAX_RATIO : MAX_RATIO_UPW, 0.1);
 	obs_property_float_set_suffix(p, ":1");
-	p = obs_properties_add_float_slider(props, SETTING_THRESHOLD, TEXT_THRESHOLD, MIN_THRESHOLD_DB, MAX_THRESHOLD_DB,
-					    0.1);
+	p = obs_properties_add_float_slider(props, SETTING_THRESHOLD, TEXT_THRESHOLD, MIN_THRESHOLD_DB,
+					    MAX_THRESHOLD_DB, 0.1);
 	obs_property_float_set_suffix(p, " dB");
 	p = obs_properties_add_int_slider(props, SETTING_ATTACK_TIME, TEXT_ATTACK_TIME, MIN_ATK_RLS_MS, MAX_ATK_MS, 1);
 	obs_property_int_set_suffix(p, " ms");
-	p = obs_properties_add_int_slider(props, SETTING_RELEASE_TIME, TEXT_RELEASE_TIME, MIN_ATK_RLS_MS, MAX_RLS_MS, 1);
+	p = obs_properties_add_int_slider(props, SETTING_RELEASE_TIME, TEXT_RELEASE_TIME, MIN_ATK_RLS_MS, MAX_RLS_MS,
+					  1);
 	obs_property_int_set_suffix(p, " ms");
 	p = obs_properties_add_float_slider(props, SETTING_OUTPUT_GAIN, TEXT_OUTPUT_GAIN, MIN_OUTPUT_GAIN_DB,
 					    MAX_OUTPUT_GAIN_DB, 0.1);
 	obs_property_float_set_suffix(p, " dB");
 	if (!cd->is_upwcomp) {
-		obs_property_t *detect = obs_properties_add_list(props, SETTING_DETECTOR, TEXT_DETECTOR, OBS_COMBO_TYPE_LIST,
-								 OBS_COMBO_FORMAT_STRING);
+		obs_property_t *detect = obs_properties_add_list(props, SETTING_DETECTOR, TEXT_DETECTOR,
+								 OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
 		obs_property_list_add_string(detect, TEXT_RMS, "RMS");
 		obs_property_list_add_string(detect, TEXT_PEAK, "peak");
 	} else {

@@ -819,15 +819,15 @@ static obs_properties_t *nvidia_audio_properties(void *data)
 {
 	obs_properties_t *ppts = obs_properties_create();
 	struct nvidia_audio_data *ng = (struct nvidia_audio_data *)data;
-	obs_property_t *method =
-		obs_properties_add_list(ppts, SETTING_METHOD, TEXT_METHOD, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
+	obs_property_t *method = obs_properties_add_list(ppts, SETTING_METHOD, TEXT_METHOD, OBS_COMBO_TYPE_LIST,
+							 OBS_COMBO_FORMAT_STRING);
 	if (ng->nvidia_sdk_dir_found) {
 		obs_property_list_add_string(method, TEXT_METHOD_NVAFX_DENOISER, SETTING_METHOD_NVAFX_DENOISER);
 		obs_property_list_add_string(method, TEXT_METHOD_NVAFX_DEREVERB, SETTING_METHOD_NVAFX_DEREVERB);
 		obs_property_list_add_string(method, TEXT_METHOD_NVAFX_DEREVERB_DENOISER,
 					     SETTING_METHOD_NVAFX_DEREVERB_DENOISER);
-		obs_property_t *slider = obs_properties_add_float_slider(ppts, SETTING_NVAFX_INTENSITY, TEXT_NVAFX_INTENSITY,
-									 0.0f, 1.0f, 0.01f);
+		obs_property_t *slider = obs_properties_add_float_slider(ppts, SETTING_NVAFX_INTENSITY,
+									 TEXT_NVAFX_INTENSITY, 0.0f, 1.0f, 0.01f);
 
 		unsigned int version = get_lib_version();
 		obs_property_t *warning = obs_properties_add_text(ppts, "deprecation", NULL, OBS_TEXT_INFO);

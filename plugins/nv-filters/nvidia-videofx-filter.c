@@ -132,7 +132,8 @@ static void nvvfx_filter_update(void *data, obs_data_t *settings)
 	filter->processing_interval = (int)obs_data_get_int(settings, SETTING_PROCESSING);
 	float strength = (float)obs_data_get_double(settings, SETTING_STRENGTH);
 	if (id == SETTING_FX_AIGS || id == SETTING_FX_BG_BLUR) {
-		int mode = id == SETTING_FX_BG_BLUR ? (int)SETTING_MODE_QUALITY : (int)obs_data_get_int(settings, SETTING_MODE);
+		int mode = id == SETTING_FX_BG_BLUR ? (int)SETTING_MODE_QUALITY
+						    : (int)obs_data_get_int(settings, SETTING_MODE);
 		if (filter->mode != mode) {
 			filter->mode = mode;
 			vfxErr = NvVFX_SetU32(filter->handle, NVVFX_MODE, mode);
@@ -1067,13 +1068,14 @@ static obs_properties_t *nvvfx_filter_properties(void *data)
 		obs_property_t *strength =
 			obs_properties_add_float_slider(props, SETTING_STRENGTH, TEXT_MODE_BLUR_STRENGTH, 0, 1, 0.05);
 	} else {
-		obs_property_t *mode =
-			obs_properties_add_list(props, SETTING_MODE, TEXT_MODE, OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_INT);
+		obs_property_t *mode = obs_properties_add_list(props, SETTING_MODE, TEXT_MODE, OBS_COMBO_TYPE_LIST,
+							       OBS_COMBO_FORMAT_INT);
 		obs_property_list_add_int(mode, TEXT_MODE_QUALITY, SETTING_MODE_QUALITY);
 		obs_property_list_add_int(mode, TEXT_MODE_PERF, SETTING_MODE_PERF);
 		obs_property_t *threshold =
 			obs_properties_add_float_slider(props, SETTING_THRESHOLDFX, TEXT_MODE_THRESHOLD, 0, 1, 0.05);
-		obs_property_t *partial = obs_properties_add_int_slider(props, SETTING_PROCESSING, TEXT_PROCESSING, 1, 4, 1);
+		obs_property_t *partial =
+			obs_properties_add_int_slider(props, SETTING_PROCESSING, TEXT_PROCESSING, 1, 4, 1);
 		obs_property_set_long_description(partial, TEXT_PROCESSING_HINT);
 	}
 	unsigned int version = get_lib_version();

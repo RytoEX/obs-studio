@@ -477,12 +477,13 @@ static obs_properties_t *compressor_properties(void *data)
 
 	p = obs_properties_add_float_slider(props, SETTING_RATIO, TEXT_RATIO, MIN_RATIO, MAX_RATIO, 0.5);
 	obs_property_float_set_suffix(p, ":1");
-	p = obs_properties_add_float_slider(props, SETTING_THRESHOLD, TEXT_THRESHOLD, MIN_THRESHOLD_DB, MAX_THRESHOLD_DB,
-					    0.1);
+	p = obs_properties_add_float_slider(props, SETTING_THRESHOLD, TEXT_THRESHOLD, MIN_THRESHOLD_DB,
+					    MAX_THRESHOLD_DB, 0.1);
 	obs_property_float_set_suffix(p, " dB");
 	p = obs_properties_add_int_slider(props, SETTING_ATTACK_TIME, TEXT_ATTACK_TIME, MIN_ATK_RLS_MS, MAX_ATK_MS, 1);
 	obs_property_int_set_suffix(p, " ms");
-	p = obs_properties_add_int_slider(props, SETTING_RELEASE_TIME, TEXT_RELEASE_TIME, MIN_ATK_RLS_MS, MAX_RLS_MS, 1);
+	p = obs_properties_add_int_slider(props, SETTING_RELEASE_TIME, TEXT_RELEASE_TIME, MIN_ATK_RLS_MS, MAX_RLS_MS,
+					  1);
 	obs_property_int_set_suffix(p, " ms");
 	p = obs_properties_add_float_slider(props, SETTING_OUTPUT_GAIN, TEXT_OUTPUT_GAIN, MIN_OUTPUT_GAIN_DB,
 					    MAX_OUTPUT_GAIN_DB, 0.1);
