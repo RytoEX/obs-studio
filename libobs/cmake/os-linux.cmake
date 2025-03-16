@@ -44,6 +44,11 @@ if(NOT HAVE_UUID_HEADER)
   message(FATAL_ERROR "Required system header <uuid/uuid.h> not found.")
 endif()
 
+set_source_files_properties(
+  util/darray.h
+  PROPERTIES C_EXTENSIONS TRUE
+)
+
 target_link_libraries(
   libobs
   PRIVATE
