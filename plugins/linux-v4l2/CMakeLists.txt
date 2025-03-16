@@ -43,4 +43,4 @@ if(ENABLE_UDEV)
   target_compile_definitions(linux-v4l2 PRIVATE HAVE_UDEV)
 endif()
 
-set_target_properties_obs(linux-v4l2 PROPERTIES FOLDER plugins PREFIX "")
+set_target_properties_obs(linux-v4l2 PROPERTIES FOLDER plugins PREFIX "" C_EXTENSIONS ON)
