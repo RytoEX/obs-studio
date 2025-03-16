@@ -37,4 +37,4 @@ target_compile_options(
     $<$<COMPILE_LANG_AND_ID:C,Clang,AppleClang>:-Wno-comma>
 )
 
-set_target_properties(caption PROPERTIES FOLDER deps POSITION_INDEPENDENT_CODE TRUE)
+set_target_properties(caption PROPERTIES FOLDER deps POSITION_INDEPENDENT_CODE TRUE C_EXTENSIONS TRUE)
