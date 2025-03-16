@@ -44,11 +44,6 @@ if(NOT HAVE_UUID_HEADER)
   message(FATAL_ERROR "Required system header <uuid/uuid.h> not found.")
 endif()
 
-set_source_files_properties(
-  util/darray.h
-  PROPERTIES C_EXTENSIONS TRUE
-)
-
 target_link_libraries(
   libobs
   PRIVATE
@@ -97,4 +92,4 @@ else()
   target_disable_feature(libobs "Wayland compositor support (Linux)")
 endif()
 
-set_target_properties(libobs PROPERTIES OUTPUT_NAME obs)
+set_target_properties(libobs PROPERTIES OUTPUT_NAME obs C_EXTENSIONS TRUE)
