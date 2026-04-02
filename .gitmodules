@@ -6,4 +6,4 @@
 	url = https://github.com/RytoEX/obs-browser.git
 [submodule "plugins/obs-websocket"]
 	path = plugins/obs-websocket
-	url = https://github.com/obsproject/obs-websocket.git
+	url = https://github.com/RytoEX/obs-websocket.git
