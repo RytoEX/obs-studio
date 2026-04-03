@@ -8,6 +8,7 @@ on:
       - master
       - 'release/**'
       - use-cpp-20
+      - make-cpp20-compatible-on-cpp17
     tags:
       - '*'
 permissions:
