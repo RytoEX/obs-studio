@@ -2,9 +2,10 @@
 #pragma warning(disable : 4152) /* casting func ptr to void */
 #endif
 
+#include "obfuscate.h"
+
 #include <stdbool.h>
 #include <windows.h>
-#include "obfuscate.h"
 
 #define LOWER_HALFBYTE(x) ((x) & 0xF)
 #define UPPER_HALFBYTE(x) (((x) >> 4) & 0xF)

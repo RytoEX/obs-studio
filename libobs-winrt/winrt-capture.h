@@ -1,9 +1,9 @@
 #pragma once
 
+#include <obs-module.h>
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-
-#include <obs-module.h>
 
 #ifdef __cplusplus
 extern "C" {
