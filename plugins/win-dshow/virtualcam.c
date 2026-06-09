@@ -1,7 +1,8 @@
+#include "shared-memory-queue.h"
+#include "util/threading.h"
+
 #include <obs-module.h>
 #include <util/platform.h>
-#include "util/threading.h"
-#include "shared-memory-queue.h"
 
 struct virtualcam_data {
 	obs_output_t *output;

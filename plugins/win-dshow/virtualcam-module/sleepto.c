@@ -1,6 +1,7 @@
-#include <windows.h>
-#include <stdbool.h>
 #include "sleepto.h"
+
+#include <stdbool.h>
+#include <windows.h>
 
 static bool have_clockfreq = false;
 static LARGE_INTEGER clock_freq;

@@ -16,7 +16,9 @@
 ******************************************************************************/
 
 #include "ffmpeg-decode.h"
+
 #include "obs-ffmpeg-compat.h"
+
 #include <obs-avc.h>
 #ifdef ENABLE_HEVC
 #include <obs-hevc.h>

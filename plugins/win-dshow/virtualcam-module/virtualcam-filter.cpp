@@ -1,9 +1,10 @@
 #include "virtualcam-filter.hpp"
+
 #include "sleepto.h"
 
+#include <inttypes.h>
 #include <shlobj_core.h>
 #include <strsafe.h>
-#include <inttypes.h>
 
 using namespace DShow;
 

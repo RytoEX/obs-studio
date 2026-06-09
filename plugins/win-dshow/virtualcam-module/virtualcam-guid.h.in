@@ -1,7 +1,7 @@
 #pragma once
 
-#include <windows.h>
 #include <initguid.h>
+#include <windows.h>
 
 #ifdef VIRTUALCAM_AVAILABLE
 DEFINE_GUID(CLSID_OBS_VirtualVideo,
