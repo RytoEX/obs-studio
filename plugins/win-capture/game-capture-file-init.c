@@ -1,13 +1,14 @@
-#include <windows.h>
-#include <strsafe.h>
-#include <shlobj.h>
+#include <obs-module.h>
+#include <util/base.h>
+#include <util/c99defs.h>
+#include <util/platform.h>
+#include <util/windows/win-version.h>
+
 #include <aclapi.h>
 #include <sddl.h>
-#include <obs-module.h>
-#include <util/windows/win-version.h>
-#include <util/platform.h>
-#include <util/c99defs.h>
-#include <util/base.h>
+#include <shlobj.h>
+#include <strsafe.h>
+#include <windows.h>
 
 /* ------------------------------------------------------------------------- */
 /* helper funcs                                                              */

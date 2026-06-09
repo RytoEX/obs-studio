@@ -1,8 +1,9 @@
-#include <windows.h>
-#include <stdio.h>
 #include "app-helpers.h"
 #include "nt-stuff.h"
 #include "util/base.h"
+
+#include <stdio.h>
+#include <windows.h>
 
 WINADVAPI BOOL WINAPI ConvertSidToStringSidW(PSID sid, LPWSTR *str);
 

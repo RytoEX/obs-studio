@@ -1,9 +1,11 @@
-#include <windows.h>
-#include <psapi.h>
-#include <inttypes.h>
 #include "graphics-hook.h"
 #include <graphics-hook-ver.h>
+
 #include <util/windows/obfuscate.h>
+
+#include <inttypes.h>
+#include <psapi.h>
+#include <windows.h>
 
 #define DEBUG_OUTPUT
 

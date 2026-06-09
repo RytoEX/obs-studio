@@ -1,12 +1,13 @@
+#include "graphics-hook-info.h"
+
 #include <obs-module.h>
-#include <util/windows/win-version.h>
-#include <util/platform.h>
-#include <util/dstr.h>
 #include <util/config-file.h>
+#include <util/dstr.h>
 #include <util/pipe.h>
+#include <util/platform.h>
+#include <util/windows/win-version.h>
 
 #include <windows.h>
-#include "graphics-hook-info.h"
 
 extern struct graphics_offsets offsets32;
 extern struct graphics_offsets offsets64;

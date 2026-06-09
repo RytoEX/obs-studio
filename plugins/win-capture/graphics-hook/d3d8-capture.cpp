@@ -1,9 +1,10 @@
-#include <dxgi.h>
-
-#include <d3d8.h>
 #include "graphics-hook.h"
 
+#include <d3d8.h>
+
 #include <detours.h>
+
+#include <dxgi.h>
 
 typedef HRESULT(STDMETHODCALLTYPE *reset_t)(IDirect3DDevice8 *, D3DPRESENT_PARAMETERS *);
 typedef HRESULT(STDMETHODCALLTYPE *present_t)(IDirect3DDevice8 *, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *);

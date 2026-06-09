@@ -1,13 +1,13 @@
-#include <windows.h>
-#include <obs-module.h>
-#include <util/dstr.h>
-#include <util/windows/win-version.h>
-#include <util/platform.h>
+#include "compat-format-ver.h"
+#include "compat-helpers.h"
 
 #include <file-updater/file-updater.h>
+#include <obs-module.h>
+#include <util/dstr.h>
+#include <util/platform.h>
+#include <util/windows/win-version.h>
 
-#include "compat-helpers.h"
-#include "compat-format-ver.h"
+#include <windows.h>
 
 #define WIN_CAPTURE_LOG_STRING "[win-capture plugin] "
 #define WIN_CAPTURE_VER_STRING "win-capture plugin (libobs " OBS_VERSION ")"

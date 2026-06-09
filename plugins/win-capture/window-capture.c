@@ -1,13 +1,14 @@
-#include <stdlib.h>
-#include <util/dstr.h>
-#include <util/threading.h>
-#include <util/windows/window-helpers.h>
-
-#include "dc-capture.h"
 #include "audio-helpers.h"
 #include "compat-helpers.h"
+#include "dc-capture.h"
+
+#include <util/dstr.h>
 #include <util/platform.h>
+#include <util/threading.h>
+#include <util/windows/window-helpers.h>
 #include <winrt-capture.h>
+
+#include <stdlib.h>
 
 /* clang-format off */
 

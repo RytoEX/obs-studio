@@ -1,7 +1,8 @@
+#include "get-graphics-offsets.h"
+
 #include <inttypes.h>
 #include <stdio.h>
 #include <windows.h>
-#include "get-graphics-offsets.h"
 
 int main(int argc, char *argv[])
 {

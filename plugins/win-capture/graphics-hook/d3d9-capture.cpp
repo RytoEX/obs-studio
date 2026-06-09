@@ -1,11 +1,11 @@
+#include "d3d9-patches.hpp"
+#include "graphics-hook.h"
+
+#include <detours.h>
+
 #include <d3d9.h>
 #include <d3d11.h>
 #include <dxgi.h>
-
-#include "graphics-hook.h"
-#include "d3d9-patches.hpp"
-
-#include <detours.h>
 
 typedef HRESULT(STDMETHODCALLTYPE *present_t)(IDirect3DDevice9 *, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *);
 typedef HRESULT(STDMETHODCALLTYPE *present_ex_t)(IDirect3DDevice9Ex *, CONST RECT *, CONST RECT *, HWND,

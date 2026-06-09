@@ -1,5 +1,6 @@
-#include <util/dstr.h>
 #include "dc-capture.h"
+
+#include <util/dstr.h>
 
 /* clang-format off */
 

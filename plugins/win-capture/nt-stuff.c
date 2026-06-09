@@ -1,6 +1,6 @@
+#include <stdbool.h>
 #include <windows.h>
 #include <winternl.h>
-#include <stdbool.h>
 
 #define THREAD_STATE_WAITING 5
 #define THREAD_WAIT_REASON_SUSPENDED 5

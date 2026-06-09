@@ -1,12 +1,12 @@
-#include <windows.h>
+#include "cursor-capture.h"
 
 #include <obs-module.h>
 #include <util/dstr.h>
-#include <util/threading.h>
-
-#include "cursor-capture.h"
 #include <util/platform.h>
+#include <util/threading.h>
 #include <winrt-capture.h>
+
+#include <windows.h>
 
 #define do_log(level, format, ...) \
 	blog(level, "[duplicator-monitor-capture: '%s'] " format, obs_source_get_name(capture->source), ##__VA_ARGS__)

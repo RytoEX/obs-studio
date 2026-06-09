@@ -1,16 +1,15 @@
-#include <windows.h>
+#include "dxgi-helpers.hpp"
 #include "graphics-hook.h"
 
 #if COMPILE_D3D12_HOOK
+
+#include <detours.h>
 
 #include <d3d11on12.h>
 #include <d3d12.h>
 #include <dxgi1_4.h>
 #include <inttypes.h>
-
-#include <detours.h>
-
-#include "dxgi-helpers.hpp"
+#include <windows.h>
 
 #define MAX_BACKBUFFERS 8
 

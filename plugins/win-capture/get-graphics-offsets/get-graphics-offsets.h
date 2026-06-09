@@ -1,8 +1,9 @@
 #pragma once
 
+#include <graphics-hook-info.h>
+
 #include <stdint.h>
 #include <stdbool.h>
-#include <graphics-hook-info.h>
 
 #define DUMMY_WNDCLASS "get_addrs_wndclass"
 

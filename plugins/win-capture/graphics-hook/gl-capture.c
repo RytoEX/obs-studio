@@ -3,16 +3,16 @@
 #pragma warning(disable : 4054) /* function pointer to data pointer */
 #endif
 
-#include <windows.h>
-
-#define COBJMACROS
-#include <dxgi.h>
-#include <d3d11.h>
-
 #include "gl-decs.h"
 #include "graphics-hook.h"
 
 #include <detours.h>
+
+#define COBJMACROS
+#include <d3d11.h>
+#include <dxgi.h>
+
+#include <windows.h>
 
 #define DUMMY_WINDOW_CLASS_NAME L"graphics_hook_gl_dummy_window"
 

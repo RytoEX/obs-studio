@@ -1,7 +1,8 @@
+#include "get-graphics-offsets.h"
+
+#include <d3d9.h>
 #include <stdio.h>
 #include <windows.h>
-#include <d3d9.h>
-#include "get-graphics-offsets.h"
 
 typedef HRESULT(WINAPI *d3d9createex_t)(UINT, IDirect3D9Ex **);
 

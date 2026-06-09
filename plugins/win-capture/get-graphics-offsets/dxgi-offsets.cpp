@@ -1,8 +1,9 @@
-#include <windows.h>
-#include <d3d10.h>
-#include <VersionHelpers.h>
-#include <dxgi1_2.h>
 #include "get-graphics-offsets.h"
+
+#include <d3d10.h>
+#include <dxgi1_2.h>
+#include <VersionHelpers.h>
+#include <windows.h>
 
 typedef HRESULT(WINAPI *d3d10create_t)(IDXGIAdapter *, D3D10_DRIVER_TYPE, HMODULE, UINT, UINT, DXGI_SWAP_CHAIN_DESC *,
 				       IDXGISwapChain **, IUnknown **);

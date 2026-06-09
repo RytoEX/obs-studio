@@ -1,24 +1,26 @@
-#include <inttypes.h>
-#include <obs-module.h>
-#include <obs-hotkey.h>
-#include <util/dstr.h>
-#include <util/platform.h>
-#include <util/threading.h>
-#include <util/windows/window-helpers.h>
-#include <windows.h>
-#include <dxgi.h>
-#include <util/sse-intrin.h>
-#include <util/util_uint64.h>
-#include <ipc-util/pipe.h>
-#include <util/windows/obfuscate.h>
-#include "inject-library.h"
-#include "compat-helpers.h"
-#include "graphics-hook-info.h"
-#include "graphics-hook-ver.h"
-#include "cursor-capture.h"
 #include "app-helpers.h"
 #include "audio-helpers.h"
+#include "compat-helpers.h"
+#include "cursor-capture.h"
+#include "graphics-hook-info.h"
+#include "graphics-hook-ver.h"
+#include "inject-library.h"
 #include "nt-stuff.h"
+
+#include <ipc-util/pipe.h>
+#include <obs-hotkey.h>
+#include <obs-module.h>
+#include <util/dstr.h>
+#include <util/platform.h>
+#include <util/sse-intrin.h>
+#include <util/threading.h>
+#include <util/util_uint64.h>
+#include <util/windows/obfuscate.h>
+#include <util/windows/window-helpers.h>
+
+#include <dxgi.h>
+#include <inttypes.h>
+#include <windows.h>
 
 #define do_log(level, format, ...) \
 	blog(level, "[game-capture: '%s'] " format, obs_source_get_name(gc->source), ##__VA_ARGS__)

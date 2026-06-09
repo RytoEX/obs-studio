@@ -1,8 +1,8 @@
-#include <d3d10.h>
-#include <dxgi.h>
-
 #include "dxgi-helpers.hpp"
 #include "graphics-hook.h"
+
+#include <d3d10.h>
+#include <dxgi.h>
 
 struct d3d10_data {
 	ID3D10Device *device; /* do not release */

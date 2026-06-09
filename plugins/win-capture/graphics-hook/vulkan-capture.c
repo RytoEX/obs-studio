@@ -1,21 +1,18 @@
-#include <windows.h>
+#include "vulkan-capture.h"
+
+#include "dxgi-helpers.hpp"
 #include "graphics-hook.h"
 
 #define VK_USE_PLATFORM_WIN32_KHR
-
-#include <malloc.h>
-#include <vulkan/vulkan.h>
 #include <vulkan/vk_layer.h>
-
+#include <vulkan/vulkan.h>
 #include <vulkan/vulkan_win32.h>
 
 #define COBJMACROS
-#include <dxgi.h>
 #include <d3d11.h>
-
-#include "dxgi-helpers.hpp"
-
-#include "vulkan-capture.h"
+#include <dxgi.h>
+#include <malloc.h>
+#include <windows.h>
 
 /* ======================================================================== */
 /* defs/statics                                                             */

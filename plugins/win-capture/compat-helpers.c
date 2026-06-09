@@ -1,12 +1,12 @@
-#include <jansson.h>
+#include "compat-format-ver.h"
+#include "compat-helpers.h"
 
 #include <obs-module.h>
 #include <util/dstr.h>
 #include <util/platform.h>
 #include <util/windows/window-helpers.h>
 
-#include "compat-helpers.h"
-#include "compat-format-ver.h"
+#include <jansson.h>
 
 enum match_flags {
 	MATCH_EXE = 1 << 0,

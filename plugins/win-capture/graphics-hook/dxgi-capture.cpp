@@ -1,16 +1,15 @@
-#include <d3d10_1.h>
-#include <d3d11.h>
-#include <dxgi1_2.h>
-#include <d3dcompiler.h>
-#include <inttypes.h>
-
 #include "graphics-hook.h"
 
 #include <detours.h>
 
+#include <d3d10_1.h>
+#include <d3d11.h>
 #if COMPILE_D3D12_HOOK
 #include <d3d12.h>
 #endif
+#include <d3dcompiler.h>
+#include <dxgi1_2.h>
+#include <inttypes.h>
 
 typedef HRESULT(STDMETHODCALLTYPE *resize_buffers_t)(IDXGISwapChain *, UINT, UINT, UINT, DXGI_FORMAT, UINT);
 typedef HRESULT(STDMETHODCALLTYPE *present_t)(IDXGISwapChain *, UINT, UINT);
