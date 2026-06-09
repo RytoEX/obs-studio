@@ -1,12 +1,12 @@
 #pragma once
 
-#include <assert.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
-#include <stdio.h>
-
 #include "hook-helpers.h"
+
+#include <assert.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
 #define EVENT_CAPTURE_RESTART L"CaptureHook_Restart"
 #define EVENT_CAPTURE_STOP L"CaptureHook_Stop"
