@@ -4,21 +4,12 @@
 #include <cstdint>
 #include <thread>
 
-#ifdef OBS_LEGACY
-#include "../shared-memory-queue.h"
-#include "../tiny-nv12-scale.h"
-#include "../../../deps/libdshowcapture/src/source/output-filter.hpp"
-#include "../../../deps/libdshowcapture/src/source/dshow-formats.hpp"
-#include "../../../libobs/util/windows/WinHandle.hpp"
-#include "../../../libobs/util/threading-windows.h"
-#else
 #include <shared-memory-queue.h>
 #include <tiny-nv12-scale.h>
 #include <source/output-filter.hpp>
 #include <source/dshow-formats.hpp>
 #include <util/windows/WinHandle.hpp>
 #include <util/threading-windows.h>
-#endif
 
 typedef struct {
 	int cx;

@@ -6,11 +6,7 @@
 #include <util/platform.h>
 #include <util/windows/WinHandle.hpp>
 #include <util/threading.h>
-#ifdef OBS_LEGACY
-#include "libdshowcapture/dshowcapture.hpp"
-#else
 #include <dshowcapture.hpp>
-#endif
 #include "ffmpeg-decode.h"
 #include "encode-dstr.hpp"
 
