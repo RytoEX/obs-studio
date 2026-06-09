@@ -1,6 +1,8 @@
-#include <windows.h>
 #include "shared-memory-queue.h"
+
 #include "tiny-nv12-scale.h"
+
+#include <windows.h>
 
 #define VIDEO_NAME L"OBSVirtualCamVideo"
 
