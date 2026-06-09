@@ -4,13 +4,8 @@
 #include <windows.h>
 #include <shellapi.h>
 #include <stdbool.h>
-#ifdef OBS_LEGACY
-#include "../../../libobs/util/windows/obfuscate.h"
-#include "../inject-library.h"
-#else
 #include <util/windows/obfuscate.h>
 #include <inject-library.h>
-#endif
 
 #if defined(_MSC_VER) && !defined(inline)
 #define inline __inline

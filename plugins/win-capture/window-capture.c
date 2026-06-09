@@ -6,13 +6,8 @@
 #include "dc-capture.h"
 #include "audio-helpers.h"
 #include "compat-helpers.h"
-#ifdef OBS_LEGACY
-#include "../../libobs/util/platform.h"
-#include "../../libobs-winrt/winrt-capture.h"
-#else
 #include <util/platform.h>
 #include <winrt-capture.h>
-#endif
 
 /* clang-format off */
 
