@@ -1,15 +1,15 @@
 #pragma once
 
-#include <windows.h>
-#include <cstdint>
-#include <thread>
-
 #include <shared-memory-queue.h>
-#include <tiny-nv12-scale.h>
 #include <source/output-filter.hpp>
 #include <source/dshow-formats.hpp>
-#include <util/windows/WinHandle.hpp>
+#include <tiny-nv12-scale.h>
 #include <util/threading-windows.h>
+#include <util/windows/WinHandle.hpp>
+
+#include <cstdint>
+#include <thread>
+#include <windows.h>
 
 typedef struct {
 	int cx;

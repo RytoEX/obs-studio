@@ -1,8 +1,8 @@
-#include <obs-module.h>
+#include <dshowcapture.hpp>
 #include <obs-avc.h>
+#include <obs-module.h>
 #include <util/darray.h>
 #include <util/dstr.hpp>
-#include <dshowcapture.hpp>
 
 using namespace DShow;
 using namespace std;

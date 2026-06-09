@@ -1,20 +1,21 @@
-#include <objbase.h>
+#include "encode-dstr.hpp"
+#include "ffmpeg-decode.h"
 
+#include <dshowcapture.hpp>
 #include <obs-module.h>
 #include <obs.hpp>
 #include <util/dstr.hpp>
 #include <util/platform.h>
 #include <util/windows/WinHandle.hpp>
 #include <util/threading.h>
-#include <dshowcapture.hpp>
-#include "ffmpeg-decode.h"
-#include "encode-dstr.hpp"
 
 #include <algorithm>
 #include <limits>
 #include <set>
 #include <string>
 #include <vector>
+
+#include <objbase.h>
 
 /*
  * TODO:
