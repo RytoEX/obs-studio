@@ -1,5 +1,5 @@
-#include <windows.h>
 #include <stdint.h>
+#include <windows.h>
 
 #define INJECT_ERROR_INJECT_FAILED -1
 #define INJECT_ERROR_INVALID_PARAMS -2
