@@ -1,5 +1,6 @@
-#include <string.h>
 #include "tiny-nv12-scale.h"
+
+#include <string.h>
 
 /* TODO: optimize this stuff later, or replace with something better.  it's
  * kind of garbage.  although normally it shouldn't be called that often.  plus
