@@ -16,7 +16,6 @@ jobs:
   create-appcast:
     name: Create Sparkle Appcast 🎙️
     runs-on: macos-26
-    needs: check-tag
     strategy:
       fail-fast: false
       matrix:
