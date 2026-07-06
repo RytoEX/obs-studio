@@ -52,6 +52,8 @@ jobs:
           print "workflowRunId=${workflowRunId}" >> $GITHUB_OUTPUT
 
       - name: Download Artifact 📥
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           : Download Artifact
           local -A arch_names=(x86_64 Intel arm64 Apple)
