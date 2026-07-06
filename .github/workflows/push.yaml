@@ -43,7 +43,8 @@ jobs:
 
           local -A arch_names=(x86_64 intel arm64 apple)
           print "cpuName=${arch_names[${{ matrix.target }}]}" >> $GITHUB_OUTPUT
-          print "commitHash=${GITHUB_SHA:0:9}" >> $GITHUB_OUTPUT
+          #print "commitHash=${GITHUB_SHA:0:9}" >> $GITHUB_OUTPUT
+          print "commitHash=2396e6e9b" >> $GITHUB_OUTPUT
           print "channel=${channel}" >> $GITHUB_OUTPUT
 
           #local workflowRunId="$(gh run list --branch "${GITHUB_REF_NAME}" --event push --limit 1 --json "databaseId" --jq ".[].databaseId")"
