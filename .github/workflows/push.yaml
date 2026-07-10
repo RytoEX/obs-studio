@@ -47,8 +47,8 @@ jobs:
           print "commitHash=2396e6e9b" >> $GITHUB_OUTPUT
           print "channel=${channel}" >> $GITHUB_OUTPUT
 
-          #local workflowRunId="$(gh run list --branch "${GITHUB_REF_NAME}" --event push --limit 1 --json "databaseId" --jq ".[].databaseId")"
-          local workflowRunId="28768124637"
+          local workflowRunId="$(gh run list --branch "master" --event push --limit 1 --json "databaseId" --jq ".[].databaseId")"
+          #local workflowRunId="28768124637"
           print "workflowRunId=${workflowRunId}" >> $GITHUB_OUTPUT
 
       - name: Download Artifact 📥
