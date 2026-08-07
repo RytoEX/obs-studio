@@ -98,6 +98,8 @@ get_property(obs_module_list GLOBAL PROPERTY OBS_MODULES_ENABLED)
 list(JOIN obs_module_list "|" SAFE_MODULES)
 target_compile_definitions(obs-studio PRIVATE "SAFE_MODULES=\"${SAFE_MODULES}\"")
 
+target_link_options(obs-studio PRIVATE $<$<PLATFORM_ID:Windows>:/DEPENDENTLOADFLAG:0x1000>)
+
 get_target_property(target_sources obs-studio SOURCES)
 set(target_cpp_sources ${target_sources})
 set(target_hpp_sources ${target_sources})
