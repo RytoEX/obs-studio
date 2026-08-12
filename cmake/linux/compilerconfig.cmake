@@ -12,6 +12,7 @@ mark_as_advanced(ENABLE_COMPILER_TRACE)
 set(
   _obs_gcc_c_options
   $<$<BOOL:${OBS_COMPILE_DEPRECATION_AS_WARNING}>:-Wno-error=deprecated-declarations>
+  -fno-char8_t
   -fno-strict-aliasing
   -fopenmp-simd
   -Wdeprecated-declarations
