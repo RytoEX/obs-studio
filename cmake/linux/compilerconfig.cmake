@@ -12,7 +12,6 @@ mark_as_advanced(ENABLE_COMPILER_TRACE)
 set(
   _obs_gcc_c_options
   $<$<BOOL:${OBS_COMPILE_DEPRECATION_AS_WARNING}>:-Wno-error=deprecated-declarations>
-  -fno-char8_t
   -fno-strict-aliasing
   -fopenmp-simd
   -Wdeprecated-declarations
@@ -48,7 +47,7 @@ add_compile_options(
   "$<$<COMPILE_LANG_AND_ID:C,GNU>:${_obs_gcc_c_options}>"
   "$<$<COMPILE_LANG_AND_ID:C,GNU>:-Wint-conversion;-Wno-missing-prototypes;-Wno-strict-prototypes;-Wpointer-sign>"
   "$<$<COMPILE_LANG_AND_ID:CXX,GNU>:${_obs_gcc_c_options}>"
-  "$<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Winvalid-offsetof;-Wno-overloaded-virtual>"
+  "$<$<COMPILE_LANG_AND_ID:CXX,GNU>:-fno-char8_t;-Winvalid-offsetof;-Wno-overloaded-virtual>"
   "$<$<COMPILE_LANG_AND_ID:C,Clang>:${_obs_clang_c_options}>"
   "$<$<COMPILE_LANG_AND_ID:CXX,Clang>:${_obs_clang_cxx_options}>"
 )
