@@ -170,8 +170,11 @@ void OBSImporter::importCollections()
 {
 	setEnabled(false);
 
+	PRAGMA_WARN_PUSH
+	PRAGMA_DISABLE_DEPRECATION
 	const std::filesystem::path sceneCollectionLocation =
 		App()->userScenesLocation / std::filesystem::u8path(OBSSceneCollectionPath);
+	PRAGMA_WARN_POP
 
 	for (int i = 0; i < optionsModel->rowCount() - 1; i++) {
 		int selected = optionsModel->index(i, ImporterColumn::Selected).data(Qt::CheckStateRole).value<int>();
