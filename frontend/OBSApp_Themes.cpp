@@ -131,9 +131,12 @@ static optional<OBSTheme> ParseThemeMeta(const QString &path)
 		}
 	}
 
+	PRAGMA_WARN_PUSH
+	PRAGMA_DISABLE_DEPRECATION
 	auto filepath = filesystem::u8path(path.toStdString());
 	meta.isBaseTheme = filepath.extension() == ".obt";
 	meta.filename = filepath.stem();
+	PRAGMA_WARN_POP
 
 	if (meta.id.isEmpty() || meta.name.isEmpty() || (!meta.isBaseTheme && meta.extends.isEmpty())) {
 		/* Theme is invalid */
@@ -1002,7 +1005,10 @@ bool OBSApp::SetTheme(const QString &name)
 	filesystem::path debugOut;
 	char configPath[512];
 	if (GetAppConfigPath(configPath, sizeof(configPath), filename.c_str())) {
+		PRAGMA_WARN_PUSH
+		PRAGMA_DISABLE_DEPRECATION
 		debugOut = absolute(filesystem::u8path(configPath));
+		PRAGMA_WARN_POP
 		filesystem::create_directories(debugOut.parent_path());
 	}
 
@@ -1059,13 +1065,19 @@ bool OBSApp::InitTheme()
 	/* Set search paths for custom 'theme:' URI prefix */
 	string searchDir;
 	if (GetDataFilePath("themes", searchDir)) {
+		PRAGMA_WARN_PUSH
+		PRAGMA_DISABLE_DEPRECATION
 		auto installSearchDir = filesystem::u8path(searchDir);
+		PRAGMA_WARN_POP
 		QDir::addSearchPath("theme", absolute(installSearchDir));
 	}
 
 	char userDir[512];
 	if (GetAppConfigPath(userDir, sizeof(userDir), "obs-studio/themes")) {
+		PRAGMA_WARN_PUSH
+		PRAGMA_DISABLE_DEPRECATION
 		auto configSearchDir = filesystem::u8path(userDir);
+		PRAGMA_WARN_POP
 		QDir::addSearchPath("theme", absolute(configSearchDir));
 	}
 

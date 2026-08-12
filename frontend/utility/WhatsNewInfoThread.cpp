@@ -40,6 +40,8 @@
 
 static bool QuickWriteFile(const char *file, const std::string &data)
 try {
+	PRAGMA_WARN_PUSH
+	PRAGMA_DISABLE_DEPRECATION
 	std::ofstream fileStream(std::filesystem::u8path(file), std::ios::binary);
 	if (fileStream.fail()) {
 		throw strprintf("Failed to open file '%s': %s", file, strerror(errno));
@@ -49,6 +51,7 @@ try {
 	if (fileStream.fail()) {
 		throw strprintf("Failed to write file '%s': %s", file, strerror(errno));
 	}
+	PRAGMA_WARN_POP
 
 	return true;
 
@@ -59,7 +62,10 @@ try {
 
 static bool QuickReadFile(const char *file, std::string &data)
 try {
+	PRAGMA_WARN_PUSH
+	PRAGMA_DISABLE_DEPRECATION
 	std::ifstream fileStream(std::filesystem::u8path(file), std::ios::binary);
+	PRAGMA_WARN_POP
 	if (!fileStream.is_open() || fileStream.fail()) {
 		throw strprintf("Failed to open file '%s': %s", file, strerror(errno));
 	}

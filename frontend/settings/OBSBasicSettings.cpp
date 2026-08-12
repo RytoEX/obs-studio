@@ -1942,7 +1942,10 @@ OBSPropertiesView *OBSBasicSettings::CreateEncoderPropertyView(const char *encod
 		const OBSBasic *basic = OBSBasic::Get();
 		const OBSProfile &currentProfile = basic->GetCurrentProfile();
 
+		PRAGMA_WARN_PUSH
+		PRAGMA_DISABLE_DEPRECATION
 		const std::filesystem::path jsonFilePath = currentProfile.path / std::filesystem::u8path(path);
+		PRAGMA_WARN_POP
 
 		if (!jsonFilePath.empty()) {
 			obs_data_t *data = obs_data_create_from_json_file_safe(jsonFilePath.u8string().c_str(), "bak");
@@ -3399,7 +3402,10 @@ static void WriteJsonData(OBSPropertiesView *view, const char *path)
 	const OBSBasic *basic = OBSBasic::Get();
 	const OBSProfile &currentProfile = basic->GetCurrentProfile();
 
+	PRAGMA_WARN_PUSH
+	PRAGMA_DISABLE_DEPRECATION
 	const std::filesystem::path jsonFilePath = currentProfile.path / std::filesystem::u8path(path);
+	PRAGMA_WARN_POP
 
 	if (!jsonFilePath.empty()) {
 		obs_data_t *settings = view->GetSettings();
@@ -5260,8 +5266,11 @@ void OBSBasicSettings::AdvReplayBufferChanged()
 
 		const OBSProfile &currentProfile = main->GetCurrentProfile();
 
+		PRAGMA_WARN_PUSH
+		PRAGMA_DISABLE_DEPRECATION
 		const std::filesystem::path jsonFilePath =
 			currentProfile.path / std::filesystem::u8path("recordEncoder.json");
+		PRAGMA_WARN_POP
 
 		if (!jsonFilePath.empty()) {
 			OBSDataAutoRelease data =

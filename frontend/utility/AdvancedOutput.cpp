@@ -14,7 +14,10 @@ static OBSData GetDataFromJsonFile(const char *jsonFile)
 
 	const OBSProfile &currentProfile = basic->GetCurrentProfile();
 
+	PRAGMA_WARN_PUSH
+	PRAGMA_DISABLE_DEPRECATION
 	const std::filesystem::path jsonFilePath = currentProfile.path / std::filesystem::u8path(jsonFile);
+	PRAGMA_WARN_POP
 
 	OBSDataAutoRelease data = nullptr;
 

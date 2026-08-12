@@ -29,7 +29,10 @@ static OBSData OpenServiceSettings(std::string &type)
 	const OBSBasic *basic = OBSBasic::Get();
 	const OBSProfile &currentProfile = basic->GetCurrentProfile();
 
+	PRAGMA_WARN_PUSH
+	PRAGMA_DISABLE_DEPRECATION
 	const std::filesystem::path jsonFilePath = currentProfile.path / std::filesystem::u8path(OBSServiceFileName);
+	PRAGMA_WARN_POP
 
 	if (!std::filesystem::exists(jsonFilePath)) {
 		return OBSData();

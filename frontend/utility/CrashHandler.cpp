@@ -236,7 +236,10 @@ void CrashHandler::setupSentinel()
 				      appLaunchUUIDString.size() + 1);
 	crashSentinelFilePath.append("/").append(crashSentinelPrefix).append(appLaunchUUIDString);
 
+	PRAGMA_WARN_PUSH
+	PRAGMA_DISABLE_DEPRECATION
 	crashSentinelFile_ = std::filesystem::u8path(crashSentinelFilePath);
+	PRAGMA_WARN_POP
 
 	isActiveCrashHandler_ = true;
 }
@@ -259,7 +262,10 @@ void CrashHandler::updateCrashLogFromConfig()
 	OBS::Clock::duration durationSinceEpoch = std::chrono::seconds(lastCrashLogUploadTimestamp);
 	OBS::TimePoint lastCrashLogUploadTime = OBS::TimePoint(durationSinceEpoch);
 
+	PRAGMA_WARN_PUSH
+	PRAGMA_DISABLE_DEPRECATION
 	lastCrashLogFile_ = std::filesystem::u8path(lastCrashLogFilePath);
+	PRAGMA_WARN_POP
 	lastCrashLogFileName_ = lastCrashLogFile_.filename().u8string();
 	lastCrashLogURL_ = lastCrashLogUploadURL;
 	lastCrashUploadTime_ = lastCrashLogUploadTime;

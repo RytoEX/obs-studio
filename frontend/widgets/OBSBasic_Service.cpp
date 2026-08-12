@@ -29,7 +29,10 @@ void OBSBasic::SaveService()
 
 	const OBSProfile &currentProfile = GetCurrentProfile();
 
+	PRAGMA_WARN_PUSH
+	PRAGMA_DISABLE_DEPRECATION
 	const std::filesystem::path jsonFilePath = currentProfile.path / std::filesystem::u8path(OBSServiceFileName);
+	PRAGMA_WARN_POP
 
 	OBSDataAutoRelease data = obs_data_create();
 	OBSDataAutoRelease settings = obs_service_get_settings(service);
@@ -49,8 +52,11 @@ bool OBSBasic::LoadService()
 	try {
 		const OBSProfile &currentProfile = GetCurrentProfile();
 
+		PRAGMA_WARN_PUSH
+		PRAGMA_DISABLE_DEPRECATION
 		const std::filesystem::path jsonFilePath =
 			currentProfile.path / std::filesystem::u8path(OBSServiceFileName);
+		PRAGMA_WARN_POP
 
 		data = obs_data_create_from_json_file_safe(jsonFilePath.u8string().c_str(), "bak");
 

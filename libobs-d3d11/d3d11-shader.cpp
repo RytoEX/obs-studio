@@ -235,7 +235,10 @@ void gs_shader::Compile(const char *shaderString, const char *file, const char *
 	snprintf(hashstr, sizeof(hashstr), "%02llx", hash);
 
 	BPtr program_data = os_get_program_data_path_ptr("obs-studio/shader-cache");
+	PRAGMA_WARN_PUSH
+	PRAGMA_DISABLE_DEPRECATION
 	auto cachePath = std::filesystem::u8path(program_data.Get()) / hashstr;
+	PRAGMA_WARN_POP
 	// Increment if on-disk format changes
 	cachePath += ".v2";
 

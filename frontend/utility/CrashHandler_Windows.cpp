@@ -78,7 +78,10 @@ std::filesystem::path CrashHandler::getCrashLogDirectory() const
 
 	std::string crashLogDirectoryString = crashLogDirectory.Get();
 
+	PRAGMA_WARN_PUSH
+	PRAGMA_DISABLE_DEPRECATION
 	std::filesystem::path crashLogDirectoryPath = std::filesystem::u8path(crashLogDirectoryString);
+	PRAGMA_WARN_POP
 
 	return crashLogDirectoryPath;
 }

@@ -262,7 +262,10 @@ SceneCollection &OBSBasic::CreateSceneCollection(const std::string &collectionNa
 		throw std::invalid_argument("Failed to get closest file name for new scene collection: " + fileName);
 	}
 
+	PRAGMA_WARN_PUSH
+	PRAGMA_DISABLE_DEPRECATION
 	std::filesystem::path collectionFilePath = std::filesystem::u8path(collectionFile);
+	PRAGMA_WARN_POP
 
 	auto [iterator, success] =
 		collections.try_emplace(collectionName, collectionName, std::move(collectionFilePath));
@@ -429,8 +432,11 @@ void OBSBasic::RefreshSceneCollectionCache()
 {
 	OBSSceneCollectionCache foundCollections{};
 
+	PRAGMA_WARN_PUSH
+	PRAGMA_DISABLE_DEPRECATION
 	const std::filesystem::path collectionsPath =
 		App()->userScenesLocation / std::filesystem::u8path(SceneCollectionPath.substr(1));
+	PRAGMA_WARN_POP
 
 	if (!std::filesystem::exists(collectionsPath)) {
 		blog(LOG_WARNING, "Failed to get scene collections config path");
@@ -654,8 +660,11 @@ void OBSBasic::on_actionExportSceneCollection_triggered()
 
 	if (!destinationFileName.isEmpty() && !destinationFileName.isNull()) {
 		const std::filesystem::path sourceFile = currentCollection.getFilePath();
+		PRAGMA_WARN_PUSH
+		PRAGMA_DISABLE_DEPRECATION
 		const std::filesystem::path destinationFile =
 			std::filesystem::u8path(destinationFileName.toStdString());
+		PRAGMA_WARN_POP
 
 		OBSDataAutoRelease collection = obs_data_create_from_json_file(sourceFile.u8string().c_str());
 
