@@ -14,5 +14,3 @@ target_sources(
     importers/studio.cpp
     importers/xsplit.cpp
 )
-
-set_source_files_properties(importer/OBSImporter.cpp PROPERTIES COMPILE_FLAGS "-std=c++17")
